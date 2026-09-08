@@ -342,7 +342,7 @@ const HeroSection = () => {
             {/* Hero photo */}
 
             <img
-              src="/public/image/hero.png"
+              src="/image/hero.png"
               alt="Smiling business owner using the TaxPilot UK platform"
               className="
                 relative
