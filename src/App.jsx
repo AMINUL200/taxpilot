@@ -12,6 +12,15 @@ import HelpPage from "./pages/customer/HelpPage";
 import BlogDetails from "./pages/customer/BlogDetails";
 import PricingPage from "./pages/customer/PricingPage";
 import CorporationTax from "./pages/customer/products/CorporationTax";
+import AnnualAccounts from "./pages/customer/products/AnnualAccounts";
+import MtdVat from "./pages/customer/products/MtdVat";
+import SelfAssessmentOverview from "./component/self-assessment/SelfAssessmentOverview";
+import SelfAssessment from "./pages/customer/products/SelfAssessment";
+import ConfirmationStatement from "./pages/customer/products/ConfirmationStatement";
+import Terms from "./pages/customer/privacy/Terms";
+import Privacy from "./pages/customer/privacy/Privacy";
+import Cookies from "./pages/customer/privacy/Cookies";
+import Accessibility from "./pages/customer/privacy/Accessibility";
 
 const App = () => {
   return (
@@ -28,6 +37,20 @@ const App = () => {
 
 
           <Route path="/corporation-tax" element={<CorporationTax />} />
+          <Route path="/annual-accounts" element={<AnnualAccounts />} />
+          <Route path="/mtd-vat" element={<MtdVat />} />
+          <Route path="/self-assessment" element={<SelfAssessment />} />
+          <Route path="/confirmation-statement" element={<ConfirmationStatement />} />
+
+
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/cookies" element={<Cookies />} />
+          <Route path="/accessibility" element={<Accessibility />} />
+
+
+
+
         </Route>
 
         {/* Admin Layout */}
