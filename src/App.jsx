@@ -37,6 +37,15 @@ import OrganizationMyCompaniesDetails from "./pages/organization/OrganizationMyC
 import OrganizationCorporationTax from "./pages/organization/OrganizationCorporationTax";
 import OrganizationSelfAssessment from "./pages/organization/OrganizationSelfAssessment";
 import OrganizationCorporationTaxCT600Page from "./pages/organization/OrganizationCorporationTaxCT600Page";
+import OrganizationConfirmationStatements from "./pages/organization/OrganizationConfirmationStatements";
+import OrganizationVAT from "./pages/organization/OrganizationVAT";
+import OrganizationVATReturn from "./pages/organization/OrganizationVATReturn";
+import AccountantLayout from "./layout/AccountantLayout";
+
+
+import AccountantDashboard from "./pages/accountant/AccountantDashboard";
+import AccountantClients from "./pages/accountant/AccountantClients";
+import AccountantClientsDetails from "./pages/accountant/AccountantClientsDetails";
 
 const App = () => {
   return (
@@ -109,6 +118,30 @@ const App = () => {
             path="products/self-assessment"
             element={<OrganizationSelfAssessment />}
           />
+          <Route
+            path="products/confirmation-statement"
+            element={<OrganizationConfirmationStatements />}
+          />
+          <Route path="products/mtd-vat" element={<OrganizationVAT />} />
+          <Route
+            path="products/mtd-vat-return/:companyNumber/start"
+            element={<OrganizationVATReturn />}
+          />
+        </Route>
+
+        {/* Accountant portal */}
+        <Route path="/accountant" element={<AccountantLayout />}>
+          <Route index element={<AccountantDashboard />} />
+          <Route path="clients" element={<AccountantClients />} />
+          <Route path="clients/:id" element={<AccountantClientsDetails />} />
+          {/* <Route path="companies" element={<AccountantCompanies />} />
+          <Route path="filings" element={<AccountantFilings />} />
+          <Route path="deadlines" element={<AccountantDeadlines />} />
+          <Route path="tasks" element={<AccountantTasks />} />
+          <Route path="documents" element={<AccountantDocuments />} />
+          <Route path="team" element={<AccountantTeam />} />
+          <Route path="billing" element={<AccountantBilling />} />
+          <Route path="settings" element={<AccountantSettings />} /> */}
         </Route>
 
         {/* Admin Layout */}
