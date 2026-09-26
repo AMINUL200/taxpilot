@@ -46,6 +46,17 @@ import AccountantLayout from "./layout/AccountantLayout";
 import AccountantDashboard from "./pages/accountant/AccountantDashboard";
 import AccountantClients from "./pages/accountant/AccountantClients";
 import AccountantClientsDetails from "./pages/accountant/AccountantClientsDetails";
+import AccountantCompanies from "./pages/accountant/AccountantCompanies";
+import AccountantCompaniesDetails from "./pages/accountant/AccountantCompaniesDetails";
+import AccountantFilings from "./pages/accountant/AccountantFilings";
+import AccountantFilingsDetails from "./pages/accountant/AccountantFilingsDetails";
+import AccountantDeadlines from "./pages/accountant/AccountantDeadlines";
+import AccountantTasks from "./pages/accountant/AccountantTasks";
+import AccountantSettings from "./pages/accountant/AccountantSettings";
+import AccountantDocuments from "./pages/accountant/AccountantDocuments";
+import AccountantTeam from "./pages/accountant/AccountantTeam";
+import AccountantBilling from "./pages/accountant/AccountantBilling";
+import AccountantTeamDetails from "./pages/accountant/AccountantTeamDetails";
 
 const App = () => {
   return (
@@ -134,14 +145,18 @@ const App = () => {
           <Route index element={<AccountantDashboard />} />
           <Route path="clients" element={<AccountantClients />} />
           <Route path="clients/:id" element={<AccountantClientsDetails />} />
-          {/* <Route path="companies" element={<AccountantCompanies />} />
+          <Route path="companies" element={<AccountantCompanies />} />
+          <Route path="companies/:Id" element={<AccountantCompaniesDetails />} />
           <Route path="filings" element={<AccountantFilings />} />
+          <Route path="filings/:Id" element={<AccountantFilingsDetails />} />
           <Route path="deadlines" element={<AccountantDeadlines />} />
           <Route path="tasks" element={<AccountantTasks />} />
           <Route path="documents" element={<AccountantDocuments />} />
           <Route path="team" element={<AccountantTeam />} />
+          <Route path="team/:Id" element={<AccountantTeamDetails />} />
+
           <Route path="billing" element={<AccountantBilling />} />
-          <Route path="settings" element={<AccountantSettings />} /> */}
+          <Route path="settings" element={<AccountantSettings />} />
         </Route>
 
         {/* Admin Layout */}
