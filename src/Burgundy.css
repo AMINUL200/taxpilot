@@ -1,0 +1,399 @@
+@import "tailwindcss";
+
+@theme {
+  /* ========================================
+     PREMIUM BRAND
+  ======================================== */
+
+  --color-brand-50: #fcf4f7;
+  --color-brand-100: #f6e9ee;
+  --color-brand-200: #edd1db;
+  --color-brand-300: #dfadbd;
+  --color-brand-400: #c9829a;
+  --color-brand-500: #a94d6b;
+  --color-brand-600: #7a1f3d;
+  --color-brand-700: #681a35;
+  --color-brand-800: #5e1730;
+  --color-brand-900: #421022;
+  --color-brand-950: #290a15;
+
+  /* Primary */
+  --color-primary: #7a1f3d;
+  --color-primary-hover: #5e1730;
+  --color-primary-light: #f6e9ee;
+  --color-primary-soft: #fcf4f7;
+
+  /* Premium Dark */
+  --color-secondary: #3b3440;
+  --color-dark: #171717;
+  --color-dark-hover: #0f0f0f;
+  --color-dark-soft: #292529;
+
+  /* Champagne Accent */
+  --color-accent: #c9a45c;
+  --color-accent-light: #f7f0e2;
+  --color-accent-dark: #a88442;
+
+  /* Text */
+  --color-text-heading: #191619;
+  --color-text: #403b3e;
+  --color-text-secondary: #5f5a5d;
+  --color-text-muted: #8a8387;
+
+  /* Backgrounds */
+  --color-background: #f8f7f5;
+  --color-background-white: #ffffff;
+  --color-background-soft: #faf9f7;
+  --color-background-mint: #f6e9ee;
+  --color-background-green: #f4f7f5;
+  --color-background-cream: #fbf7ee;
+  --color-background-blue: #f5f3f6;
+  --color-background-indigo: #f5f0f3;
+
+  /* Borders */
+  --color-border: #e5e0dc;
+  --color-border-light: #eeeae7;
+  --color-border-dark: #d4ceca;
+
+  /* Status */
+  --color-success: #2f7d62;
+  --color-success-light: #eaf5f0;
+
+  --color-warning: #b7791f;
+  --color-warning-light: #fbf3df;
+
+  --color-danger: #b54747;
+  --color-danger-light: #faeeee;
+
+  --color-info: #6b5b73;
+  --color-info-light: #f1edf3;
+
+  /* Product Colors */
+  --color-product-corporation: #7a1f3d;
+  --color-product-accounts: #3b3440;
+  --color-product-vat: #2f7d62;
+  --color-product-self: #a88442;
+  --color-product-confirmation: #6b5b73;
+
+  /* Radius */
+  --radius-card: 16px;
+  --radius-card-lg: 24px;
+  --radius-button: 10px;
+
+  /* Shadows */
+  --shadow-card:
+    0 8px 30px rgba(23, 23, 23, 0.06);
+
+  --shadow-card-hover:
+    0 18px 45px rgba(23, 23, 23, 0.10);
+
+  --shadow-premium:
+    0 20px 60px rgba(23, 23, 23, 0.08);
+}
+
+
+/* ========================================
+   ROOT VARIABLES
+======================================== */
+
+:root {
+  --primary: #7a1f3d;
+  --primary-hover: #5e1730;
+  --primary-light: #f6e9ee;
+  --primary-soft: #fcf4f7;
+
+  --secondary: #3b3440;
+
+  --accent: #c9a45c;
+  --accent-light: #f7f0e2;
+  --accent-dark: #a88442;
+
+  --heading: #191619;
+  --text: #403b3e;
+  --text-secondary: #5f5a5d;
+  --text-muted: #8a8387;
+
+  --background: #f8f7f5;
+  --background-white: #ffffff;
+  --background-soft: #faf9f7;
+
+  --border: #e5e0dc;
+  --border-light: #eeeae7;
+
+  --success: #2f7d62;
+  --warning: #b7791f;
+  --danger: #b54747;
+}
+
+
+/* ========================================
+   BASE
+======================================== */
+
+body {
+  background: #f8f7f5;
+  color: #403b3e;
+}
+
+
+/* ========================================
+   BUTTONS
+======================================== */
+
+.btn-primary {
+  background: #7a1f3d;
+  color: #ffffff;
+  border: 1px solid #7a1f3d;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #5e1730;
+  border-color: #5e1730;
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: #7a1f3d;
+  border: 1px solid #7a1f3d;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #f6e9ee;
+}
+
+.btn-dark {
+  background: #171717;
+  color: #ffffff;
+}
+
+.btn-dark:hover {
+  background: #0f0f0f;
+}
+
+.btn-accent {
+  background: #c9a45c;
+  color: #191619;
+  border: 1px solid #c9a45c;
+}
+
+.btn-accent:hover {
+  background: #a88442;
+  border-color: #a88442;
+}
+
+
+/* ========================================
+   BADGES
+======================================== */
+
+.badge-brand {
+  background: #f6e9ee;
+  color: #7a1f3d;
+}
+
+.badge-primary {
+  background: #f6e9ee;
+  color: #7a1f3d;
+}
+
+.badge-success {
+  background: #eaf5f0;
+  color: #2f7d62;
+}
+
+.badge-warning {
+  background: #fbf3df;
+  color: #b7791f;
+}
+
+.badge-danger {
+  background: #faeeee;
+  color: #b54747;
+}
+
+
+/* ========================================
+   CARDS
+======================================== */
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e0dc;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(23, 23, 23, 0.06);
+}
+
+.card:hover {
+  box-shadow: 0 18px 45px rgba(23, 23, 23, 0.10);
+}
+
+
+/* ========================================
+   SECTIONS
+======================================== */
+
+.section-white {
+  background: #ffffff;
+}
+
+.section-soft {
+  background: #faf9f7;
+}
+
+.section-mint {
+  background: #f6e9ee;
+}
+
+.section-green {
+  background: #f4f7f5;
+}
+
+.section-cream {
+  background: #fbf7ee;
+}
+
+.section-blue {
+  background: #f5f3f6;
+}
+
+.section-indigo {
+  background: #f5f0f3;
+}
+
+.section-dark {
+  background: #171717;
+}
+
+
+/* ========================================
+   TEXT
+======================================== */
+
+.text-highlight {
+  color: #7a1f3d;
+}
+
+.text-accent {
+  color: #c9a45c;
+}
+
+.text-indigo {
+  color: #6b5b73;
+}
+
+
+/* ========================================
+   GRADIENTS
+======================================== */
+
+.gradient-brand {
+  background: linear-gradient(
+    135deg,
+    #7a1f3d 0%,
+    #5e1730 100%
+  );
+}
+
+.gradient-hero {
+  background:
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(201, 164, 92, 0.12),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #fcf4f7 0%,
+      #f8f7f5 55%,
+      #ffffff 100%
+    );
+}
+
+.gradient-dark {
+  background:
+    linear-gradient(
+      135deg,
+      #171717 0%,
+      #292529 100%
+    );
+}
+
+.gradient-premium {
+  background:
+    linear-gradient(
+      135deg,
+      #7a1f3d 0%,
+      #5e1730 65%,
+      #3b3440 100%
+    );
+}
+
+.gradient-accent {
+  background:
+    linear-gradient(
+      135deg,
+      #c9a45c 0%,
+      #a88442 100%
+    );
+}
+
+
+/* ========================================
+   ICON CIRCLES
+======================================== */
+
+.icon-circle {
+  background: #f6e9ee;
+  color: #7a1f3d;
+}
+
+.icon-circle-accent {
+  background: #f7f0e2;
+  color: #a88442;
+}
+
+
+/* ========================================
+   INPUTS
+======================================== */
+
+.input {
+  background: #ffffff;
+  border: 1px solid #e5e0dc;
+  color: #191619;
+}
+
+.input:focus {
+  border-color: #7a1f3d;
+  box-shadow: 0 0 0 3px rgba(122, 31, 61, 0.10);
+}
+
+
+/* ========================================
+   TABLE
+======================================== */
+
+.table-header {
+  background: #faf9f7;
+  color: #5f5a5d;
+}
+
+.table-row {
+  border-color: #eeeae7;
+}
+
+.table-row:hover {
+  background: #fcf4f7;
+}
+
+
+/* ========================================
+   SELECTION
+======================================== */
+
+::selection {
+  background: #edd1db;
+  color: #421022;
+}

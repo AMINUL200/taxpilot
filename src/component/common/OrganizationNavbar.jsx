@@ -2,16 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   Menu,
-  Search,
   Bell,
   HelpCircle,
   ChevronDown,
   User,
   Settings,
   LogOut,
-  Building2,
-  Check,
-  Plus,
+  FileText,
+  FileCheck2,
+  Percent,
 } from "lucide-react";
 
 const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
@@ -50,6 +49,43 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
   const dropdownRefs = useRef({});
 
   // =========================================================
+  // NAVIGATION LINKS
+  // =========================================================
+
+  const navLinks = [
+    {
+      id: "accounts",
+      label: "Accounts",
+      path: "/organization/products/accounts",
+      icon: FileText,
+    },
+    {
+      id: "ct600",
+      label: "CT600",
+      path: "/organization/products/ct600",
+      icon: FileText,
+    },
+    {
+      id: "ct600-accounts",
+      label: "CT600 & Accounts",
+      path: "/organization/products/corporation-tax",
+      icon: FileText,
+    },
+    {
+      id: "payroll",
+      label: "Payroll",
+      path: "/organization/products/payroll",
+      icon: Percent,
+    },
+    {
+      id: "vat",
+      label: "VAT",
+      path: "/organization/products/mtd-vat",
+      icon: Percent,
+    },
+  ];
+
+  // =========================================================
   // DUMMY DATA
   // =========================================================
 
@@ -59,13 +95,6 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
     email: "john@abctrading.co.uk",
     initials: "JS",
   };
-
-  const companies = [
-    { id: 1, name: "ABC Trading Ltd", number: "12345678", active: true },
-    { id: 2, name: "XYZ Solutions Ltd", number: "87654321", active: false },
-  ];
-
-  const [activeCompany, setActiveCompany] = useState(companies[0]);
 
   // =========================================================
   // SCROLL EFFECT
@@ -113,9 +142,10 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
     navigate("/");
   };
 
-  const handleCompanySelect = (company) => {
-    setActiveCompany(company);
-    setOpenDropdown(null);
+  const isActivePath = (path) => {
+    if (!path) return false;
+    // Exact match for the products root
+    return location.pathname === path;
   };
 
   const unreadCount = notifications.filter((n) => n.unread).length;
@@ -140,15 +170,12 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
         ${scrolled ? "shadow-sm" : ""}
       `}
     >
-
       <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-
         {/* =================================================
             LEFT SIDE
         ================================================== */}
 
         <div className="flex items-center gap-3">
-
           {/* Mobile menu button */}
           <button
             type="button"
@@ -170,97 +197,56 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
           >
             <Menu className="h-5 w-5" />
           </button>
-
-         
-
         </div>
 
         {/* =================================================
-            CENTER - SEARCH (Desktop)
+            CENTER - PRODUCT NAVIGATION LINKS
         ================================================== */}
 
-        <div className="hidden flex-1 justify-center px-4 md:flex">
+        <nav className="hidden flex-1 items-center justify-center gap-1 px-4 md:flex">
+          {navLinks.map((link) => {
+            const isActive = isActivePath(link.path);
 
-          <div className="relative w-full max-w-md">
+            return (
+              <Link
+                key={link.id}
+                to={link.path}
+                className={`
+                  group
+                  relative
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-lg
+                  px-3.5
+                  py-2
+                  text-sm
+                  font-semibold
+                  transition-all
+                  duration-200
+                  ${
+                    isActive
+                      ? "bg-primary-light text-primary"
+                      : "text-text hover:bg-primary-light hover:text-primary"
+                  }
+                `}
+              >
+                <span className="truncate">{link.label}</span>
 
-            <Search
-              className="
-                pointer-events-none
-                absolute
-                left-3.5
-                top-1/2
-                h-4
-                w-4
-                -translate-y-1/2
-                text-text-muted
-              "
-            />
-
-            <input
-              type="text"
-              placeholder="Search companies, filings, deadlines..."
-              className="
-                w-full
-                rounded-lg
-                border
-                border-border-light
-                bg-background-soft
-                py-2.5
-                pl-10
-                pr-16
-                text-sm
-                text-heading
-                outline-none
-                transition-all
-                duration-200
-                placeholder:text-text-muted
-                focus:border-primary
-                focus:bg-white
-                focus:ring-2
-                focus:ring-primary/10
-              "
-            />
-
-            <div className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 items-center gap-1 lg:flex">
-              <kbd className="rounded border border-border bg-white px-1.5 py-0.5 text-[10px] font-semibold text-text-muted">
-                ⌘
-              </kbd>
-              <kbd className="rounded border border-border bg-white px-1.5 py-0.5 text-[10px] font-semibold text-text-muted">
-                K
-              </kbd>
-            </div>
-
-          </div>
-
-        </div>
+                {/* Active indicator dot */}
+                {isActive && (
+                  <span className="absolute -bottom-[13px] left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary" />
+                )}
+              </Link>
+            );
+          })}
+        </nav>
 
         {/* =================================================
             RIGHT SIDE
         ================================================== */}
 
         <div className="flex items-center gap-1 sm:gap-2">
-
-          {/* Mobile search */}
-          <button
-            type="button"
-            className="
-              flex
-              h-9
-              w-9
-              items-center
-              justify-center
-              rounded-lg
-              text-text
-              transition-colors
-              hover:bg-primary-light
-              hover:text-primary
-              md:hidden
-            "
-            aria-label="Search"
-          >
-            <Search className="h-[18px] w-[18px]" />
-          </button>
-
           {/* Help */}
           <Link
             to="/help"
@@ -287,7 +273,6 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
             className="relative"
             ref={(el) => (dropdownRefs.current["notifications"] = el)}
           >
-
             <button
               type="button"
               onClick={() => toggleDropdown("notifications")}
@@ -306,7 +291,6 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
               "
               aria-label="Notifications"
             >
-
               <Bell className="h-[18px] w-[18px]" />
 
               {unreadCount > 0 && (
@@ -314,7 +298,6 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                   {unreadCount}
                 </span>
               )}
-
             </button>
 
             {/* Notifications Dropdown */}
@@ -336,7 +319,6 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                   shadow-xl
                 "
               >
-
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-border-light px-4 py-3">
                   <p className="text-xs font-bold text-heading">
@@ -354,7 +336,6 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
 
                 {/* List */}
                 <div className="max-h-[360px] overflow-y-auto">
-
                   {notifications.length === 0 ? (
                     <div className="py-10 text-center">
                       <Bell className="mx-auto h-8 w-8 text-text-muted/40" />
@@ -367,7 +348,7 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                       <button
                         key={notif.id}
                         type="button"
-                        className={`
+                        className="
                           flex
                           w-full
                           items-start
@@ -380,9 +361,8 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                           transition-colors
                           hover:bg-background-soft
                           last:border-b-0
-                        `}
+                        "
                       >
-
                         <div
                           className={`
                             mt-1
@@ -409,11 +389,9 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                             {notif.time}
                           </p>
                         </div>
-
                       </button>
                     ))
                   )}
-
                 </div>
 
                 {/* Footer */}
@@ -436,10 +414,8 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                     View all notifications
                   </Link>
                 </div>
-
               </div>
             )}
-
           </div>
 
           {/* Divider */}
@@ -450,7 +426,6 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
             className="relative"
             ref={(el) => (dropdownRefs.current["user"] = el)}
           >
-
             <button
               type="button"
               onClick={() => toggleDropdown("user")}
@@ -464,7 +439,6 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                 hover:bg-primary-light
               "
             >
-
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white">
                 {user.initials}
               </div>
@@ -490,7 +464,6 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                   ${openDropdown === "user" ? "rotate-180 text-primary" : ""}
                 `}
               />
-
             </button>
 
             {/* User Dropdown */}
@@ -511,12 +484,9 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                   shadow-xl
                 "
               >
-
                 {/* User info */}
                 <div className="border-b border-border-light px-4 py-4">
-
                   <div className="flex items-center gap-3">
-
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
                       {user.initials}
                     </div>
@@ -529,14 +499,11 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                         {user.email}
                       </p>
                     </div>
-
                   </div>
-
                 </div>
 
                 {/* Menu items */}
                 <div className="py-1">
-
                   <button
                     type="button"
                     onClick={() => {
@@ -584,7 +551,6 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                     <Settings className="h-4 w-4 text-text-muted" />
                     <span>Settings</span>
                   </button>
-
                 </div>
 
                 {/* Logout */}
@@ -610,16 +576,51 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                     <span>Log out</span>
                   </button>
                 </div>
-
               </div>
             )}
-
           </div>
-
         </div>
-
       </div>
 
+      {/* =================================================
+          MOBILE NAVIGATION LINKS (below header on small screens)
+      ================================================== */}
+
+      <div className="border-t border-border-light bg-white md:hidden">
+        <div className="flex gap-1 overflow-x-auto px-4 py-2">
+          {navLinks.map((link) => {
+            const isActive = isActivePath(link.path);
+
+            return (
+              <Link
+                key={link.id}
+                to={link.path}
+                className={`
+                  group
+                  inline-flex
+                  shrink-0
+                  items-center
+                  gap-2
+                  rounded-lg
+                  px-3
+                  py-1.5
+                  text-xs
+                  font-semibold
+                  transition-all
+                  duration-200
+                  ${
+                    isActive
+                      ? "bg-primary-light text-primary"
+                      : "text-text hover:bg-primary-light hover:text-primary"
+                  }
+                `}
+              >
+                <span className="whitespace-nowrap">{link.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
     </header>
   );
 };

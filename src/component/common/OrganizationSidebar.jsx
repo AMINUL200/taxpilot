@@ -50,6 +50,18 @@ const OrganizationSidebar = ({
       path: "/organization/companies",
       icon: Building2,
     },
+    {
+      id: "accounts",
+      label: "Accounts",
+      path: "/organization/products/accounts",
+      icon: FileText,
+    },
+    {
+      id: "ct600",
+      label: "CT600",
+      path: "/organization/products/ct600",
+      icon: FileText,
+    },
 
     {
       id: "ct600-accounts",
@@ -58,13 +70,19 @@ const OrganizationSidebar = ({
       icon: FileText,
     },
 
-    {
-      id: "confirmation-statement",
-      label: "Confirmation Statement",
-      path: "/organization/products/confirmation-statement",
-      icon: FileCheck2,
-    },
+    // {
+    //   id: "confirmation-statement",
+    //   label: "Confirmation Statement",
+    //   path: "/organization/products/confirmation-statement",
+    //   icon: FileCheck2,
+    // },
 
+    {
+      id: "payroll",
+      label: "⁠Payroll",
+      path: "/organization/products/payroll",
+      icon: Percent,
+    },
     {
       id: "vat",
       label: "VAT",

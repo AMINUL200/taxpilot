@@ -20,7 +20,6 @@ const PricingPlans = ({ billing = "yearly" }) => {
       button: "Choose Dormant",
       popular: false,
     },
-
     {
       name: "Solo",
       description: "For one trading company",
@@ -39,7 +38,6 @@ const PricingPlans = ({ billing = "yearly" }) => {
       button: "Get started",
       popular: true,
     },
-
     {
       name: "Portfolio",
       description: "For multiple companies",
@@ -58,7 +56,6 @@ const PricingPlans = ({ billing = "yearly" }) => {
       button: "Choose Portfolio",
       popular: false,
     },
-
     {
       name: "Portfolio Plus",
       description: "For growing practices",
@@ -79,20 +76,20 @@ const PricingPlans = ({ billing = "yearly" }) => {
   ];
 
   return (
-    <section className="bg-[#F5FCF9] pb-20 lg:pb-24">
+    <section className="bg-background-mint-pale pb-20 lg:pb-24">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
 
         {/* Section heading */}
         <div className="mx-auto mb-10 max-w-2xl text-center">
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-[#087F5B]">
+          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-primary">
             Choose your plan
           </p>
 
-          <h2 className="text-[30px] font-bold tracking-[-0.025em] text-[#09263A] sm:text-[34px]">
+          <h2 className="text-[30px] font-bold tracking-[-0.025em] text-plum sm:text-[34px]">
             Simple plans. No surprises.
           </h2>
 
-          <p className="mt-3 text-[14px] leading-6 text-[#71827F]">
+          <p className="mt-3 text-[14px] leading-6 text-text-secondary">
             Everything you need to manage your UK tax and compliance
             in one simple platform.
           </p>
@@ -112,14 +109,14 @@ const PricingPlans = ({ billing = "yearly" }) => {
                 key={plan.name}
                 className={`relative flex flex-col rounded-2xl bg-white p-6 transition-all duration-200 ${
                   plan.popular
-                    ? "border-2 border-[#087F5B] shadow-[0_15px_40px_rgba(8,127,91,0.12)]"
-                    : "border border-[#DDEAE6] shadow-[0_8px_25px_rgba(0,62,62,0.04)] hover:-translate-y-1 hover:shadow-[0_12px_35px_rgba(0,62,62,0.08)]"
+                    ? "border-2 border-primary shadow-[0_15px_40px_rgba(141,26,61,0.12)]"
+                    : "border border-border-light shadow-[0_8px_25px_rgba(32,21,22,0.04)] hover:-translate-y-1 hover:shadow-[0_12px_35px_rgba(32,21,22,0.08)]"
                 }`}
               >
 
                 {/* Popular badge */}
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#087F5B] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.08em] text-white shadow-sm">
+                  <div className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-primary px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.08em] text-white shadow-sm">
                     <Sparkles className="h-3 w-3" />
                     Most popular
                   </div>
@@ -127,11 +124,11 @@ const PricingPlans = ({ billing = "yearly" }) => {
 
                 {/* Plan name */}
                 <div>
-                  <h3 className="text-[19px] font-bold tracking-[-0.015em] text-[#09263A]">
+                  <h3 className="text-[19px] font-bold tracking-[-0.015em] text-plum">
                     {plan.name}
                   </h3>
 
-                  <p className="mt-1.5 min-h-[20px] text-[12px] text-[#71827F]">
+                  <p className="mt-1.5 min-h-[20px] text-[12px] text-text-secondary">
                     {plan.description}
                   </p>
                 </div>
@@ -140,42 +137,42 @@ const PricingPlans = ({ billing = "yearly" }) => {
                 <div className="mt-6">
                   <div className="flex items-end gap-1">
 
-                    <span className="text-[38px] font-bold leading-none tracking-[-0.04em] text-[#09263A]">
+                    <span className="text-[38px] font-bold leading-none tracking-[-0.04em] text-plum">
                       £{price}
                     </span>
 
-                    <span className="mb-1 text-[11px] text-[#8A9B97]">
+                    <span className="mb-1 text-[11px] text-text-muted">
                       /{plan.period}
                     </span>
 
                   </div>
 
                   {billing === "monthly" && (
-                    <p className="mt-2 text-[10px] text-[#8A9B97]">
+                    <p className="mt-2 text-[10px] text-text-muted">
                       Billed monthly
                     </p>
                   )}
 
                   {billing === "yearly" && (
-                    <p className="mt-2 text-[10px] font-medium text-[#087F5B]">
+                    <p className="mt-2 text-[10px] font-medium text-primary">
                       Billed annually
                     </p>
                   )}
                 </div>
 
                 {/* Company count */}
-                <div className="mt-5 rounded-lg bg-[#F5FCF9] px-3 py-2.5">
-                  <p className="text-[12px] font-semibold text-[#314D4A]">
+                <div className="mt-5 rounded-lg bg-background-mint-pale px-3 py-2.5">
+                  <p className="text-[12px] font-semibold text-plum">
                     {plan.companies}
                   </p>
                 </div>
 
                 {/* Divider */}
-                <div className="my-5 h-px bg-[#E6EEEB]" />
+                <div className="my-5 h-px bg-border-light" />
 
                 {/* Features */}
                 <div className="flex-1">
-                  <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[#8A9B97]">
+                  <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.1em] text-text-muted">
                     Includes
                   </p>
 
@@ -185,11 +182,11 @@ const PricingPlans = ({ billing = "yearly" }) => {
                         key={feature}
                         className="flex items-start gap-2.5"
                       >
-                        <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#E5F7F0]">
-                          <Check className="h-2.5 w-2.5 text-[#087F5B]" />
+                        <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-accent-soft">
+                          <Check className="h-2.5 w-2.5 text-accent" />
                         </div>
 
-                        <span className="text-[11px] leading-5 text-[#526966]">
+                        <span className="text-[11px] leading-5 text-text-secondary">
                           {feature}
                         </span>
                       </li>
@@ -202,8 +199,8 @@ const PricingPlans = ({ billing = "yearly" }) => {
                   to="/register"
                   className={`group mt-7 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-[12px] font-semibold transition-all duration-200 ${
                     plan.popular
-                      ? "bg-[#087F5B] text-white shadow-[0_5px_15px_rgba(8,127,91,0.16)] hover:bg-[#005E45]"
-                      : "border border-[#087F5B] bg-white text-[#087F5B] hover:bg-[#087F5B] hover:text-white"
+                      ? "bg-primary text-white shadow-[0_5px_15px_rgba(141,26,61,0.16)] hover:bg-primary-hover"
+                      : "border border-primary bg-white text-primary hover:bg-primary hover:text-white"
                   }`}
                 >
                   <span>{plan.button}</span>
@@ -219,23 +216,23 @@ const PricingPlans = ({ billing = "yearly" }) => {
 
         {/* Bottom reassurance */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
-          <div className="flex items-center gap-2 text-[11px] text-[#71827F]">
-            <Check className="h-3.5 w-3.5 text-[#087F5B]" />
+          <div className="flex items-center gap-2 text-[11px] text-text-secondary">
+            <Check className="h-3.5 w-3.5 text-accent" />
             No hidden fees
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] text-[#71827F]">
-            <Check className="h-3.5 w-3.5 text-[#087F5B]" />
+          <div className="flex items-center gap-2 text-[11px] text-text-secondary">
+            <Check className="h-3.5 w-3.5 text-accent" />
             Cancel anytime
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] text-[#71827F]">
-            <Check className="h-3.5 w-3.5 text-[#087F5B]" />
+          <div className="flex items-center gap-2 text-[11px] text-text-secondary">
+            <Check className="h-3.5 w-3.5 text-accent" />
             Secure payments
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] text-[#71827F]">
-            <Check className="h-3.5 w-3.5 text-[#087F5B]" />
+          <div className="flex items-center gap-2 text-[11px] text-text-secondary">
+            <Check className="h-3.5 w-3.5 text-accent" />
             UK-focused support
           </div>
         </div>

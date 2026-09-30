@@ -4,17 +4,18 @@ import {
   X,
   ChevronRight,
   Home,
-  Package,
+  Sparkles,
+  Users,
   DollarSign,
-  HelpCircle,
+  BookOpen,
   User,
   LogOut,
   LayoutDashboard,
-  Search,
   FileText,
   Calculator,
   Receipt,
   ClipboardCheck,
+  HelpCircle,
 } from "lucide-react";
 
 const SideBar = ({ toggleMenu, isOpen }) => {
@@ -22,9 +23,9 @@ const SideBar = ({ toggleMenu, isOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // =========================================================
-  // SIDEBAR NAVIGATION LINKS - MATCHES NAVBAR
-  // =========================================================
+  /* =========================================================
+     SIDEBAR NAVIGATION LINKS - MATCHES NAVBAR
+     ========================================================= */
 
   const sidebarLinks = [
     {
@@ -34,9 +35,9 @@ const SideBar = ({ toggleMenu, isOpen }) => {
       icon: <Home className="w-5 h-5" />,
     },
     {
-      id: "products",
-      label: "Products",
-      icon: <Package className="w-5 h-5" />,
+      id: "features",
+      label: "Features",
+      icon: <Sparkles className="w-5 h-5" />,
       dropdown: [
         {
           id: "corporation-tax",
@@ -71,39 +72,53 @@ const SideBar = ({ toggleMenu, isOpen }) => {
       ],
     },
     {
+      id: "accountants",
+      label: "For accountants",
+      path: "/accountants",
+      icon: <Users className="w-5 h-5" />,
+    },
+    {
       id: "pricing",
       label: "Pricing",
       path: "/pricing",
       icon: <DollarSign className="w-5 h-5" />,
     },
     {
-      id: "help",
-      label: "Help",
-      path: "/help",
-      icon: <HelpCircle className="w-5 h-5" />,
+      id: "resources",
+      label: "Resources",
+      icon: <BookOpen className="w-5 h-5" />,
+      dropdown: [
+        {
+          id: "help",
+          label: "Help",
+          path: "/help",
+          icon: <HelpCircle className="w-4 h-4" />,
+        },
+      ],
     },
   ];
 
-  // =========================================================
-  // AUTH STATE - MATCHES NAVBAR
-  // =========================================================
+  /* =========================================================
+     AUTH STATE - MATCHES NAVBAR
+     ========================================================= */
 
   const isAuthenticated = false;
   const userData = { user_type: 2 };
 
-  // =========================================================
-  // CLOSE SIDEBAR ON ROUTE CHANGE
-  // =========================================================
+  /* =========================================================
+     CLOSE SIDEBAR ON ROUTE CHANGE
+     ========================================================= */
 
   useEffect(() => {
     if (isOpen) {
       toggleMenu();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
-  // =========================================================
-  // TOGGLE DROPDOWN
-  // =========================================================
+  /* =========================================================
+     TOGGLE DROPDOWN
+     ========================================================= */
 
   const toggleDropdown = (dropdownId) => {
     setOpenDropdowns((prev) => ({
@@ -112,9 +127,9 @@ const SideBar = ({ toggleMenu, isOpen }) => {
     }));
   };
 
-  // =========================================================
-  // HANDLE NAVIGATION
-  // =========================================================
+  /* =========================================================
+     HANDLE NAVIGATION
+     ========================================================= */
 
   const handleNavClick = (path) => {
     if (path) {
@@ -123,9 +138,9 @@ const SideBar = ({ toggleMenu, isOpen }) => {
     }
   };
 
-  // =========================================================
-  // HANDLE LOGOUT
-  // =========================================================
+  /* =========================================================
+     HANDLE LOGOUT
+     ========================================================= */
 
   const handleLogout = () => {
     console.log("Logging out...");
@@ -133,17 +148,17 @@ const SideBar = ({ toggleMenu, isOpen }) => {
     toggleMenu();
   };
 
-  // =========================================================
-  // CHECK ACTIVE PATH
-  // =========================================================
+  /* =========================================================
+     CHECK ACTIVE PATH
+     ========================================================= */
 
   const isActivePath = (path) => {
     return location.pathname === path;
   };
 
-  // =========================================================
-  // RENDER DROPDOWN ITEMS (NESTED)
-  // =========================================================
+  /* =========================================================
+     RENDER DROPDOWN ITEMS (NESTED)
+     ========================================================= */
 
   const renderDropdownItem = (item, level = 1) => {
     const hasSubDropdown = item.dropdown && item.dropdown.length > 0;
@@ -240,9 +255,9 @@ const SideBar = ({ toggleMenu, isOpen }) => {
     );
   };
 
-  // =========================================================
-  // RENDER NAVIGATION ITEM
-  // =========================================================
+  /* =========================================================
+     RENDER NAVIGATION ITEM
+     ========================================================= */
 
   const renderNavItem = (item) => {
     const hasDropdown = item.dropdown && item.dropdown.length > 0;
@@ -338,9 +353,9 @@ const SideBar = ({ toggleMenu, isOpen }) => {
     );
   };
 
-  // =========================================================
-  // SIDEBAR
-  // =========================================================
+  /* =========================================================
+     SIDEBAR
+     ========================================================= */
 
   return (
     <>
@@ -386,7 +401,7 @@ const SideBar = ({ toggleMenu, isOpen }) => {
 
         <div className="flex items-center justify-between p-6 border-b border-border-light flex-shrink-0">
           <div className="flex items-center gap-3">
-            {/* Logo */}
+            {/* Logo — matches Navbar paper plane */}
             <div className="relative flex items-center justify-center w-9 h-9">
               <svg
                 width="36"
@@ -395,20 +410,20 @@ const SideBar = ({ toggleMenu, isOpen }) => {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                {/* Leaf 1 */}
+                <path d="M44 5L5 21.5L21.5 27L27 43L44 5Z" fill="#2563EB" />
                 <path
-                  d="M26.5 7C34.5 6.2 41.4 9.1 43 15.5C44.5 21.6 40.4 27.1 33.2 29.2C29.3 30.3 25.6 29.7 22.8 27.7C23.2 19.4 24.1 12.3 26.5 7Z"
-                  fill="#087F5B"
+                  d="M5 21.5L44 5L21.5 27"
+                  stroke="#1D4ED8"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
-                {/* Leaf 2 */}
                 <path
-                  d="M20.5 16.5C15.2 13.2 9.4 14 6.2 18.5C3.1 22.9 4.9 28.6 10 31.4C13.3 33.2 17.1 33.2 20.4 31.5C19.1 25.9 19.2 21 20.5 16.5Z"
-                  fill="#5ACBA8"
-                />
-                {/* Bottom leaf */}
-                <path
-                  d="M21.2 25.8C14.7 25.6 9.7 29 9.2 34C8.7 39.4 13.8 43.2 19.5 42.8C25.1 42.5 29.1 38.5 28.5 33.7C27.9 29.6 25.3 27 21.2 25.8Z"
-                  fill="#8CDEC3"
+                  d="M21.5 27L27 43L44 5"
+                  stroke="#1D4ED8"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </div>

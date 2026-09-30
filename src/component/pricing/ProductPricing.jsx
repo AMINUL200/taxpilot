@@ -6,8 +6,8 @@ const ProductPricing = () => {
   const products = [
     {
       icon: FileText,
-      iconBg: "bg-[#E8F8F2]",
-      iconColor: "text-[#087F5B]",
+      iconBg: "bg-accent-soft",
+      iconColor: "text-accent",
       title: "Corporation Tax",
       description:
         "Prepare and file your Company Tax Return with HMRC.",
@@ -18,8 +18,8 @@ const ProductPricing = () => {
     },
     {
       icon: BarChart3,
-      iconBg: "bg-[#EEF7FF]",
-      iconColor: "text-[#2878B8]",
+      iconBg: "bg-primary-light",
+      iconColor: "text-primary",
       title: "Annual Accounts",
       description:
         "Prepare and file your statutory accounts with Companies House.",
@@ -30,8 +30,8 @@ const ProductPricing = () => {
     },
     {
       icon: Percent,
-      iconBg: "bg-[#FFF1F1]",
-      iconColor: "text-[#D65C5C]",
+      iconBg: "bg-gold-light",
+      iconColor: "text-gold",
       title: "MTD VAT",
       description:
         "Submit your VAT returns digitally to HMRC with ease.",
@@ -42,8 +42,8 @@ const ProductPricing = () => {
     },
     {
       icon: Building2,
-      iconBg: "bg-[#FFF7E6]",
-      iconColor: "text-[#C98A16]",
+      iconBg: "bg-secondary-light",
+      iconColor: "text-secondary",
       title: "Confirmation Statement",
       description:
         "Keep your company information up to date with Companies House.",
@@ -54,8 +54,8 @@ const ProductPricing = () => {
     },
     {
       icon: UserRound,
-      iconBg: "bg-[#F3EEFF]",
-      iconColor: "text-[#7856C7]",
+      iconBg: "bg-plum-light",
+      iconColor: "text-plum",
       title: "Self Assessment",
       description:
         "Prepare your Self Assessment tax return quickly and simply.",
@@ -75,15 +75,15 @@ const ProductPricing = () => {
         ====================================================== */}
         <div className="mx-auto mb-12 max-w-2xl text-center">
 
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-[#087F5B]">
+          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-primary">
             Individual products
           </p>
 
-          <h2 className="text-[30px] font-bold tracking-[-0.025em] text-[#09263A] sm:text-[36px]">
+          <h2 className="text-[30px] font-bold tracking-[-0.025em] text-plum sm:text-[36px]">
             Only pay for what you need
           </h2>
 
-          <p className="mt-3 text-[14px] leading-6 text-[#71827F]">
+          <p className="mt-3 text-[14px] leading-6 text-text-secondary">
             Need just one service? Choose an individual product and
             get everything you need to stay compliant.
           </p>
@@ -101,7 +101,7 @@ const ProductPricing = () => {
             return (
               <div
                 key={product.title}
-                className="group flex flex-col rounded-2xl border border-[#DDEAE6] bg-white p-5 transition-all duration-200 hover:-translate-y-1 hover:border-[#BFDDD3] hover:shadow-[0_12px_35px_rgba(0,62,62,0.08)]"
+                className="group flex flex-col rounded-2xl border border-border-light bg-white p-5 transition-all duration-200 hover:-translate-y-1 hover:border-accent-light hover:shadow-[0_12px_35px_rgba(32,21,22,0.08)]"
               >
 
                 {/* Icon */}
@@ -115,12 +115,12 @@ const ProductPricing = () => {
                 </div>
 
                 {/* Title */}
-                <h3 className="mt-5 min-h-[24px] text-[15px] font-bold leading-5 text-[#09263A]">
+                <h3 className="mt-5 min-h-[24px] text-[15px] font-bold leading-5 text-plum">
                   {product.title}
                 </h3>
 
                 {/* Description */}
-                <p className="mt-2 min-h-[72px] text-[12px] leading-5 text-[#71827F]">
+                <p className="mt-2 min-h-[72px] text-[12px] leading-5 text-text-secondary">
                   {product.description}
                 </p>
 
@@ -128,18 +128,18 @@ const ProductPricing = () => {
                 <div className="mt-5">
 
                   {product.note && (
-                    <p className="mb-0.5 text-[9px] font-medium uppercase tracking-[0.08em] text-[#8A9B97]">
+                    <p className="mb-0.5 text-[9px] font-medium uppercase tracking-[0.08em] text-text-muted">
                       {product.note}
                     </p>
                   )}
 
                   <div className="flex items-end gap-1">
 
-                    <span className="text-[27px] font-bold leading-none tracking-[-0.03em] text-[#09263A]">
+                    <span className="text-[27px] font-bold leading-none tracking-[-0.03em] text-plum">
                       {product.price}
                     </span>
 
-                    <span className="mb-0.5 text-[10px] text-[#8A9B97]">
+                    <span className="mb-0.5 text-[10px] text-text-muted">
                       {product.period}
                     </span>
 
@@ -148,12 +148,12 @@ const ProductPricing = () => {
                 </div>
 
                 {/* Divider */}
-                <div className="my-5 h-px bg-[#E7EFEC]" />
+                <div className="my-5 h-px bg-border-light" />
 
                 {/* Learn more */}
                 <Link
                   to={product.link}
-                  className="group/link mt-auto flex items-center gap-2 text-[11px] font-semibold text-[#087F5B]"
+                  className="group/link mt-auto flex items-center gap-2 text-[11px] font-semibold text-primary"
                 >
                   <span>Learn more</span>
 
@@ -172,7 +172,7 @@ const ProductPricing = () => {
             BOTTOM NOTE
         ====================================================== */}
         <div className="mt-8 text-center">
-          <p className="text-[11px] text-[#8A9B97]">
+          <p className="text-[11px] text-text-muted">
             All prices are shown excluding VAT where applicable.
           </p>
         </div>

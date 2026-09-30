@@ -15,7 +15,6 @@ const BlogDetails = () => {
   const { slug } = useParams();
   const [activeSection, setActiveSection] = useState("");
 
-  // Refs for each section
   const sectionRefs = {
     "what-is-corporation-tax": useRef(null),
     "who-needs-to-pay": useRef(null),
@@ -23,7 +22,6 @@ const BlogDetails = () => {
     "make-compliance-simpler": useRef(null),
   };
 
-  // Article data
   const article = {
     category: "TAX GUIDES",
     date: "12 Aug 2026",
@@ -32,7 +30,8 @@ const BlogDetails = () => {
     excerpt:
       "Everything you need to know about Corporation Tax, from understanding your responsibilities to preparing and filing your Company Tax Return.",
     author: "TaxPilot UK",
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop&crop=center",
+    image:
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop&crop=center",
   };
 
   const relatedArticles = [
@@ -40,46 +39,35 @@ const BlogDetails = () => {
       category: "ACCOUNTING",
       date: "8 Aug 2026",
       title: "What small businesses need to know about annual accounts",
-      image: "https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=800&h=500&fit=crop&crop=center",
+      image:
+        "https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=800&h=500&fit=crop&crop=center",
       slug: "small-business-annual-accounts",
     },
     {
       category: "VAT",
       date: "5 Aug 2026",
       title: "Making Tax Digital for VAT: a simple guide",
-      image: "https://images.unsplash.com/photo-1554224155-26032ffc0d07?w=800&h=500&fit=crop&crop=center",
+      image:
+        "https://images.unsplash.com/photo-1554224155-26032ffc0d07?w=800&h=500&fit=crop&crop=center",
       slug: "making-tax-digital-vat",
     },
     {
       category: "TAX GUIDES",
       date: "2 Aug 2026",
       title: "Understanding your company's tax deadlines",
-      image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&h=500&fit=crop&crop=center",
+      image:
+        "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&h=500&fit=crop&crop=center",
       slug: "understanding-tax-deadlines",
     },
   ];
 
-  // Table of contents sections
   const tableOfContents = [
-    {
-      id: "what-is-corporation-tax",
-      label: "What is Corporation Tax?",
-    },
-    {
-      id: "who-needs-to-pay",
-      label: "Who needs to pay?",
-    },
-    {
-      id: "when-do-you-need-to-file",
-      label: "When do you need to file?",
-    },
-    {
-      id: "make-compliance-simpler",
-      label: "Make compliance simpler",
-    },
+    { id: "what-is-corporation-tax", label: "What is Corporation Tax?" },
+    { id: "who-needs-to-pay", label: "Who needs to pay?" },
+    { id: "when-do-you-need-to-file", label: "When do you need to file?" },
+    { id: "make-compliance-simpler", label: "Make compliance simpler" },
   ];
 
-  // Scroll to section function
   const scrollToSection = (sectionId) => {
     const element = sectionRefs[sectionId]?.current;
     if (element) {
@@ -87,43 +75,32 @@ const BlogDetails = () => {
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
   };
 
-  // Detect active section on scroll
   useEffect(() => {
     const handleScroll = () => {
       let currentSection = "";
-      
-      // Check each section's position
+
       Object.entries(sectionRefs).forEach(([id, ref]) => {
         if (ref.current) {
           const rect = ref.current.getBoundingClientRect();
-          // If section is in view (top of section is above center of viewport)
           if (rect.top <= window.innerHeight / 2) {
             currentSection = id;
           }
         }
       });
-      
+
       setActiveSection(currentSection);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    
-    // Initial check
     handleScroll();
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Handle share button
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -136,7 +113,6 @@ const BlogDetails = () => {
         console.log("Share cancelled");
       }
     } else {
-      // Fallback: copy to clipboard
       try {
         await navigator.clipboard.writeText(window.location.href);
         alert("Link copied to clipboard!");
@@ -147,41 +123,34 @@ const BlogDetails = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#09263A]">
+    <div className="min-h-screen bg-background text-plum">
 
       {/* =====================================================
           ARTICLE HERO
       ====================================================== */}
-      <section className="relative overflow-hidden bg-[#F5FCF9]">
+      <section className="relative overflow-hidden bg-background-mint-pale">
 
         {/* Decorative background */}
-        <div className="pointer-events-none absolute -left-40 -top-40 h-[420px] w-[420px] rounded-full bg-[#DDF5EC] opacity-70 blur-3xl" />
-
-        <div className="pointer-events-none absolute -right-40 top-10 h-[400px] w-[400px] rounded-full bg-[#E7F8F2] opacity-80 blur-3xl" />
+        <div className="pointer-events-none absolute -left-40 -top-40 h-[420px] w-[420px] rounded-full bg-mint opacity-70 blur-3xl" />
+        <div className="pointer-events-none absolute -right-40 top-10 h-[400px] w-[400px] rounded-full bg-accent-soft opacity-80 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl px-5 pb-14 pt-8 sm:px-8 lg:px-10 lg:pb-20">
 
           {/* Breadcrumb */}
-          <div className="mb-10 flex items-center gap-2 text-[12px] text-[#71827F]">
-            <Link
-              to="/"
-              className="transition-colors hover:text-[#087F5B]"
-            >
+          <div className="mb-10 flex items-center gap-2 text-[12px] text-text-secondary">
+            <Link to="/" className="transition-colors hover:text-primary">
               Home
             </Link>
 
             <span>/</span>
 
-            <Link
-              to="/blog"
-              className="transition-colors hover:text-[#087F5B]"
-            >
+            <Link to="/blog" className="transition-colors hover:text-primary">
               Blog
             </Link>
 
             <span>/</span>
 
-            <span className="max-w-[200px] truncate text-[#087F5B] sm:max-w-none">
+            <span className="max-w-[200px] truncate text-primary sm:max-w-none">
               {article.category}
             </span>
           </div>
@@ -189,37 +158,36 @@ const BlogDetails = () => {
           <div className="mx-auto max-w-4xl text-center">
 
             {/* Category */}
-            <div className="mb-5 inline-flex items-center rounded-full border border-[#C9EDE1] bg-white px-3 py-1.5">
-              <span className="text-[10px] font-bold tracking-[0.12em] text-[#087F5B]">
+            <div className="mb-5 inline-flex items-center rounded-full border border-accent-light bg-background px-3 py-1.5">
+              <span className="text-[10px] font-bold tracking-[0.12em] text-primary">
                 {article.category}
               </span>
             </div>
 
             {/* Title */}
-            <h1 className="text-[36px] font-bold leading-[1.12] tracking-[-0.035em] text-[#09263A] sm:text-[46px] lg:text-[54px]">
+            <h1 className="text-[36px] font-bold leading-[1.12] tracking-[-0.035em] text-plum sm:text-[46px] lg:text-[54px]">
               {article.title}
             </h1>
 
             {/* Excerpt */}
-            <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-7 text-[#687B78] sm:text-[16px]">
+            <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-7 text-text-secondary sm:text-[16px]">
               {article.excerpt}
             </p>
 
             {/* Meta */}
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[12px] text-[#71827F]">
-
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[12px] text-text-secondary">
               <div className="flex items-center gap-2">
-                <UserRound className="h-4 w-4 text-[#087F5B]" />
+                <UserRound className="h-4 w-4 text-primary" />
                 <span>{article.author}</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-[#087F5B]" />
+                <CalendarDays className="h-4 w-4 text-primary" />
                 <span>{article.date}</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <Clock3 className="h-4 w-4 text-[#087F5B]" />
+                <Clock3 className="h-4 w-4 text-primary" />
                 <span>{article.readTime}</span>
               </div>
             </div>
@@ -232,15 +200,13 @@ const BlogDetails = () => {
       ====================================================== */}
       <section className="px-5 sm:px-8 lg:px-10">
         <div className="mx-auto max-w-6xl -translate-y-1">
-
-          <div className="overflow-hidden rounded-2xl border border-[#DDEAE6] bg-[#F5FCF9] shadow-[0_20px_50px_rgba(0,62,62,0.10)]">
+          <div className="overflow-hidden rounded-2xl border border-border-light bg-background-mint-pale shadow-[0_20px_50px_rgba(32,21,22,0.10)]">
             <img
               src={article.image}
               alt={article.title}
               className="h-[240px] w-full object-cover sm:h-[360px] lg:h-[500px]"
             />
           </div>
-
         </div>
       </section>
 
@@ -256,29 +222,29 @@ const BlogDetails = () => {
             <article className="mx-auto w-full max-w-3xl">
 
               {/* Intro */}
-              <p className="text-[17px] font-medium leading-8 text-[#314D4A]">
+              <p className="text-[17px] font-medium leading-8 text-text-secondary">
                 Corporation Tax is one of the key responsibilities for UK
                 limited companies. Understanding what you need to pay,
                 when you need to pay it and how to file your return can
                 help you avoid unnecessary penalties and stay compliant.
               </p>
 
-              <div className="my-10 h-px bg-[#E5EEEB]" />
+              <div className="my-10 h-px bg-border-light" />
 
               {/* Section 1 */}
               <div ref={sectionRefs["what-is-corporation-tax"]}>
-                <h2 className="text-[26px] font-bold tracking-[-0.02em] text-[#09263A]">
+                <h2 className="text-[26px] font-bold tracking-[-0.02em] text-plum">
                   What is Corporation Tax?
                 </h2>
 
-                <p className="mt-4 text-[14px] leading-7 text-[#687B78]">
+                <p className="mt-4 text-[14px] leading-7 text-text-secondary">
                   Corporation Tax is a tax on the profits made by companies
                   and certain other organisations. If you operate a limited
                   company in the UK, your company will generally need to
                   consider whether it has a Corporation Tax liability.
                 </p>
 
-                <p className="mt-4 text-[14px] leading-7 text-[#687B78]">
+                <p className="mt-4 text-[14px] leading-7 text-text-secondary">
                   The amount your company pays depends on its taxable
                   profits and the applicable Corporation Tax rules. Keeping
                   accurate financial records throughout the year makes it
@@ -288,11 +254,11 @@ const BlogDetails = () => {
 
               {/* Section 2 */}
               <div ref={sectionRefs["who-needs-to-pay"]}>
-                <h2 className="mt-10 text-[26px] font-bold tracking-[-0.02em] text-[#09263A]">
+                <h2 className="mt-10 text-[26px] font-bold tracking-[-0.02em] text-plum">
                   Who needs to pay Corporation Tax?
                 </h2>
 
-                <p className="mt-4 text-[14px] leading-7 text-[#687B78]">
+                <p className="mt-4 text-[14px] leading-7 text-text-secondary">
                   Most UK limited companies are within the Corporation Tax
                   regime. Your responsibilities can depend on the structure
                   of your business, where it operates and the type of income
@@ -308,11 +274,11 @@ const BlogDetails = () => {
                   ].map((item) => (
                     <div
                       key={item}
-                      className="flex items-start gap-3 rounded-lg bg-[#F5FCF9] px-4 py-3"
+                      className="flex items-start gap-3 rounded-lg bg-background-mint-pale px-4 py-3"
                     >
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#087F5B]" />
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
 
-                      <span className="text-[13px] leading-6 text-[#526966]">
+                      <span className="text-[13px] leading-6 text-text-secondary">
                         {item}
                       </span>
                     </div>
@@ -321,20 +287,19 @@ const BlogDetails = () => {
               </div>
 
               {/* Key takeaway */}
-              <div className="my-10 rounded-2xl border border-[#CFE9DF] bg-[#F1FBF7] p-6 sm:p-7">
-
+              <div className="my-10 rounded-2xl border border-accent-light bg-accent-soft p-6 sm:p-7">
                 <div className="flex items-start gap-4">
 
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#087F5B]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary">
                     <BookOpen className="h-5 w-5 text-white" />
                   </div>
 
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#087F5B]">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-primary">
                       Key takeaway
                     </p>
 
-                    <p className="mt-2 text-[14px] leading-7 text-[#314D4A]">
+                    <p className="mt-2 text-[14px] leading-7 text-text-secondary">
                       Keeping your company records organised throughout
                       the year can make preparing your Corporation Tax
                       return considerably simpler.
@@ -346,11 +311,11 @@ const BlogDetails = () => {
 
               {/* Section 3 */}
               <div ref={sectionRefs["when-do-you-need-to-file"]}>
-                <h2 className="mt-10 text-[26px] font-bold tracking-[-0.02em] text-[#09263A]">
+                <h2 className="mt-10 text-[26px] font-bold tracking-[-0.02em] text-plum">
                   When do you need to file?
                 </h2>
 
-                <p className="mt-4 text-[14px] leading-7 text-[#687B78]">
+                <p className="mt-4 text-[14px] leading-7 text-text-secondary">
                   Corporation Tax has separate deadlines for filing your
                   Company Tax Return and paying any Corporation Tax that
                   is due. It is important to understand both deadlines and
@@ -360,7 +325,6 @@ const BlogDetails = () => {
 
                 {/* Numbered steps */}
                 <div className="mt-7 space-y-5">
-
                   {[
                     {
                       number: "01",
@@ -383,42 +347,38 @@ const BlogDetails = () => {
                       text: "Submit the required information and make any payment that is due by the relevant deadline.",
                     },
                   ].map((step) => (
-                    <div
-                      key={step.number}
-                      className="flex gap-4"
-                    >
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#E5F7F0] text-[10px] font-bold text-[#087F5B]">
+                    <div key={step.number} className="flex gap-4">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent">
                         {step.number}
                       </div>
 
                       <div>
-                        <h3 className="text-[14px] font-bold text-[#09263A]">
+                        <h3 className="text-[14px] font-bold text-plum">
                           {step.title}
                         </h3>
 
-                        <p className="mt-1 text-[13px] leading-6 text-[#71827F]">
+                        <p className="mt-1 text-[13px] leading-6 text-text-secondary">
                           {step.text}
                         </p>
                       </div>
                     </div>
                   ))}
-
                 </div>
               </div>
 
               {/* Section 4 */}
               <div ref={sectionRefs["make-compliance-simpler"]}>
-                <h2 className="mt-12 text-[26px] font-bold tracking-[-0.02em] text-[#09263A]">
+                <h2 className="mt-12 text-[26px] font-bold tracking-[-0.02em] text-plum">
                   Make compliance simpler
                 </h2>
 
-                <p className="mt-4 text-[14px] leading-7 text-[#687B78]">
+                <p className="mt-4 text-[14px] leading-7 text-text-secondary">
                   Tax compliance does not need to be complicated. With the
                   right information and a clear process, businesses can
                   manage their obligations more confidently.
                 </p>
 
-                <p className="mt-4 text-[14px] leading-7 text-[#687B78]">
+                <p className="mt-4 text-[14px] leading-7 text-text-secondary">
                   TaxPilot UK brings Corporation Tax, annual accounts and
                   other important compliance tasks together in one simple
                   platform, helping you spend less time dealing with
@@ -427,11 +387,11 @@ const BlogDetails = () => {
               </div>
 
               {/* Share */}
-              <div className="mt-12 flex flex-col gap-4 border-t border-[#E5EEEB] pt-7 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-12 flex flex-col gap-4 border-t border-border-light pt-7 sm:flex-row sm:items-center sm:justify-between">
 
                 <Link
                   to="/blog"
-                  className="group inline-flex items-center gap-2 text-[13px] font-semibold text-[#087F5B]"
+                  className="group inline-flex items-center gap-2 text-[13px] font-semibold text-primary"
                 >
                   <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                   Back to blog
@@ -440,7 +400,7 @@ const BlogDetails = () => {
                 <button
                   type="button"
                   onClick={handleShare}
-                  className="inline-flex items-center gap-2 text-[12px] font-semibold text-[#687B78] transition-colors hover:text-[#087F5B]"
+                  className="inline-flex items-center gap-2 text-[12px] font-semibold text-text-secondary transition-colors hover:text-primary"
                 >
                   <Share2 className="h-4 w-4" />
                   Share article
@@ -453,12 +413,11 @@ const BlogDetails = () => {
                 SIDEBAR - Table of Contents
             ================================================== */}
             <aside className="hidden lg:block">
-
               <div className="sticky top-8">
 
-                <div className="rounded-2xl border border-[#DDEAE6] bg-[#F5FCF9] p-5">
+                <div className="rounded-2xl border border-border-light bg-background-mint-pale p-5">
 
-                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#087F5B]">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary">
                     In this article
                   </p>
 
@@ -467,10 +426,10 @@ const BlogDetails = () => {
                       <button
                         key={item.id}
                         onClick={() => scrollToSection(item.id)}
-                        className={`block w-full text-left border-l-2 pl-3 text-[12px] leading-5 transition-all hover:text-[#087F5B] ${
+                        className={`block w-full text-left border-l-2 pl-3 text-[12px] leading-5 transition-all hover:text-primary ${
                           activeSection === item.id
-                            ? "border-[#087F5B] text-[#087F5B] font-semibold"
-                            : "border-transparent text-[#687B78]"
+                            ? "border-primary text-primary font-semibold"
+                            : "border-transparent text-text-secondary"
                         }`}
                       >
                         {item.label}
@@ -481,9 +440,9 @@ const BlogDetails = () => {
                 </div>
 
                 {/* Sidebar CTA */}
-                <div className="mt-5 rounded-2xl bg-[#004646] p-6">
+                <div className="mt-5 rounded-2xl bg-plum p-6">
 
-                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#65D9BB]">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-accent">
                     TaxPilot UK
                   </p>
 
@@ -491,14 +450,14 @@ const BlogDetails = () => {
                     Make tax compliance simpler.
                   </h3>
 
-                  <p className="mt-3 text-[12px] leading-5 text-[#BCD8D3]">
+                  <p className="mt-3 text-[12px] leading-5 text-white/65">
                     Prepare and manage your business compliance in one
                     simple platform.
                   </p>
 
                   <Link
                     to="/register"
-                    className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#65D9BB] px-4 py-3 text-[11px] font-bold text-[#003E3E] transition-colors hover:bg-[#7BE1C8]"
+                    className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-[11px] font-bold text-plum transition-colors hover:bg-accent-hover"
                   >
                     Get started for free
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -515,40 +474,36 @@ const BlogDetails = () => {
       {/* =====================================================
           RELATED ARTICLES
       ====================================================== */}
-      <section className="bg-[#F5FCF9] py-20 lg:py-24">
+      <section className="bg-background-mint-pale py-20 lg:py-24">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
 
           <div className="mb-10 flex items-end justify-between gap-5">
-
             <div>
-              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-[#087F5B]">
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.13em] text-primary">
                 Keep reading
               </p>
 
-              <h2 className="text-[30px] font-bold tracking-[-0.025em] text-[#09263A]">
+              <h2 className="text-[30px] font-bold tracking-[-0.025em] text-plum">
                 Related articles
               </h2>
             </div>
 
             <Link
               to="/blog"
-              className="group hidden items-center gap-2 text-[13px] font-semibold text-[#087F5B] sm:flex"
+              className="group hidden items-center gap-2 text-[13px] font-semibold text-primary sm:flex"
             >
               View all articles
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
-
           </div>
 
           <div className="grid gap-5 md:grid-cols-3">
-
             {relatedArticles.map((item) => (
               <Link
                 key={item.slug}
                 to={`/blog/${item.slug}`}
-                className="group overflow-hidden rounded-2xl border border-[#DDEAE6] bg-white transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_35px_rgba(0,62,62,0.08)]"
+                className="group overflow-hidden rounded-2xl border border-border-light bg-background transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_35px_rgba(32,21,22,0.08)]"
               >
-
                 <div className="overflow-hidden">
                   <img
                     src={item.image}
@@ -559,32 +514,27 @@ const BlogDetails = () => {
                 </div>
 
                 <div className="p-5">
-
                   <div className="flex items-center gap-3 text-[10px]">
-                    <span className="font-bold tracking-[0.08em] text-[#087F5B]">
+                    <span className="font-bold tracking-[0.08em] text-primary">
                       {item.category}
                     </span>
 
-                    <span className="h-1 w-1 rounded-full bg-[#B5C6C2]" />
+                    <span className="h-1 w-1 rounded-full bg-border" />
 
-                    <span className="text-[#8A9B97]">
-                      {item.date}
-                    </span>
+                    <span className="text-text-muted">{item.date}</span>
                   </div>
 
-                  <h3 className="mt-3 text-[16px] font-bold leading-6 text-[#09263A] transition-colors group-hover:text-[#087F5B]">
+                  <h3 className="mt-3 text-[16px] font-bold leading-6 text-plum transition-colors group-hover:text-primary">
                     {item.title}
                   </h3>
 
-                  <div className="mt-5 flex items-center gap-2 text-[12px] font-semibold text-[#087F5B]">
+                  <div className="mt-5 flex items-center gap-2 text-[12px] font-semibold text-primary">
                     Read more
                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                   </div>
-
                 </div>
               </Link>
             ))}
-
           </div>
         </div>
       </section>
@@ -593,18 +543,16 @@ const BlogDetails = () => {
           BOTTOM CTA
       ====================================================== */}
       <section className="px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
-
-        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-2xl bg-[#004646] px-7 py-10 sm:px-10 lg:px-14 lg:py-12">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-2xl bg-plum px-7 py-10 sm:px-10 lg:px-14 lg:py-12">
 
           {/* Decorative circles */}
-          <div className="pointer-events-none absolute -right-20 -top-28 h-64 w-64 rounded-full border border-[#27756F]/40" />
-
-          <div className="pointer-events-none absolute -bottom-32 left-[40%] h-64 w-64 rounded-full border border-[#27756F]/30" />
+          <div className="pointer-events-none absolute -right-20 -top-28 h-64 w-64 rounded-full border border-dark-soft/60" />
+          <div className="pointer-events-none absolute -bottom-32 left-[40%] h-64 w-64 rounded-full border border-dark-soft/50" />
 
           <div className="relative flex flex-col justify-between gap-7 lg:flex-row lg:items-center">
 
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#65D9BB]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-accent">
                 Ready to get started?
               </p>
 
@@ -612,17 +560,16 @@ const BlogDetails = () => {
                 Make compliance one less thing to worry about.
               </h2>
 
-              <p className="mt-2 text-[13px] text-[#C2DCD7]">
+              <p className="mt-2 text-[13px] text-white/65">
                 Simple, secure and built for UK businesses.
               </p>
             </div>
 
             <Link
               to="/register"
-              className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#65D9BB] px-6 py-3.5 text-[12px] font-bold text-[#003E3E] transition-all hover:bg-[#7BE1C8]"
+              className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3.5 text-[12px] font-bold text-plum transition-all hover:bg-accent-hover"
             >
               Get started for free
-
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
 

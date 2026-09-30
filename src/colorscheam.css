@@ -1,0 +1,637 @@
+@import "tailwindcss";
+
+
+
+/* =========================================================
+   TAXPILOT UK - GLOBAL DESIGN SYSTEM
+   React + Vite + Tailwind CSS v4
+   ========================================================= */
+
+@theme {
+
+    /* =======================================================
+     BRAND COLORS
+     ======================================================= */
+
+    --color-brand-50: #f0fbf7;
+    --color-brand-100: #d9f6eb;
+    --color-brand-200: #b8ecd9;
+    --color-brand-300: #8cdec3;
+    --color-brand-400: #5acba8;
+    --color-brand-500: #10a874;
+    --color-brand-600: #087f5b;
+    --color-brand-700: #056b4d;
+    --color-brand-800: #04563f;
+    --color-brand-900: #003f3f;
+    --color-brand-950: #002b2b;
+
+
+    /* =======================================================
+     PRIMARY
+     ======================================================= */
+
+    --color-primary: #087f5b;
+    --color-primary-hover: #056b4d;
+    --color-primary-light: #ecfaf5;
+    --color-primary-soft: #d9f6eb;
+
+
+    /* =======================================================
+     SECONDARY
+     ======================================================= */
+
+    --color-secondary: #102a43;
+    --color-secondary-hover: #0b2236;
+    --color-secondary-light: #eaf2f8;
+
+
+    /* =======================================================
+     ACCENT / HIGHLIGHT
+     ======================================================= */
+
+    --color-accent: #10a874;
+    --color-accent-light: #c9f2e3;
+    --color-accent-soft: #f0fbf7;
+
+
+    /* =======================================================
+     TEXT COLORS
+     ======================================================= */
+
+    --color-heading: #102a43;
+    --color-text: #243b53;
+    --color-text-secondary: #486581;
+    --color-text-muted: #829ab1;
+    --color-text-light: #9fb3c8;
+    --color-text-white: #ffffff;
+
+
+    /* =======================================================
+     BACKGROUND COLORS
+     ======================================================= */
+
+    --color-background: #ffffff;
+    --color-background-soft: #f8fbfa;
+    --color-background-mint: #ecfaf5;
+    --color-background-green: #f5fcf9;
+    --color-background-cream: #fff9ec;
+    --color-background-blue: #f4f8fb;
+
+
+    /* =======================================================
+     DARK SECTIONS
+     ======================================================= */
+
+    --color-dark: #003f3f;
+    --color-dark-hover: #002b2b;
+    --color-dark-soft: #075757;
+    --color-dark-text: #ffffff;
+    --color-dark-muted: #b8d8d0;
+
+
+    /* =======================================================
+     BUTTON COLORS
+     ======================================================= */
+
+    --color-button-primary: #087f5b;
+    --color-button-primary-hover: #056b4d;
+
+    --color-button-secondary: #ffffff;
+    --color-button-secondary-hover: #ecfaf5;
+
+    --color-button-dark: #003f3f;
+    --color-button-dark-hover: #002b2b;
+
+
+    /* =======================================================
+     BORDER COLORS
+     ======================================================= */
+
+    --color-border: #d8e9e2;
+    --color-border-light: #e8f1ee;
+    --color-border-dark: #b8d8d0;
+
+
+    /* =======================================================
+     STATUS COLORS
+     ======================================================= */
+
+    --color-success: #10a874;
+    --color-success-light: #e5f8f0;
+
+    --color-warning: #e8a317;
+    --color-warning-light: #fff6dc;
+
+    --color-danger: #dc4c4c;
+    --color-danger-light: #fff0f0;
+
+    --color-info: #3b82c4;
+    --color-info-light: #edf6ff;
+
+
+    /* =======================================================
+     PRODUCT CARD COLORS
+     ======================================================= */
+
+    --color-product-green: #ecfaf5;
+    --color-product-blue: #eff7ff;
+    --color-product-red: #fff1f1;
+    --color-product-yellow: #fff8e5;
+    --color-product-purple: #f6f0ff;
+
+
+    /* =======================================================
+     RADIUS
+     ======================================================= */
+
+    --radius-card: 16px;
+    --radius-card-lg: 24px;
+    --radius-button: 10px;
+
+
+    /* =======================================================
+     SHADOWS
+     ======================================================= */
+
+    --shadow-card:
+        0 4px 20px rgba(16, 42, 67, 0.06);
+
+    --shadow-card-hover:
+        0 12px 35px rgba(16, 42, 67, 0.10);
+
+    --shadow-button:
+        0 5px 15px rgba(8, 127, 91, 0.20);
+}
+
+
+/* =========================================================
+   GLOBAL CSS VARIABLES
+   ========================================================= */
+
+:root {
+
+    /* Brand */
+    --primary: #087f5b;
+    --primary-hover: #056b4d;
+
+    /* Highlight */
+    --highlight: #10a874;
+    --highlight-light: #c9f2e3;
+
+    /* Text */
+    --heading: #102a43;
+    --text: #243b53;
+    --text-secondary: #486581;
+    --text-muted: #829ab1;
+
+    /* Background */
+    --bg: #ffffff;
+    --bg-soft: #f8fbfa;
+    --bg-mint: #ecfaf5;
+    --bg-green: #f5fcf9;
+    --bg-cream: #fff9ec;
+
+    /* Dark */
+    --dark: #003f3f;
+    --dark-hover: #002b2b;
+    --dark-text: #ffffff;
+
+    /* Border */
+    --border: #d8e9e2;
+    --border-light: #e8f1ee;
+
+    /* Status */
+    --success: #10a874;
+    --warning: #e8a317;
+    --danger: #dc4c4c;
+    --info: #3b82c4;
+}
+
+
+/* =========================================================
+   BASE
+   ========================================================= */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+
+/* =========================================================
+   HEADINGS
+   ========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    /* color: var(--heading); */
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+a {
+    /* color: inherit; */
+    text-decoration: none;
+}
+
+/* a:hover {
+    color: var(--primary);
+} */
+
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    background: var(--primary);
+    color: #ffffff;
+
+    padding: 12px 22px;
+    border-radius: var(--radius-button);
+
+    font-weight: 600;
+    font-size: 14px;
+
+    border: 1px solid var(--primary);
+
+    box-shadow: var(--shadow-button);
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    color: #ffffff;
+
+    transform: translateY(-1px);
+    cursor: pointer;
+    box-shadow:
+        0 8px 20px rgba(8, 127, 91, 0.25);
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+   ========================================================= */
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    /* Default */
+    background: #ffffff;
+    color: var(--primary);
+
+    padding: 12px 22px;
+    border-radius: var(--radius-button);
+
+    font-weight: 600;
+    font-size: 14px;
+
+    /* Green outline */
+    border: 1px solid var(--primary);
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn-secondary:hover {
+    /* Hover */
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    cursor: pointer;
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   DARK BUTTON
+   ========================================================= */
+
+.btn-dark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    background: var(--dark);
+    color: #ffffff;
+
+    padding: 12px 22px;
+    border-radius: var(--radius-button);
+
+    font-weight: 600;
+
+    border: 1px solid var(--dark);
+
+    transition: all 0.2s ease;
+}
+
+.btn-dark:hover {
+    background: var(--dark-hover);
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   SMALL LABEL / BADGE
+   ========================================================= */
+
+.badge-brand {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    background: var(--bg-mint);
+    color: var(--primary);
+
+    border: 1px solid var(--border);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.card {
+    background: #ffffff;
+
+    border: 1px solid var(--border-light);
+
+    border-radius: var(--radius-card);
+
+    box-shadow: var(--shadow-card);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+
+    border-color: var(--border);
+
+    box-shadow: var(--shadow-card-hover);
+}
+
+
+/* =========================================================
+   SECTION BACKGROUNDS
+   ========================================================= */
+
+.section-white {
+    background: #ffffff;
+}
+
+.section-soft {
+    background: var(--bg-soft);
+}
+
+.section-mint {
+    background: var(--bg-mint);
+}
+
+.section-green {
+    background: var(--bg-green);
+}
+
+.section-cream {
+    background: var(--bg-cream);
+}
+
+.section-dark {
+    background: var(--dark);
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   DARK SECTION TEXT
+   ========================================================= */
+
+.section-dark h1,
+.section-dark h2,
+.section-dark h3,
+.section-dark h4 {
+    color: #ffffff;
+}
+
+.section-dark p {
+    color: var(--dark-muted);
+}
+
+
+/* =========================================================
+   HIGHLIGHT TEXT
+   ========================================================= */
+
+.text-highlight {
+    color: var(--primary);
+}
+
+.text-accent {
+    color: var(--highlight);
+}
+
+
+/* =========================================================
+   GRADIENTS
+   ========================================================= */
+
+.gradient-brand {
+    background:
+        linear-gradient(135deg,
+            #ecfaf5 0%,
+            #f5fcf9 50%,
+            #ffffff 100%);
+}
+
+.gradient-hero {
+    background:
+        radial-gradient(circle at 80% 30%,
+            rgba(16, 168, 116, 0.12),
+            transparent 35%),
+        linear-gradient(135deg,
+            #ffffff 0%,
+            #f5fcf9 100%);
+}
+
+.gradient-dark {
+    background:
+        linear-gradient(135deg,
+            #003f3f 0%,
+            #075757 100%);
+}
+
+
+/* =========================================================
+   PRODUCT CARD BACKGROUNDS
+   ========================================================= */
+
+.product-green {
+    background: var(--color-product-green);
+}
+
+.product-blue {
+    background: var(--color-product-blue);
+}
+
+.product-red {
+    background: var(--color-product-red);
+}
+
+.product-yellow {
+    background: var(--color-product-yellow);
+}
+
+.product-purple {
+    background: var(--color-product-purple);
+}
+
+
+/* =========================================================
+   ICON CIRCLE
+   ========================================================= */
+
+.icon-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 44px;
+    height: 44px;
+
+    border-radius: 50%;
+
+    background: var(--accent-light, #c9f2e3);
+    color: var(--primary);
+}
+
+
+/* =========================================================
+   FORM INPUT
+   ========================================================= */
+
+.input {
+    width: 100%;
+
+    background: #ffffff;
+
+    color: var(--text);
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    padding: 11px 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.input::placeholder {
+    color: var(--text-muted);
+}
+
+.input:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(8, 127, 91, 0.10);
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.divider {
+    border-color: var(--border-light);
+}
+
+
+/* =========================================================
+   SELECTION
+   ========================================================= */
+
+::selection {
+    background: var(--highlight-light);
+    color: var(--heading);
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f5f8f7;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #a8cfc2;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}

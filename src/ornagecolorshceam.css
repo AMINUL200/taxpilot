@@ -1,0 +1,1070 @@
+@import "tailwindcss";
+
+/* =========================================================
+   TAXPILOT UK
+   ELECTRIC ORANGE + MIDNIGHT NAVY + CYAN
+========================================================= */
+
+@theme {
+
+  /* =======================================================
+     BRAND — ELECTRIC ORANGE
+  ======================================================= */
+
+  --color-brand-50: #fff7f4;
+  --color-brand-100: #fff0eb;
+  --color-brand-200: #ffdcd2;
+  --color-brand-300: #ffc0b0;
+  --color-brand-400: #ff9a83;
+  --color-brand-500: #ff7655;
+  --color-brand-600: #ff5a36;
+  --color-brand-700: #ed4828;
+  --color-brand-800: #d94424;
+  --color-brand-900: #ad341d;
+  --color-brand-950: #6f1f13;
+
+  /* Primary */
+  --color-primary: #ff5a36;
+  --color-primary-hover: #d94424;
+  --color-primary-light: #fff0eb;
+  --color-primary-soft: #fff7f4;
+
+  /* =======================================================
+     SECONDARY — NAVY
+  ======================================================= */
+
+  --color-secondary: #25324a;
+  --color-secondary-light: #e9edf4;
+  --color-secondary-soft: #f4f6f9;
+
+  /* =======================================================
+     DARK
+  ======================================================= */
+
+  --color-dark: #0b1324;
+  --color-dark-hover: #060b16;
+  --color-dark-soft: #162139;
+  --color-dark-muted: #42506a;
+
+  /* =======================================================
+     ACCENT — CYAN
+  ======================================================= */
+
+  --color-accent: #26c6da;
+  --color-accent-light: #e8fafc;
+  --color-accent-dark: #1596a8;
+  --color-accent-soft: #f1fdfe;
+
+  /* =======================================================
+     TEXT
+  ======================================================= */
+
+  --color-text-heading: #111827;
+  --color-text: #374151;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #7b8494;
+  --color-text-light: #a5adba;
+
+  /* =======================================================
+     BACKGROUNDS
+  ======================================================= */
+
+  --color-background: #f3f6fa;
+  --color-background-white: #ffffff;
+  --color-background-soft: #f8fafc;
+
+  --color-background-orange: #fff3ef;
+  --color-background-cyan: #eefaFC;
+  --color-background-navy: #eef2f8;
+  --color-background-slate: #f1f4f8;
+  --color-background-dark: #0b1324;
+
+  /* =======================================================
+     BORDERS
+  ======================================================= */
+
+  --color-border: #dfe5ed;
+  --color-border-light: #ebeff4;
+  --color-border-dark: #cbd3df;
+
+  /* =======================================================
+     STATUS COLORS
+  ======================================================= */
+
+  --color-success: #16a36a;
+  --color-success-light: #e8f7f1;
+  --color-success-dark: #0f7c50;
+
+  --color-warning: #e09a22;
+  --color-warning-light: #fff5df;
+  --color-warning-dark: #a96f14;
+
+  --color-danger: #dc4c4c;
+  --color-danger-light: #fceeee;
+  --color-danger-dark: #b73535;
+
+  --color-info: #4382b8;
+  --color-info-light: #edf5fb;
+
+  /* =======================================================
+     PRODUCT COLORS
+  ======================================================= */
+
+  --color-product-corporation: #ff5a36;
+  --color-product-accounts: #25324a;
+  --color-product-vat: #16a36a;
+  --color-product-self: #26c6da;
+  --color-product-confirmation: #4382b8;
+
+  /* =======================================================
+     RADIUS
+  ======================================================= */
+
+  --radius-card: 16px;
+  --radius-card-lg: 24px;
+  --radius-button: 10px;
+
+  /* =======================================================
+     SHADOWS
+  ======================================================= */
+
+  --shadow-card:
+    0 8px 30px rgba(11, 19, 36, 0.055);
+
+  --shadow-card-hover:
+    0 18px 45px rgba(11, 19, 36, 0.11);
+
+  --shadow-premium:
+    0 24px 70px rgba(11, 19, 36, 0.10);
+}
+
+
+/* =========================================================
+   ROOT VARIABLES
+========================================================= */
+
+:root {
+  --primary: #ff5a36;
+  --primary-hover: #d94424;
+  --primary-light: #fff0eb;
+  --primary-soft: #fff7f4;
+
+  --secondary: #25324a;
+  --secondary-light: #e9edf4;
+
+  --dark: #0b1324;
+  --dark-hover: #060b16;
+  --dark-soft: #162139;
+
+  --accent: #26c6da;
+  --accent-light: #e8fafc;
+  --accent-dark: #1596a8;
+
+  --heading: #111827;
+  --text: #374151;
+  --text-secondary: #4b5563;
+  --text-muted: #7b8494;
+
+  --background: #f3f6fa;
+  --background-white: #ffffff;
+  --background-soft: #f8fafc;
+
+  --border: #dfe5ed;
+  --border-light: #ebeff4;
+  --border-dark: #cbd3df;
+
+  --success: #16a36a;
+  --warning: #e09a22;
+  --danger: #dc4c4c;
+  --info: #4382b8;
+}
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+
+  background: #f3f6fa;
+  color: #374151;
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   TYPOGRAPHY
+========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #111827;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.text-heading {
+  color: #111827;
+}
+
+.text-body {
+  color: #374151;
+}
+
+.text-secondary {
+  color: #4b5563;
+}
+
+.text-muted {
+  color: #7b8494;
+}
+
+.text-light {
+  color: #a5adba;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  background: #ff5a36;
+  color: #ffffff;
+
+  border: 1px solid #ff5a36;
+  border-radius: 10px;
+
+  padding: 10px 18px;
+
+  font-weight: 600;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #d94424;
+  border-color: #d94424;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 20px rgba(255, 90, 54, 0.22);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+========================================================= */
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  background: #ffffff;
+  color: #ff5a36;
+
+  border: 1px solid #ff5a36;
+  border-radius: 10px;
+
+  padding: 10px 18px;
+
+  font-weight: 600;
+
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #fff0eb;
+  color: #d94424;
+}
+
+
+/* =========================================================
+   DARK BUTTON
+========================================================= */
+
+.btn-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  background: #0b1324;
+  color: #ffffff;
+
+  border: 1px solid #0b1324;
+  border-radius: 10px;
+
+  padding: 10px 18px;
+
+  font-weight: 600;
+
+  transition: all 0.2s ease;
+}
+
+.btn-dark:hover {
+  background: #060b16;
+}
+
+
+/* =========================================================
+   CYAN BUTTON
+========================================================= */
+
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  background: #26c6da;
+  color: #0b1324;
+
+  border: 1px solid #26c6da;
+  border-radius: 10px;
+
+  padding: 10px 18px;
+
+  font-weight: 600;
+
+  transition: all 0.2s ease;
+}
+
+.btn-accent:hover {
+  background: #1596a8;
+  border-color: #1596a8;
+}
+
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.badge-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  background: #fff0eb;
+  color: #ff5a36;
+
+  border-radius: 999px;
+
+  padding: 5px 10px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-primary {
+  display: inline-flex;
+  align-items: center;
+
+  background: #fff0eb;
+  color: #ff5a36;
+
+  border-radius: 999px;
+
+  padding: 5px 10px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-success {
+  display: inline-flex;
+  align-items: center;
+
+  background: #e8f7f1;
+  color: #16a36a;
+
+  border-radius: 999px;
+
+  padding: 5px 10px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-warning {
+  display: inline-flex;
+  align-items: center;
+
+  background: #fff5df;
+  color: #e09a22;
+
+  border-radius: 999px;
+
+  padding: 5px 10px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-danger {
+  display: inline-flex;
+  align-items: center;
+
+  background: #fceeee;
+  color: #dc4c4c;
+
+  border-radius: 999px;
+
+  padding: 5px 10px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-accent {
+  display: inline-flex;
+  align-items: center;
+
+  background: #e8fafc;
+  color: #1596a8;
+
+  border-radius: 999px;
+
+  padding: 5px 10px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.card {
+  background: #ffffff;
+
+  border: 1px solid #dfe5ed;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 8px 30px rgba(11, 19, 36, 0.055);
+
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow:
+    0 18px 45px rgba(11, 19, 36, 0.11);
+}
+
+.card-static {
+  background: #ffffff;
+
+  border: 1px solid #dfe5ed;
+
+  border-radius: 16px;
+}
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.section-white {
+  background: #ffffff;
+}
+
+.section-soft {
+  background: #f8fafc;
+}
+
+.section-mint {
+  background: #fff0eb;
+}
+
+.section-green {
+  background: #f1f7f4;
+}
+
+.section-cream {
+  background: #fff8ef;
+}
+
+.section-blue {
+  background: #eef2f8;
+}
+
+.section-indigo {
+  background: #f0f2f7;
+}
+
+.section-cyan {
+  background: #e8fafc;
+}
+
+.section-dark {
+  background: #0b1324;
+}
+
+
+/* =========================================================
+   DARK SECTION
+========================================================= */
+
+.section-dark h1,
+.section-dark h2,
+.section-dark h3,
+.section-dark h4,
+.section-dark h5,
+.section-dark h6 {
+  color: #ffffff;
+}
+
+.section-dark p {
+  color: #c4cbd6;
+}
+
+.section-dark .text-muted {
+  color: #8b96a8;
+}
+
+
+/* =========================================================
+   TEXT COLORS
+========================================================= */
+
+.text-highlight {
+  color: #ff5a36;
+}
+
+.text-primary {
+  color: #ff5a36;
+}
+
+.text-accent {
+  color: #26c6da;
+}
+
+.text-success {
+  color: #16a36a;
+}
+
+.text-warning {
+  color: #e09a22;
+}
+
+.text-danger {
+  color: #dc4c4c;
+}
+
+.text-info {
+  color: #4382b8;
+}
+
+
+/* =========================================================
+   GRADIENTS
+========================================================= */
+
+.gradient-brand {
+  background:
+    linear-gradient(
+      135deg,
+      #ff5a36 0%,
+      #d94424 100%
+    );
+}
+
+.gradient-hero {
+  background:
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(255, 90, 54, 0.10),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 15% 80%,
+      rgba(38, 198, 218, 0.08),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #fff7f4 0%,
+      #f3f6fa 55%,
+      #ffffff 100%
+    );
+}
+
+.gradient-dark {
+  background:
+    linear-gradient(
+      135deg,
+      #0b1324 0%,
+      #162139 100%
+    );
+}
+
+.gradient-premium {
+  background:
+    linear-gradient(
+      135deg,
+      #0b1324 0%,
+      #25324a 60%,
+      #ff5a36 100%
+    );
+}
+
+.gradient-accent {
+  background:
+    linear-gradient(
+      135deg,
+      #26c6da 0%,
+      #1596a8 100%
+    );
+}
+
+.gradient-orange {
+  background:
+    linear-gradient(
+      135deg,
+      #ff7655 0%,
+      #ff5a36 55%,
+      #d94424 100%
+    );
+}
+
+
+/* =========================================================
+   PRODUCT COLORS
+========================================================= */
+
+.product-corporation {
+  background: #fff0eb;
+  color: #ff5a36;
+}
+
+.product-accounts {
+  background: #e9edf4;
+  color: #25324a;
+}
+
+.product-vat {
+  background: #e8f7f1;
+  color: #16a36a;
+}
+
+.product-self {
+  background: #e8fafc;
+  color: #1596a8;
+}
+
+.product-confirmation {
+  background: #edf5fb;
+  color: #4382b8;
+}
+
+
+/* =========================================================
+   ICON CIRCLES
+========================================================= */
+
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+
+  border-radius: 14px;
+
+  background: #fff0eb;
+  color: #ff5a36;
+}
+
+.icon-circle-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+
+  border-radius: 14px;
+
+  background: #e8fafc;
+  color: #1596a8;
+}
+
+.icon-circle-success {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+
+  border-radius: 14px;
+
+  background: #e8f7f1;
+  color: #16a36a;
+}
+
+.icon-circle-warning {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+
+  border-radius: 14px;
+
+  background: #fff5df;
+  color: #e09a22;
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.input {
+  width: 100%;
+
+  background: #ffffff;
+  color: #111827;
+
+  border: 1px solid #dfe5ed;
+  border-radius: 10px;
+
+  padding: 11px 13px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input::placeholder {
+  color: #a5adba;
+}
+
+.input:hover {
+  border-color: #cbd3df;
+}
+
+.input:focus {
+  border-color: #ff5a36;
+
+  box-shadow:
+    0 0 0 3px rgba(255, 90, 54, 0.10);
+}
+
+.input-error {
+  border-color: #dc4c4c;
+}
+
+.input-error:focus {
+  border-color: #dc4c4c;
+
+  box-shadow:
+    0 0 0 3px rgba(220, 76, 76, 0.10);
+}
+
+.input-success {
+  border-color: #16a36a;
+}
+
+.input-success:focus {
+  border-color: #16a36a;
+
+  box-shadow:
+    0 0 0 3px rgba(22, 163, 106, 0.10);
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-header {
+  background: #f8fafc;
+
+  color: #4b5563;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.04em;
+}
+
+.table-row {
+  border-bottom: 1px solid #ebeff4;
+
+  transition:
+    background-color 0.15s ease;
+}
+
+.table-row:hover {
+  background: #fff7f4;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.nav-link {
+  color: #4b5563;
+
+  transition:
+    color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #ff5a36;
+}
+
+.nav-link-active {
+  color: #ff5a36;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+  background: #ffffff;
+
+  border-right: 1px solid #dfe5ed;
+}
+
+.sidebar-dark {
+  background: #0b1324;
+  color: #ffffff;
+}
+
+.sidebar-item {
+  color: #4b5563;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.sidebar-item:hover {
+  background: #fff0eb;
+  color: #ff5a36;
+}
+
+.sidebar-item-active {
+  background: #ff5a36;
+  color: #ffffff;
+
+  box-shadow:
+    0 6px 18px rgba(255, 90, 54, 0.18);
+}
+
+
+/* =========================================================
+   DASHBOARD STAT COLORS
+========================================================= */
+
+.stat-primary {
+  background: #fff0eb;
+  color: #ff5a36;
+}
+
+.stat-success {
+  background: #e8f7f1;
+  color: #16a36a;
+}
+
+.stat-warning {
+  background: #fff5df;
+  color: #e09a22;
+}
+
+.stat-danger {
+  background: #fceeee;
+  color: #dc4c4c;
+}
+
+.stat-accent {
+  background: #e8fafc;
+  color: #1596a8;
+}
+
+
+/* =========================================================
+   DIVIDERS
+========================================================= */
+
+.divider {
+  width: 100%;
+  height: 1px;
+
+  background: #dfe5ed;
+}
+
+.divider-light {
+  width: 100%;
+  height: 1px;
+
+  background: #ebeff4;
+}
+
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+:focus-visible {
+  outline: 3px solid rgba(255, 90, 54, 0.22);
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   SELECTION
+========================================================= */
+
+::selection {
+  background: #ffdcd2;
+  color: #6f1f13;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3f6fa;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd3df;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a5adba;
+}
+
+
+/* =========================================================
+   DISABLED
+========================================================= */
+
+button:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   TRANSITIONS
+========================================================= */
+
+.transition-theme {
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .card {
+    border-radius: 14px;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-dark,
+  .btn-accent {
+    padding: 10px 15px;
+  }
+}

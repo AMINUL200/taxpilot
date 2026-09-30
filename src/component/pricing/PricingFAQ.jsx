@@ -52,20 +52,20 @@ const PricingFAQ = () => {
   };
 
   return (
-    <section className="bg-[#F5FCF9] py-20 sm:py-24">
+    <section className="bg-background-mint-pale py-20 sm:py-24">
       <div className="mx-auto max-w-4xl px-5 sm:px-6">
 
         {/* Header */}
         <div className="mx-auto mb-12 max-w-2xl text-center">
-          <span className="mb-4 inline-flex items-center rounded-full bg-[#E5F7F0] px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-[#087F5B]">
+          <span className="mb-4 inline-flex items-center rounded-full bg-accent-soft px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-primary">
             Pricing FAQ
           </span>
 
-          <h2 className="text-3xl font-bold tracking-tight text-[#09263A] sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-plum sm:text-4xl">
             Frequently asked questions
           </h2>
 
-          <p className="mt-4 text-sm leading-7 text-[#687B78] sm:text-base">
+          <p className="mt-4 text-sm leading-7 text-text-secondary sm:text-base">
             Everything you need to know about our plans, pricing and
             subscriptions.
           </p>
@@ -81,8 +81,8 @@ const PricingFAQ = () => {
                 key={faq.question}
                 className={`overflow-hidden rounded-xl border bg-white transition-all duration-200 ${
                   isOpen
-                    ? "border-[#B8DED1] shadow-[0_8px_25px_rgba(0,62,62,0.06)]"
-                    : "border-[#DDEAE6]"
+                    ? "border-accent-light shadow-[0_8px_25px_rgba(32,21,22,0.06)]"
+                    : "border-border-light"
                 }`}
               >
                 {/* Question */}
@@ -93,7 +93,7 @@ const PricingFAQ = () => {
                 >
                   <span
                     className={`text-sm font-semibold transition-colors sm:text-[15px] ${
-                      isOpen ? "text-[#087F5B]" : "text-[#09263A]"
+                      isOpen ? "text-primary" : "text-plum"
                     }`}
                   >
                     {faq.question}
@@ -102,8 +102,8 @@ const PricingFAQ = () => {
                   <span
                     className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-all duration-200 ${
                       isOpen
-                        ? "bg-[#087F5B] text-white"
-                        : "bg-[#E5F7F0] text-[#087F5B]"
+                        ? "bg-primary text-white"
+                        : "bg-accent-soft text-accent"
                     }`}
                   >
                     <ChevronDown
@@ -123,8 +123,8 @@ const PricingFAQ = () => {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="border-t border-[#EDF3F1] px-5 pb-5 pt-4 sm:px-6">
-                      <p className="max-w-3xl text-sm leading-7 text-[#687B78]">
+                    <div className="border-t border-border-light px-5 pb-5 pt-4 sm:px-6">
+                      <p className="max-w-3xl text-sm leading-7 text-text-secondary">
                         {faq.answer}
                       </p>
                     </div>
@@ -137,11 +137,11 @@ const PricingFAQ = () => {
 
         {/* Bottom Help */}
         <div className="mt-10 text-center">
-          <p className="text-sm text-[#687B78]">
+          <p className="text-sm text-text-secondary">
             Still have questions?{" "}
             <a
               href="/help"
-              className="font-semibold text-[#087F5B] transition-colors hover:text-[#005E45]"
+              className="font-semibold text-primary transition-colors hover:text-primary-hover"
             >
               Visit our Help Centre →
             </a>
