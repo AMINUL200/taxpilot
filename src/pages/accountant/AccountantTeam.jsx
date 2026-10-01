@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Users,
@@ -10,45 +11,33 @@ import {
   Eye,
   MoreVertical,
   Edit3,
-  Archive,
   Mail,
   Phone,
   Calendar,
   Building2,
-  Briefcase,
   Shield,
   Crown,
   UserCog,
-  Star,
-  Check,
   CheckCircle2,
   Clock3,
-  AlertCircle,
   TrendingUp,
-  Download,
   RefreshCw,
   Send,
   UserCheck,
   Trash2,
   Key,
-  Copy,
-  Activity,
-  Target,
   BarChart3,
   Zap,
   Layers,
   User,
-  Settings,
-  Plus,
   X,
-  MessageSquare,
-  Award,
   MapPin,
-  Globe,
 } from "lucide-react";
 
 const AccountantTeam = () => {
   const navigate = useNavigate();
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
 
   /* ============================================================
      STATE
@@ -61,7 +50,7 @@ const AccountantTeam = () => {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [openRowMenu, setOpenRowMenu] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
+  const [viewMode, setViewMode] = useState("grid");
 
   /* ============================================================
      STATS
@@ -74,8 +63,8 @@ const AccountantTeam = () => {
       value: 8,
       change: "of 10 seats",
       icon: Users,
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
+      iconBg: "bg-primary-light",
+      iconColor: "text-primary",
     },
     {
       id: "active",
@@ -83,8 +72,8 @@ const AccountantTeam = () => {
       value: 7,
       change: "87.5% of total",
       icon: CheckCircle2,
-      iconBg: "bg-emerald-100",
-      iconColor: "text-emerald-600",
+      iconBg: "bg-success-light",
+      iconColor: "text-success",
     },
     {
       id: "pending",
@@ -92,8 +81,8 @@ const AccountantTeam = () => {
       value: 1,
       change: "Awaiting acceptance",
       icon: Clock3,
-      iconBg: "bg-amber-100",
-      iconColor: "text-amber-600",
+      iconBg: "bg-warning-light",
+      iconColor: "text-warning",
     },
     {
       id: "workload",
@@ -101,8 +90,8 @@ const AccountantTeam = () => {
       value: "12",
       change: "Tasks per member",
       icon: TrendingUp,
-      iconBg: "bg-purple-100",
-      iconColor: "text-purple-600",
+      iconBg: "bg-secondary-light",
+      iconColor: "text-secondary",
     },
   ];
 
@@ -120,7 +109,7 @@ const AccountantTeam = () => {
       title: "Senior Accountant",
       status: "Active",
       initials: "AJ",
-      avatarColor: "bg-[#087F5B]",
+      avatarColor: "bg-primary",
       joinedDate: "15 Jan 2023",
       lastActive: "Today",
       location: "London, UK",
@@ -138,7 +127,7 @@ const AccountantTeam = () => {
       title: "Accountant",
       status: "Active",
       initials: "JS",
-      avatarColor: "bg-blue-500",
+      avatarColor: "bg-sky",
       joinedDate: "20 Mar 2023",
       lastActive: "2 hours ago",
       location: "Manchester, UK",
@@ -156,7 +145,7 @@ const AccountantTeam = () => {
       title: "Accountant",
       status: "Active",
       initials: "SM",
-      avatarColor: "bg-purple-500",
+      avatarColor: "bg-secondary",
       joinedDate: "05 Jun 2023",
       lastActive: "Today",
       location: "Birmingham, UK",
@@ -174,7 +163,7 @@ const AccountantTeam = () => {
       title: "Junior Accountant",
       status: "Active",
       initials: "DC",
-      avatarColor: "bg-amber-500",
+      avatarColor: "bg-warning",
       joinedDate: "12 Aug 2024",
       lastActive: "1 hour ago",
       location: "London, UK",
@@ -192,7 +181,7 @@ const AccountantTeam = () => {
       title: "Accountant",
       status: "Active",
       initials: "EW",
-      avatarColor: "bg-rose-500",
+      avatarColor: "bg-danger",
       joinedDate: "22 Oct 2024",
       lastActive: "3 hours ago",
       location: "Leeds, UK",
@@ -210,7 +199,7 @@ const AccountantTeam = () => {
       title: "Junior Accountant",
       status: "Active",
       initials: "MB",
-      avatarColor: "bg-cyan-500",
+      avatarColor: "bg-sky",
       joinedDate: "15 Jan 2025",
       lastActive: "Yesterday",
       location: "Bristol, UK",
@@ -228,7 +217,7 @@ const AccountantTeam = () => {
       title: "Accountant",
       status: "Active",
       initials: "LT",
-      avatarColor: "bg-indigo-500",
+      avatarColor: "bg-primary",
       joinedDate: "03 Apr 2025",
       lastActive: "5 hours ago",
       location: "Edinburgh, UK",
@@ -246,7 +235,7 @@ const AccountantTeam = () => {
       title: "Accountant",
       status: "Pending",
       initials: "JM",
-      avatarColor: "bg-teal-500",
+      avatarColor: "bg-sky",
       joinedDate: "22 Sep 2026",
       lastActive: "Invite sent",
       location: "London, UK",
@@ -289,7 +278,8 @@ const AccountantTeam = () => {
           .toLowerCase()
           .includes(query);
 
-      const matchesRole = roleFilter === "All" || member.role === roleFilter;
+      const matchesRole =
+        roleFilter === "All" || member.role === roleFilter;
       const matchesStatus =
         statusFilter === "All" || member.status === statusFilter;
 
@@ -323,32 +313,32 @@ const AccountantTeam = () => {
     switch (role) {
       case "Owner":
         return {
-          bg: "bg-purple-100",
-          text: "text-purple-700",
+          bg: "bg-secondary-light",
+          text: "text-secondary",
           icon: Crown,
         };
       case "Admin":
         return {
-          bg: "bg-blue-100",
-          text: "text-blue-700",
+          bg: "bg-primary-light",
+          text: "text-primary",
           icon: Shield,
         };
       case "Accountant":
         return {
-          bg: "bg-emerald-100",
-          text: "text-emerald-700",
+          bg: "bg-success-light",
+          text: "text-success",
           icon: UserCheck,
         };
       case "Junior Accountant":
         return {
-          bg: "bg-amber-100",
-          text: "text-amber-700",
+          bg: "bg-warning-light",
+          text: "text-warning",
           icon: User,
         };
       default:
         return {
-          bg: "bg-gray-100",
-          text: "text-gray-600",
+          bg: "bg-background-soft",
+          text: "text-text-secondary",
           icon: User,
         };
     }
@@ -358,23 +348,137 @@ const AccountantTeam = () => {
     switch (status) {
       case "Active":
         return {
-          bg: "bg-emerald-100",
-          text: "text-emerald-700",
-          dot: "bg-emerald-500",
+          bg: "bg-success-light",
+          text: "text-success",
+          dot: "bg-success",
         };
       case "Pending":
         return {
-          bg: "bg-amber-100",
-          text: "text-amber-700",
-          dot: "bg-amber-500",
+          bg: "bg-warning-light",
+          text: "text-warning",
+          dot: "bg-warning",
         };
       default:
         return {
-          bg: "bg-gray-100",
-          text: "text-gray-600",
-          dot: "bg-gray-400",
+          bg: "bg-background-soft",
+          text: "text-text-secondary",
+          dot: "bg-text-secondary",
         };
     }
+  };
+
+  /* ============================================================
+     ANIMATION VARIANTS
+  ============================================================ */
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.06,
+        delayChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
+
+  const fadeUpVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.55, ease: premiumEase },
+    },
+  };
+
+  const statCardVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 16, scale: 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.5, ease: premiumEase },
+    },
+  };
+
+  const gridCardVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 16, scale: 0.96 },
+    visible: (index) => ({
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.05,
+      },
+    }),
+  };
+
+  const rowVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -12 },
+    visible: (index) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.45,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.05,
+      },
+    }),
+  };
+
+  const dropdownVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: -8, scale: 0.96 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.22, ease: premiumEase },
+    },
+    exit: shouldReduceMotion
+      ? { opacity: 0 }
+      : {
+          opacity: 0,
+          y: -6,
+          scale: 0.97,
+          transition: { duration: 0.15 },
+        },
+  };
+
+  const menuItemVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -6 },
+    visible: (index) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.04,
+      },
+    }),
+  };
+
+  const viewContentVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.35, ease: premiumEase },
+    },
+    exit: shouldReduceMotion
+      ? { opacity: 0 }
+      : {
+          opacity: 0,
+          y: -8,
+          transition: { duration: 0.2, ease: premiumEase },
+        },
   };
 
   /* ============================================================
@@ -382,42 +486,60 @@ const AccountantTeam = () => {
   ============================================================ */
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* ======================================================
           PAGE HEADER
       ====================================================== */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <motion.div
+        variants={fadeUpVariants}
+        className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"
+      >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#09263A] sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-heading sm:text-3xl">
             Team
           </h1>
-          <p className="mt-1 text-sm text-[#687B78]">
+          <p className="mt-1 text-sm text-text-secondary">
             Manage your practice team members and permissions
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <button
+          <motion.button
             type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
+            whileHover={
+              shouldReduceMotion || isRefreshing
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={
+              shouldReduceMotion || isRefreshing
+                ? undefined
+                : { scale: 0.98 }
+            }
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-[#09263A]
-              transition-all
+              text-heading
+              transition-colors
               duration-200
-              hover:border-[#087F5B]
-              hover:text-[#087F5B]
+              hover:border-primary
+              hover:text-primary
               disabled:cursor-not-allowed
               disabled:opacity-60
             "
@@ -429,59 +551,69 @@ const AccountantTeam = () => {
             <span className="hidden sm:inline">
               {isRefreshing ? "Refreshing..." : "Refresh"}
             </span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-[#09263A]
-              transition-all
+              text-heading
+              transition-colors
               duration-200
-              hover:border-[#087F5B]
-              hover:text-[#087F5B]
+              hover:border-primary
+              hover:text-primary
             "
           >
             <Shield className="h-4 w-4" strokeWidth={2.2} />
             <span className="hidden sm:inline">Permissions</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
-              bg-[#087F5B]
+              bg-primary
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-white
-              shadow-sm
-              transition-all
+              text-text-white
+              shadow-button
+              transition-colors
               duration-200
-              hover:bg-[#005E45]
-              hover:-translate-y-0.5
-              hover:shadow-md
+              hover:bg-primary-hover
             "
           >
             <UserPlus className="h-4 w-4" strokeWidth={2.4} />
             <span>Invite Member</span>
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           STATS CARDS
@@ -490,33 +622,39 @@ const AccountantTeam = () => {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div
+            <motion.div
               key={stat.id}
+              variants={statCardVariants}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -3, transition: { duration: 0.25 } }
+              }
               className="
                 group
                 relative
                 overflow-hidden
                 rounded-xl
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 p-5
-                shadow-[0_3px_14px_rgba(16,42,67,0.035)]
-                transition-all
+                shadow-card
+                transition-[border-color,box-shadow]
                 duration-300
-                hover:-translate-y-0.5
-                hover:shadow-[0_10px_25px_rgba(16,42,67,0.08)]
+                hover:border-primary/20
+                hover:shadow-card-hover
               "
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     {stat.label}
                   </p>
-                  <p className="mt-2 text-2xl font-bold tracking-tight text-[#09263A] sm:text-3xl">
+                  <p className="mt-2 text-2xl font-bold tracking-tight text-heading sm:text-3xl">
                     {stat.value}
                   </p>
-                  <p className="mt-1.5 text-[10px] font-semibold text-[#687B78]">
+                  <p className="mt-1.5 text-[10px] font-semibold text-text-secondary">
                     {stat.change}
                   </p>
                 </div>
@@ -540,7 +678,7 @@ const AccountantTeam = () => {
                   />
                 </div>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
@@ -548,65 +686,125 @@ const AccountantTeam = () => {
       {/* ======================================================
           SEATS USAGE BANNER
       ====================================================== */}
-      <div className="flex flex-col gap-4 rounded-xl border border-[#DDEAE6] bg-gradient-to-r from-[#E8F8F2] via-[#F5FCF9] to-white p-5 sm:flex-row sm:items-center sm:justify-between">
+      <motion.div
+        variants={fadeUpVariants}
+        className="
+          flex
+          flex-col
+          gap-4
+          rounded-xl
+          border
+          border-border
+          bg-gradient-to-r
+          from-primary-light
+          via-background-soft
+          to-background
+          p-5
+          sm:flex-row
+          sm:items-center
+          sm:justify-between
+        "
+      >
         <div className="flex items-start gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#087F5B]">
-            <Zap className="h-5 w-5 text-white" strokeWidth={2.2} />
-          </div>
+          <motion.div
+            className="
+              flex
+              h-11
+              w-11
+              shrink-0
+              items-center
+              justify-center
+              rounded-xl
+              bg-primary
+              shadow-button
+            "
+            initial={
+              shouldReduceMotion
+                ? false
+                : { opacity: 0, scale: 0.6, rotate: -12 }
+            }
+            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 0.5,
+              ease: [0.34, 1.56, 0.64, 1],
+            }}
+          >
+            <Zap className="h-5 w-5 text-text-white" strokeWidth={2.2} />
+          </motion.div>
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#087F5B]">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
               Team seats
             </p>
-            <p className="mt-1 text-sm font-bold text-[#09263A]">
+            <p className="mt-1 text-sm font-bold text-heading">
               8 of 10 seats used
             </p>
-            <p className="mt-0.5 text-xs text-[#687B78]">
+            <p className="mt-0.5 text-xs text-text-secondary">
               2 seats remaining on your Practice Pro plan
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden h-2 w-32 overflow-hidden rounded-full bg-[#DDEAE6] sm:block">
-            <div
-              className="h-full rounded-full bg-[#087F5B] transition-all duration-500"
-              style={{ width: "80%" }}
+          <div className="hidden h-2 w-32 overflow-hidden rounded-full bg-border sm:block">
+            <motion.div
+              className="h-full rounded-full bg-primary"
+              initial={shouldReduceMotion ? false : { width: 0 }}
+              whileInView={{ width: "80%" }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1,
+                ease: premiumEase,
+                delay: shouldReduceMotion ? 0 : 0.4,
+              }}
             />
           </div>
-          <Link
-            to="/accountant/settings"
-            className="
-              inline-flex
-              shrink-0
-              items-center
-              gap-2
-              rounded-lg
-              bg-[#087F5B]
-              px-4
-              py-2.5
-              text-xs
-              font-bold
-              text-white
-              shadow-sm
-              transition-all
-              duration-200
-              hover:bg-[#005E45]
-            "
+          <motion.div
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
           >
-            <Zap className="h-3.5 w-3.5" strokeWidth={2.6} />
-            <span>Upgrade plan</span>
-          </Link>
+            <Link
+              to="/accountant/settings"
+              className="
+                inline-flex
+                shrink-0
+                items-center
+                gap-2
+                rounded-lg
+                bg-primary
+                px-4
+                py-2.5
+                text-xs
+                font-bold
+                text-text-white
+                shadow-button
+                transition-colors
+                duration-200
+                hover:bg-primary-hover
+              "
+            >
+              <Zap className="h-3.5 w-3.5" strokeWidth={2.6} />
+              <span>Upgrade plan</span>
+            </Link>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           FILTERS BAR
       ====================================================== */}
-      <div className="rounded-xl border border-[#DDEAE6] bg-white p-4 shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
+      <motion.div
+        variants={fadeUpVariants}
+        className="rounded-xl border border-border bg-background p-4 shadow-card"
+      >
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           {/* Search */}
           <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#687B78]" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
             <input
               type="text"
               value={search}
@@ -616,33 +814,39 @@ const AccountantTeam = () => {
                 w-full
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-[#F5FCF9]
+                border-border
+                bg-background-soft
                 py-2.5
                 pl-10
                 pr-4
                 text-sm
-                text-[#09263A]
+                text-heading
                 outline-none
                 transition-all
                 duration-200
-                placeholder:text-[#687B78]
-                focus:border-[#087F5B]
-                focus:bg-white
+                placeholder:text-text-secondary
+                focus:border-primary
+                focus:bg-background
                 focus:ring-2
-                focus:ring-[#087F5B]/10
+                focus:ring-primary/10
               "
             />
           </div>
 
           {/* Role filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowRoleDropdown((prev) => !prev);
                 setShowStatusDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -651,22 +855,25 @@ const AccountantTeam = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
               <div className="flex items-center gap-2">
-                <Shield className="h-3.5 w-3.5 text-[#687B78]" strokeWidth={2.2} />
+                <Shield
+                  className="h-3.5 w-3.5 text-text-secondary"
+                  strokeWidth={2.2}
+                />
                 <span>
                   {roleOptions.find((o) => o.value === roleFilter)?.label}
                 </span>
@@ -675,60 +882,91 @@ const AccountantTeam = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showRoleDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showRoleDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {roleOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setRoleFilter(option.value);
-                      setShowRoleDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        roleFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
-                      }
-                    `}
-                  >
-                    <span>{option.label}</span>
-                    {roleFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showRoleDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-56
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {roleOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      custom={index}
+                      variants={menuItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      onClick={() => {
+                        setRoleFilter(option.value);
+                        setShowRoleDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          roleFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span>{option.label}</span>
+                      {roleFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Status filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowStatusDropdown((prev) => !prev);
                 setShowRoleDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -737,17 +975,17 @@ const AccountantTeam = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
@@ -758,87 +996,125 @@ const AccountantTeam = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showStatusDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showStatusDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-48 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {statusOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setStatusFilter(option.value);
-                      setShowStatusDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        statusFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
-                      }
-                    `}
-                  >
-                    <span>{option.label}</span>
-                    {statusFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showStatusDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-48
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {statusOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      custom={index}
+                      variants={menuItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      onClick={() => {
+                        setStatusFilter(option.value);
+                        setShowStatusDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          statusFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span>{option.label}</span>
+                      {statusFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Clear filters */}
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-lg
-                border
-                border-[#DDEAE6]
-                bg-white
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-[#687B78]
-                transition-all
-                duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
-              "
-            >
-              <X className="h-3.5 w-3.5" strokeWidth={2.4} />
-              <span>Clear</span>
-            </button>
-          )}
+          <AnimatePresence>
+            {hasActiveFilters && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                type="button"
+                onClick={clearFilters}
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -1, transition: { duration: 0.2 } }
+                }
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  px-4
+                  py-2.5
+                  text-sm
+                  font-semibold
+                  text-text-secondary
+                  transition-colors
+                  duration-200
+                  hover:border-primary
+                  hover:text-primary
+                "
+              >
+                <X className="h-3.5 w-3.5" strokeWidth={2.4} />
+                <span>Clear</span>
+              </motion.button>
+            )}
+          </AnimatePresence>
 
           {/* View toggle */}
-          <div className="hidden rounded-lg border border-[#DDEAE6] bg-white p-1 lg:flex">
-            <button
+          <div className="hidden rounded-lg border border-border bg-background p-1 lg:flex">
+            <motion.button
               type="button"
               onClick={() => setViewMode("grid")}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
               className={`
                 inline-flex
                 items-center
@@ -848,20 +1124,22 @@ const AccountantTeam = () => {
                 py-1.5
                 text-xs
                 font-bold
-                transition-all
+                transition-colors
+                duration-200
                 ${
                   viewMode === "grid"
-                    ? "bg-[#087F5B] text-white"
-                    : "text-[#687B78] hover:bg-[#F5FCF9]"
+                    ? "bg-primary text-text-white shadow-button"
+                    : "text-text-secondary hover:bg-background-soft"
                 }
               `}
             >
               <Layers className="h-3.5 w-3.5" strokeWidth={2.4} />
               Cards
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               onClick={() => setViewMode("list")}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
               className={`
                 inline-flex
                 items-center
@@ -871,584 +1149,862 @@ const AccountantTeam = () => {
                 py-1.5
                 text-xs
                 font-bold
-                transition-all
+                transition-colors
+                duration-200
                 ${
                   viewMode === "list"
-                    ? "bg-[#087F5B] text-white"
-                    : "text-[#687B78] hover:bg-[#F5FCF9]"
+                    ? "bg-primary text-text-white shadow-button"
+                    : "text-text-secondary hover:bg-background-soft"
                 }
               `}
             >
               <Users className="h-3.5 w-3.5" strokeWidth={2.4} />
               List
-            </button>
+            </motion.button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
-          TEAM - GRID VIEW
+          VIEW SWITCH
       ====================================================== */}
-      {viewMode === "grid" && (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredTeam.map((member) => {
-            const roleStyles = getRoleStyles(member.role);
-            const RoleIcon = roleStyles.icon;
-            const statusStyles = getStatusStyles(member.status);
+      <AnimatePresence initial={false} mode="sync">
+        {/* GRID VIEW */}
+        {viewMode === "grid" && (
+          <motion.div
+            key="grid"
+            variants={viewContentVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {filteredTeam.map((member, index) => {
+              const roleStyles = getRoleStyles(member.role);
+              const RoleIcon = roleStyles.icon;
+              const statusStyles = getStatusStyles(member.status);
 
-            return (
-              <div
-                key={member.id}
-                className="
-                  group
-                  relative
-                  overflow-hidden
-                  rounded-xl
-                  border
-                  border-[#DDEAE6]
-                  bg-white
-                  transition-all
-                  duration-300
-                  hover:-translate-y-0.5
-                  hover:border-[#087F5B]/30
-                  hover:shadow-[0_10px_25px_rgba(16,42,67,0.08)]
-                "
-              >
-                {/* Header */}
-                <div className="flex items-start justify-between gap-3 border-b border-[#DDEAE6] bg-gradient-to-r from-[#E8F8F2]/60 to-white p-5">
-                  <div className="flex items-start gap-3">
-                    <div
-                      className={`
-                        flex
-                        h-14
-                        w-14
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-full
-                        text-lg
-                        font-bold
-                        text-white
-                        shadow-sm
-                        ${member.avatarColor}
-                      `}
-                    >
-                      {member.initials}
-                    </div>
-                    <div className="min-w-0 pt-0.5">
-                      <p className="truncate text-sm font-bold text-[#09263A]">
-                        {member.name}
-                      </p>
-                      <p className="mt-0.5 truncate text-[11px] text-[#687B78]">
-                        {member.title}
-                      </p>
-                      <div className="mt-2 flex flex-wrap items-center gap-2">
-                        <span
-                          className={`
-                            inline-flex
-                            items-center
-                            gap-1
-                            rounded-full
-                            px-2
-                            py-0.5
-                            text-[9px]
-                            font-bold
-                            ${roleStyles.bg}
-                            ${roleStyles.text}
-                          `}
-                        >
-                          <RoleIcon className="h-2.5 w-2.5" strokeWidth={2.6} />
-                          {member.role}
-                        </span>
-                        <span
-                          className={`
-                            inline-flex
-                            items-center
-                            gap-1
-                            rounded-full
-                            px-2
-                            py-0.5
-                            text-[9px]
-                            font-bold
-                            ${statusStyles.bg}
-                            ${statusStyles.text}
-                          `}
-                        >
-                          <span
-                            className={`h-1 w-1 rounded-full ${statusStyles.dot}`}
-                          />
-                          {member.status}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setOpenRowMenu(
-                          openRowMenu === member.id ? null : member.id
-                        )
-                      }
-                      className="flex h-7 w-7 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-white hover:text-[#087F5B]"
-                      aria-label="More actions"
-                    >
-                      <MoreVertical className="h-3.5 w-3.5" />
-                    </button>
-
-                    {openRowMenu === member.id && (
-                      <div className="absolute right-0 top-full z-20 mt-1 w-44 overflow-hidden rounded-lg border border-[#DDEAE6] bg-white py-1 shadow-2xl">
-                        <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                          <Eye className="h-3.5 w-3.5" />
-                          <span>View profile</span>
-                        </button>
-                        <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                          <Edit3 className="h-3.5 w-3.5" />
-                          <span>Edit details</span>
-                        </button>
-                        <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                          <Mail className="h-3.5 w-3.5" />
-                          <span>Send message</span>
-                        </button>
-                        <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                          <Key className="h-3.5 w-3.5" />
-                          <span>Reset password</span>
-                        </button>
-                        <div className="my-1 border-t border-[#DDEAE6]" />
-                        <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-rose-600 transition-colors hover:bg-rose-50">
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span>Remove member</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Body */}
-                <div className="p-5">
-                  {/* Contact */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-xs text-[#687B78]">
-                      <Mail
-                        className="h-3.5 w-3.5 shrink-0"
-                        strokeWidth={2.2}
-                      />
-                      <span className="truncate">{member.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-[#687B78]">
-                      <MapPin
-                        className="h-3.5 w-3.5 shrink-0"
-                        strokeWidth={2.2}
-                      />
-                      <span className="truncate">{member.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-[#687B78]">
-                      <Calendar
-                        className="h-3.5 w-3.5 shrink-0"
-                        strokeWidth={2.2}
-                      />
-                      <span>Joined {member.joinedDate}</span>
-                    </div>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="mt-4 grid grid-cols-3 gap-3 rounded-lg border border-[#DDEAE6] bg-[#F5FCF9] px-3 py-2.5">
-                    <div className="text-center">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                        Clients
-                      </p>
-                      <p className="mt-0.5 text-sm font-bold text-[#09263A]">
-                        {member.clients}
-                      </p>
-                    </div>
-                    <div className="border-x border-[#DDEAE6] text-center">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                        Tasks
-                      </p>
-                      <p className="mt-0.5 text-sm font-bold text-[#09263A]">
-                        {member.activeTasks}
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                        Done
-                      </p>
-                      <p className="mt-0.5 text-sm font-bold text-[#09263A]">
-                        {member.completedThisMonth}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Specialities */}
-                  {member.specialities.length > 0 && (
-                    <div className="mt-4">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                        Specialities
-                      </p>
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {member.specialities.map((spec) => (
-                          <span
-                            key={spec}
-                            className="rounded-full bg-[#E8F8F2] px-2 py-0.5 text-[10px] font-semibold text-[#087F5B]"
-                          >
-                            {spec}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Actions */}
-                  <div className="mt-4 flex gap-2">
-                    <Link
-                      to={`/accountant/team/${member.id}`}
-                      className="
-                        inline-flex
-                        flex-1
-                        items-center
-                        justify-center
-                        gap-1.5
-                        rounded-lg
-                        border
-                        border-[#DDEAE6]
-                        bg-white
-                        px-3
-                        py-2
-                        text-xs
-                        font-bold
-                        text-[#09263A]
-                        transition-all
-                        duration-200
-                        hover:border-[#087F5B]
-                        hover:bg-[#E8F8F2]
-                        hover:text-[#087F5B]
-                      "
-                    >
-                      <Eye className="h-3 w-3" strokeWidth={2.4} />
-                      View profile
-                    </Link>
-                    <button
-                      type="button"
-                      className="                        inline-flex
-                        items-center
-                        justify-center
-                        gap-1.5
-                        rounded-lg
-                        bg-[#087F5B]
-                        px-3
-                        py-2
-                        text-xs
-                        font-bold
-                        text-white
-                        transition-all
-                        duration-200
-                        hover:bg-[#005E45]
-                      "
-                    >
-                      <Send className="h-3 w-3" strokeWidth={2.6} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Empty state for grid */}
-          {filteredTeam.length === 0 && (
-            <div className="col-span-full flex flex-col items-center justify-center rounded-xl border border-[#DDEAE6] bg-white px-5 py-16 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F8F2]">
-                <Users className="h-7 w-7 text-[#087F5B]" strokeWidth={2} />
-              </div>
-              <p className="mt-4 text-sm font-bold text-[#09263A]">
-                No team members found
-              </p>
-              <p className="mt-1 max-w-xs text-xs text-[#687B78]">
-                {hasActiveFilters
-                  ? "Try adjusting your search or filters."
-                  : "Invite your first team member to get started."}
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ======================================================
-          TEAM - LIST VIEW
-      ====================================================== */}
-      {viewMode === "list" && (
-        <div className="overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
-          <div className="flex flex-col gap-2 border-b border-[#DDEAE6] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-[#087F5B]" strokeWidth={2.2} />
-              <h2 className="text-sm font-bold text-[#09263A]">
-                All Team Members
-              </h2>
-              <span className="rounded-full bg-[#E8F8F2] px-2 py-0.5 text-[10px] font-bold text-[#087F5B]">
-                {filteredTeam.length}
-              </span>
-            </div>
-            <p className="text-[11px] text-[#687B78]">
-              Click a member to view details
-            </p>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[1000px]">
-              <thead>
-                <tr className="border-b border-[#DDEAE6] bg-[#F5FCF9]">
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Member
-                  </th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Role
-                  </th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Location
-                  </th>
-                  <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Clients
-                  </th>
-                  <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Tasks
-                  </th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Status
-                  </th>
-                  <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-[#DDEAE6]">
-                {filteredTeam.map((member) => {
-                  const roleStyles = getRoleStyles(member.role);
-                  const RoleIcon = roleStyles.icon;
-                  const statusStyles = getStatusStyles(member.status);
-
-                  return (
-                    <tr
-                      key={member.id}
-                      onClick={() =>
-                        navigate(`/accountant/team/${member.id}`)
-                      }
-                      className="group cursor-pointer transition-colors hover:bg-[#F5FCF9]"
-                    >
-                      {/* Member */}
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`
-                              flex
-                              h-10
-                              w-10
-                              shrink-0
-                              items-center
-                              justify-center
-                              rounded-full
-                              text-[11px]
-                              font-bold
-                              text-white
-                              ${member.avatarColor}
-                            `}
-                          >
-                            {member.initials}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-bold text-[#09263A] transition-colors group-hover:text-[#087F5B]">
-                              {member.name}
-                            </p>
-                            <p className="mt-0.5 truncate text-[10px] text-[#687B78]">
-                              {member.email}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Role */}
-                      <td className="px-5 py-4">
-                        <span
-                          className={`
-                            inline-flex
-                            items-center
-                            gap-1.5
-                            rounded-full
-                            px-2.5
-                            py-1
-                            text-[10px]
-                            font-bold
-                            ${roleStyles.bg}
-                            ${roleStyles.text}
-                          `}
-                        >
-                          <RoleIcon className="h-3 w-3" strokeWidth={2.4} />
-                          {member.role}
-                        </span>
-                      </td>
-
-                      {/* Location */}
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-1.5 text-xs text-[#687B78]">
-                          <MapPin
-                            className="h-3.5 w-3.5"
-                            strokeWidth={2.2}
-                          />
-                          <span className="truncate">{member.location}</span>
-                        </div>
-                      </td>
-
-                      {/* Clients */}
-                      <td className="px-5 py-4 text-center">
-                        <span className="inline-flex items-center rounded-full bg-[#F5FCF9] px-2.5 py-1 text-[11px] font-bold text-[#09263A]">
-                          {member.clients}
-                        </span>
-                      </td>
-
-                      {/* Tasks */}
-                      <td className="px-5 py-4 text-center">
-                        <span className="inline-flex items-center rounded-full bg-[#F5FCF9] px-2.5 py-1 text-[11px] font-bold text-[#09263A]">
-                          {member.activeTasks}
-                        </span>
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-5 py-4">
-                        <span
-                          className={`
-                            inline-flex
-                            items-center
-                            gap-1.5
-                            rounded-full
-                            px-2.5
-                            py-1
-                            text-[10px]
-                            font-bold
-                            ${statusStyles.bg}
-                            ${statusStyles.text}
-                          `}
-                        >
-                          <span
-                            className={`h-1.5 w-1.5 rounded-full ${statusStyles.dot}`}
-                          />
-                          {member.status}
-                        </span>
-                      </td>
-
-                      {/* Actions */}
-                      <td
-                        className="relative px-5 py-4 text-right"
-                        onClick={(e) => e.stopPropagation()}
+              return (
+                <motion.div
+                  key={member.id}
+                  custom={index}
+                  variants={gridCardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : { y: -4, transition: { duration: 0.25 } }
+                  }
+                  className="
+                    group
+                    relative
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    transition-[border-color,box-shadow]
+                    duration-300
+                    hover:border-primary/30
+                    hover:shadow-card-hover
+                  "
+                >
+                  {/* Header */}
+                  <div
+                    className="
+                      flex
+                      items-start
+                      justify-between
+                      gap-3
+                      border-b
+                      border-border
+                      bg-gradient-to-r
+                      from-primary-light/60
+                      to-background
+                      p-5
+                    "
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`
+                          flex
+                          h-14
+                          w-14
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-full
+                          text-lg
+                          font-bold
+                          text-text-white
+                          shadow-button
+                          ${member.avatarColor}
+                        `}
                       >
-                        <div className="relative inline-flex items-center gap-1">
-                          <Link
-                            to={`/accountant/team/${member.id}`}
-                            className="
+                        {member.initials}
+                      </div>
+                      <div className="min-w-0 pt-0.5">
+                        <p className="truncate text-sm font-bold text-heading">
+                          {member.name}
+                        </p>
+                        <p className="mt-0.5 truncate text-[11px] text-text-secondary">
+                          {member.title}
+                        </p>
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          <span
+                            className={`
                               inline-flex
                               items-center
                               gap-1
+                              rounded-full
+                              px-2
+                              py-0.5
+                              text-[9px]
+                              font-bold
+                              ${roleStyles.bg}
+                              ${roleStyles.text}
+                            `}
+                          >
+                            <RoleIcon
+                              className="h-2.5 w-2.5"
+                              strokeWidth={2.6}
+                            />
+                            {member.role}
+                          </span>
+                          <span
+                            className={`
+                              inline-flex
+                              items-center
+                              gap-1
+                              rounded-full
+                              px-2
+                              py-0.5
+                              text-[9px]
+                              font-bold
+                              ${statusStyles.bg}
+                              ${statusStyles.text}
+                            `}
+                          >
+                            <span
+                              className={`h-1 w-1 rounded-full ${statusStyles.dot}`}
+                            />
+                            {member.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="relative">
+                      <motion.button
+                        type="button"
+                        onClick={() =>
+                          setOpenRowMenu(
+                            openRowMenu === member.id ? null : member.id
+                          )
+                        }
+                        whileHover={
+                          shouldReduceMotion
+                            ? undefined
+                            : {
+                                scale: 1.1,
+                                transition: { duration: 0.15 },
+                              }
+                        }
+                        whileTap={
+                          shouldReduceMotion ? undefined : { scale: 0.95 }
+                        }
+                        className="
+                          flex
+                          h-7
+                          w-7
+                          items-center
+                          justify-center
+                          rounded-lg
+                          text-text-secondary
+                          transition-colors
+                          hover:bg-background
+                          hover:text-primary
+                        "
+                        aria-label="More actions"
+                      >
+                        <MoreVertical className="h-3.5 w-3.5" />
+                      </motion.button>
+
+                      <AnimatePresence>
+                        {openRowMenu === member.id && (
+                          <motion.div
+                            initial={
+                              shouldReduceMotion
+                                ? false
+                                : { opacity: 0, y: -6, scale: 0.96 }
+                            }
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={
+                              shouldReduceMotion
+                                ? { opacity: 0 }
+                                : { opacity: 0, y: -4, scale: 0.97 }
+                            }
+                            transition={{
+                              duration: 0.2,
+                              ease: premiumEase,
+                            }}
+                            className="
+                              absolute
+                              right-0
+                              top-full
+                              z-20
+                              mt-1
+                              w-44
+                              overflow-hidden
                               rounded-lg
                               border
-                              border-[#DDEAE6]
-                              bg-white
-                              px-3
-                              py-1.5
-                              text-[11px]
-                              font-semibold
-                              text-[#09263A]
-                              transition-all
-                              duration-200
-                              hover:border-[#087F5B]
-                              hover:bg-[#E8F8F2]
-                              hover:text-[#087F5B]
+                              border-border
+                              bg-background
+                              py-1
+                              shadow-card-hover
                             "
                           >
-                            <Eye className="h-3 w-3" strokeWidth={2.4} />
-                            <span>View</span>
-                          </Link>
+                            <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                              <Eye className="h-3.5 w-3.5" />
+                              <span>View profile</span>
+                            </button>
+                            <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                              <Edit3 className="h-3.5 w-3.5" />
+                              <span>Edit details</span>
+                            </button>
+                            <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                              <Mail className="h-3.5 w-3.5" />
+                              <span>Send message</span>
+                            </button>
+                            <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                              <Key className="h-3.5 w-3.5" />
+                              <span>Reset password</span>
+                            </button>
+                            <div className="my-1 border-t border-border" />
+                            <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-danger transition-colors hover:bg-danger-light">
+                              <Trash2 className="h-3.5 w-3.5" />
+                              <span>Remove member</span>
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
 
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setOpenRowMenu(
-                                openRowMenu === member.id ? null : member.id
-                              )
-                            }
-                            className="flex h-7 w-7 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]"
-                            aria-label="More actions"
-                          >
-                            <MoreVertical className="h-3.5 w-3.5" />
-                          </button>
+                  {/* Body */}
+                  <div className="p-5">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-xs text-text-secondary">
+                        <Mail
+                          className="h-3.5 w-3.5 shrink-0"
+                          strokeWidth={2.2}
+                        />
+                        <span className="truncate">{member.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-text-secondary">
+                        <MapPin
+                          className="h-3.5 w-3.5 shrink-0"
+                          strokeWidth={2.2}
+                        />
+                        <span className="truncate">{member.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-text-secondary">
+                        <Calendar
+                          className="h-3.5 w-3.5 shrink-0"
+                          strokeWidth={2.2}
+                        />
+                        <span>Joined {member.joinedDate}</span>
+                      </div>
+                    </div>
 
-                          {openRowMenu === member.id && (
-                            <div className="absolute right-0 top-full z-20 mt-1 w-44 overflow-hidden rounded-lg border border-[#DDEAE6] bg-white py-1 shadow-2xl">
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Eye className="h-3.5 w-3.5" />
-                                <span>View profile</span>
-                              </button>
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Edit3 className="h-3.5 w-3.5" />
-                                <span>Edit details</span>
-                              </button>
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Send className="h-3.5 w-3.5" />
-                                <span>Send message</span>
-                              </button>
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Key className="h-3.5 w-3.5" />
-                                <span>Reset password</span>
-                              </button>
-                              <div className="my-1 border-t border-[#DDEAE6]" />
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-rose-600 transition-colors hover:bg-rose-50">
-                                <Trash2 className="h-3.5 w-3.5" />
-                                <span>Remove member</span>
-                              </button>
-                            </div>
-                          )}
+                    <div
+                      className="
+                        mt-4
+                        grid
+                        grid-cols-3
+                        gap-3
+                        rounded-lg
+                        border
+                        border-border
+                        bg-background-soft
+                        px-3
+                        py-2.5
+                      "
+                    >
+                      <div className="text-center">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                          Clients
+                        </p>
+                        <p className="mt-0.5 text-sm font-bold text-heading">
+                          {member.clients}
+                        </p>
+                      </div>
+                      <div className="border-x border-border text-center">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                          Tasks
+                        </p>
+                        <p className="mt-0.5 text-sm font-bold text-heading">
+                          {member.activeTasks}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                          Done
+                        </p>
+                        <p className="mt-0.5 text-sm font-bold text-heading">
+                          {member.completedThisMonth}
+                        </p>
+                      </div>
+                    </div>
+
+                    {member.specialities.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                          Specialities
+                        </p>
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {member.specialities.map((spec) => (
+                            <span
+                              key={spec}
+                              className="
+                                rounded-full
+                                bg-primary-light
+                                px-2
+                                py-0.5
+                                text-[10px]
+                                font-semibold
+                                text-primary
+                              "
+                            >
+                              {spec}
+                            </span>
+                          ))}
                         </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    )}
 
-          {/* Empty state for list */}
-          {filteredTeam.length === 0 && (
-            <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F8F2]">
-                <Users className="h-7 w-7 text-[#087F5B]" strokeWidth={2} />
+                    <div className="mt-4 flex gap-2">
+                      <motion.div
+                        whileHover={
+                          shouldReduceMotion
+                            ? undefined
+                            : { y: -1, transition: { duration: 0.2 } }
+                        }
+                        className="flex-1"
+                      >
+                        <Link
+                          to={`/accountant/team/${member.id}`}
+                          className="
+                            inline-flex
+                            w-full
+                            items-center
+                            justify-center
+                            gap-1.5
+                            rounded-lg
+                            border
+                            border-border
+                            bg-background
+                            px-3
+                            py-2
+                            text-xs
+                            font-bold
+                            text-heading
+                            transition-colors
+                            duration-200
+                            hover:border-primary
+                            hover:bg-primary-light
+                            hover:text-primary
+                          "
+                        >
+                          <Eye className="h-3 w-3" strokeWidth={2.4} />
+                          View profile
+                        </Link>
+                      </motion.div>
+                      <motion.button
+                        type="button"
+                        whileHover={
+                          shouldReduceMotion
+                            ? undefined
+                            : { y: -1, transition: { duration: 0.2 } }
+                        }
+                        whileTap={
+                          shouldReduceMotion ? undefined : { scale: 0.98 }
+                        }
+                        className="
+                          inline-flex
+                          items-center
+                          justify-center
+                          gap-1.5
+                          rounded-lg
+                          bg-primary
+                          px-3
+                          py-2
+                          text-xs
+                          font-bold
+                          text-text-white
+                          shadow-button
+                          transition-colors
+                          duration-200
+                          hover:bg-primary-hover
+                        "
+                      >
+                        <Send className="h-3 w-3" strokeWidth={2.6} />
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+
+            {filteredTeam.length === 0 && (
+              <motion.div
+                initial={
+                  shouldReduceMotion ? false : { opacity: 0, y: 12 }
+                }
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: premiumEase }}
+                className="
+                  col-span-full
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  rounded-xl
+                  border
+                  border-border
+                  bg-background
+                  px-5
+                  py-16
+                  text-center
+                "
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light">
+                  <Users className="h-7 w-7 text-primary" strokeWidth={2} />
+                </div>
+                <p className="mt-4 text-sm font-bold text-heading">
+                  No team members found
+                </p>
+                <p className="mt-1 max-w-xs text-xs text-text-secondary">
+                  {hasActiveFilters
+                    ? "Try adjusting your search or filters."
+                    : "Invite your first team member to get started."}
+                </p>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+
+        {/* LIST VIEW */}
+        {viewMode === "list" && (
+          <motion.div
+            key="list"
+            variants={viewContentVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="
+              overflow-hidden
+              rounded-xl
+              border
+              border-border
+              bg-background
+              shadow-card
+            "
+          >
+            <div className="flex flex-col gap-2 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" strokeWidth={2.2} />
+                <h2 className="text-sm font-bold text-heading">
+                  All Team Members
+                </h2>
+                <span className="rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-bold text-primary">
+                  {filteredTeam.length}
+                </span>
               </div>
-              <p className="mt-4 text-sm font-bold text-[#09263A]">
-                No team members found
-              </p>
-              <p className="mt-1 max-w-xs text-xs text-[#687B78]">
-                {hasActiveFilters
-                  ? "Try adjusting your search or filters."
-                  : "Invite your first team member to get started."}
+              <p className="text-[11px] text-text-secondary">
+                Click a member to view details
               </p>
             </div>
-          )}
-        </div>
-      )}
+
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[1000px]">
+                <thead>
+                  <tr className="border-b border-border bg-background-soft">
+                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Member
+                    </th>
+                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Role
+                    </th>
+                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Location
+                    </th>
+                    <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Clients
+                    </th>
+                    <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Tasks
+                    </th>
+                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Status
+                    </th>
+                    <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-border">
+                  {filteredTeam.map((member, index) => {
+                    const roleStyles = getRoleStyles(member.role);
+                    const RoleIcon = roleStyles.icon;
+                    const statusStyles = getStatusStyles(member.status);
+
+                    return (
+                      <motion.tr
+                        key={member.id}
+                        custom={index}
+                        variants={rowVariants}
+                        initial="hidden"
+                        animate="visible"
+                        onClick={() =>
+                          navigate(`/accountant/team/${member.id}`)
+                        }
+                        className="
+                          group
+                          cursor-pointer
+                          transition-colors
+                          hover:bg-background-soft
+                        "
+                      >
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`
+                                flex
+                                h-10
+                                w-10
+                                shrink-0
+                                items-center
+                                justify-center
+                                rounded-full
+                                text-[11px]
+                                font-bold
+                                text-text-white
+                                shadow-button
+                                ${member.avatarColor}
+                              `}
+                            >
+                              {member.initials}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-bold text-heading transition-colors group-hover:text-primary">
+                                {member.name}
+                              </p>
+                              <p className="mt-0.5 truncate text-[10px] text-text-secondary">
+                                {member.email}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="px-5 py-4">
+                          <span
+                            className={`
+                              inline-flex
+                              items-center
+                              gap-1.5
+                              rounded-full
+                              px-2.5
+                              py-1
+                              text-[10px]
+                              font-bold
+                              ${roleStyles.bg}
+                              ${roleStyles.text}
+                            `}
+                          >
+                            <RoleIcon
+                              className="h-3 w-3"
+                              strokeWidth={2.4}
+                            />
+                            {member.role}
+                          </span>
+                        </td>
+
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+                            <MapPin
+                              className="h-3.5 w-3.5"
+                              strokeWidth={2.2}
+                            />
+                            <span className="truncate">{member.location}</span>
+                          </div>
+                        </td>
+
+                        <td className="px-5 py-4 text-center">
+                          <span
+                            className="
+                              inline-flex
+                              items-center
+                              rounded-full
+                              bg-background-soft
+                              px-2.5
+                              py-1
+                              text-[11px]
+                              font-bold
+                              text-heading
+                            "
+                          >
+                            {member.clients}
+                          </span>
+                        </td>
+
+                        <td className="px-5 py-4 text-center">
+                          <span
+                            className="
+                              inline-flex
+                              items-center
+                              rounded-full
+                              bg-background-soft
+                              px-2.5
+                              py-1
+                              text-[11px]
+                              font-bold
+                              text-heading
+                            "
+                          >
+                            {member.activeTasks}
+                          </span>
+                        </td>
+
+                        <td className="px-5 py-4">
+                          <span
+                            className={`
+                              inline-flex
+                              items-center
+                              gap-1.5
+                              rounded-full
+                              px-2.5
+                              py-1
+                              text-[10px]
+                              font-bold
+                              ${statusStyles.bg}
+                              ${statusStyles.text}
+                            `}
+                          >
+                            <span
+                              className={`h-1.5 w-1.5 rounded-full ${statusStyles.dot}`}
+                            />
+                            {member.status}
+                          </span>
+                        </td>
+
+                        <td
+                          className="relative px-5 py-4 text-right"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="relative inline-flex items-center gap-1">
+                            <Link
+                              to={`/accountant/team/${member.id}`}
+                              className="
+                                inline-flex
+                                items-center
+                                gap-1
+                                rounded-lg
+                                border
+                                border-border
+                                bg-background
+                                px-3
+                                py-1.5
+                                text-[11px]
+                                font-semibold
+                                text-heading
+                                transition-colors
+                                duration-200
+                                hover:border-primary
+                                hover:bg-primary-light
+                                hover:text-primary
+                              "
+                            >
+                              <Eye className="h-3 w-3" strokeWidth={2.4} />
+                              <span>View</span>
+                            </Link>
+
+                            <motion.button
+                              type="button"
+                              onClick={() =>
+                                setOpenRowMenu(
+                                  openRowMenu === member.id
+                                    ? null
+                                    : member.id
+                                )
+                              }
+                              whileHover={
+                                shouldReduceMotion
+                                  ? undefined
+                                  : {
+                                      scale: 1.1,
+                                      transition: { duration: 0.15 },
+                                    }
+                              }
+                              whileTap={
+                                shouldReduceMotion
+                                  ? undefined
+                                  : { scale: 0.95 }
+                              }
+                              className="
+                                flex
+                                h-7
+                                w-7
+                                items-center
+                                justify-center
+                                rounded-lg
+                                text-text-secondary
+                                transition-colors
+                                hover:bg-primary-light
+                                hover:text-primary
+                              "
+                              aria-label="More actions"
+                            >
+                              <MoreVertical className="h-3.5 w-3.5" />
+                            </motion.button>
+
+                            <AnimatePresence>
+                              {openRowMenu === member.id && (
+                                <motion.div
+                                  initial={
+                                    shouldReduceMotion
+                                      ? false
+                                      : {
+                                          opacity: 0,
+                                          y: -6,
+                                          scale: 0.96,
+                                        }
+                                  }
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  exit={
+                                    shouldReduceMotion
+                                      ? { opacity: 0 }
+                                      : {
+                                          opacity: 0,
+                                          y: -4,
+                                          scale: 0.97,
+                                        }
+                                  }
+                                  transition={{
+                                    duration: 0.2,
+                                    ease: premiumEase,
+                                  }}
+                                  className="
+                                    absolute
+                                    right-0
+                                    top-full
+                                    z-20
+                                    mt-1
+                                    w-44
+                                    overflow-hidden
+                                    rounded-lg
+                                    border
+                                    border-border
+                                    bg-background
+                                    py-1
+                                    shadow-card-hover
+                                  "
+                                >
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Eye className="h-3.5 w-3.5" />
+                                    <span>View profile</span>
+                                  </button>
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Edit3 className="h-3.5 w-3.5" />
+                                    <span>Edit details</span>
+                                  </button>
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Send className="h-3.5 w-3.5" />
+                                    <span>Send message</span>
+                                  </button>
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Key className="h-3.5 w-3.5" />
+                                    <span>Reset password</span>
+                                  </button>
+                                  <div className="my-1 border-t border-border" />
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-danger transition-colors hover:bg-danger-light">
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    <span>Remove member</span>
+                                  </button>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {filteredTeam.length === 0 && (
+              <motion.div
+                initial={
+                  shouldReduceMotion ? false : { opacity: 0, y: 12 }
+                }
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: premiumEase }}
+                className="
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  px-5
+                  py-16
+                  text-center
+                "
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light">
+                  <Users className="h-7 w-7 text-primary" strokeWidth={2} />
+                </div>
+                <p className="mt-4 text-sm font-bold text-heading">
+                  No team members found
+                </p>
+                <p className="mt-1 max-w-xs text-xs text-text-secondary">
+                  {hasActiveFilters
+                    ? "Try adjusting your search or filters."
+                    : "Invite your first team member to get started."}
+                </p>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ======================================================
           WORKLOAD SUMMARY
       ====================================================== */}
-      <div className="overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
-        <div className="flex items-center gap-2 border-b border-[#DDEAE6] px-5 py-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E8F8F2]">
+      <motion.div
+        variants={fadeUpVariants}
+        className="
+          overflow-hidden
+          rounded-xl
+          border
+          border-border
+          bg-background
+          shadow-card
+        "
+      >
+        <div className="flex items-center gap-2 border-b border-border px-5 py-4">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-light">
             <BarChart3
-              className="h-4 w-4 text-[#087F5B]"
+              className="h-4 w-4 text-primary"
               strokeWidth={2.2}
             />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#09263A]">
+            <h3 className="text-sm font-bold text-heading">
               Team Workload
             </h3>
-            <p className="text-[10px] text-[#687B78]">
+            <p className="text-[10px] text-text-secondary">
               Active tasks per team member
             </p>
           </div>
@@ -1458,7 +2014,7 @@ const AccountantTeam = () => {
           {filteredTeam
             .filter((m) => m.status === "Active")
             .sort((a, b) => b.activeTasks - a.activeTasks)
-            .map((member) => {
+            .map((member, index) => {
               const maxTasks = Math.max(
                 ...team.map((m) => m.activeTasks),
                 1
@@ -1466,8 +2022,18 @@ const AccountantTeam = () => {
               const percentage = (member.activeTasks / maxTasks) * 100;
 
               return (
-                <div
+                <motion.div
                   key={member.id}
+                  initial={
+                    shouldReduceMotion ? false : { opacity: 0, y: 8 }
+                  }
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{
+                    delay: shouldReduceMotion ? 0 : index * 0.06,
+                    duration: 0.5,
+                    ease: premiumEase,
+                  }}
                   className="flex items-center gap-4"
                 >
                   <div
@@ -1481,7 +2047,8 @@ const AccountantTeam = () => {
                       rounded-full
                       text-[11px]
                       font-bold
-                      text-white
+                      text-text-white
+                      shadow-button
                       ${member.avatarColor}
                     `}
                   >
@@ -1491,59 +2058,136 @@ const AccountantTeam = () => {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="truncate text-xs font-bold text-[#09263A]">
+                        <p className="truncate text-xs font-bold text-heading">
                           {member.name}
                         </p>
-                        <p className="mt-0.5 text-[10px] text-[#687B78]">
+                        <p className="mt-0.5 text-[10px] text-text-secondary">
                           {member.title}
                         </p>
                       </div>
-                      <span className="shrink-0 text-xs font-bold text-[#09263A]">
+                      <span className="shrink-0 text-xs font-bold text-heading">
                         {member.activeTasks} tasks
                       </span>
                     </div>
 
-                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[#F1F3F5]">
-                      <div
-                        className="h-full rounded-full bg-[#087F5B] transition-all duration-500"
-                        style={{ width: `${percentage}%` }}
+                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-background-soft">
+                      <motion.div
+                        className="h-full rounded-full bg-primary"
+                        initial={
+                          shouldReduceMotion ? false : { width: 0 }
+                        }
+                        whileInView={{ width: `${percentage}%` }}
+                        viewport={{ once: true }}
+                        transition={{
+                          duration: 0.8,
+                          ease: premiumEase,
+                          delay: shouldReduceMotion
+                            ? 0
+                            : 0.2 + index * 0.06,
+                        }}
                       />
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           BOTTOM CTA BANNER
       ====================================================== */}
-      <div className="relative overflow-hidden rounded-xl border border-[#DDEAE6] bg-gradient-to-r from-[#E8F8F2] via-[#F5FCF9] to-white p-6 sm:p-7">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#087F5B] opacity-[0.06] blur-3xl" />
+      <motion.div
+        variants={fadeUpVariants}
+        className="
+          relative
+          overflow-hidden
+          rounded-xl
+          border
+          border-border
+          bg-gradient-to-r
+          from-primary-light
+          via-background-soft
+          to-background
+          p-6
+          sm:p-7
+        "
+      >
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -right-16
+            -top-16
+            h-48
+            w-48
+            rounded-full
+            bg-primary
+            opacity-[0.06]
+            blur-3xl
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.1, 1], opacity: [0.06, 0.12, 0.06] }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
 
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#087F5B]">
-              <UserPlus className="h-5 w-5 text-white" strokeWidth={2.2} />
-            </div>
+            <motion.div
+              className="
+                flex
+                h-11
+                w-11
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-primary
+                shadow-button
+              "
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : { opacity: 0, scale: 0.6, rotate: -12 }
+              }
+              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.5,
+                ease: [0.34, 1.56, 0.64, 1],
+              }}
+            >
+              <UserPlus
+                className="h-5 w-5 text-text-white"
+                strokeWidth={2.2}
+              />
+            </motion.div>
 
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#087F5B]">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
                 Grow your practice
               </p>
-              <h3 className="mt-1 text-base font-bold text-[#09263A]">
+              <h3 className="mt-1 text-base font-bold text-heading">
                 Invite team members in seconds
               </h3>
-              <p className="mt-1 text-xs leading-5 text-[#687B78]">
+              <p className="mt-1 text-xs leading-5 text-text-secondary">
                 Add accountants to your practice, assign them clients and
                 control what each member can access.
               </p>
             </div>
           </div>
 
-          <button
+          <motion.button
             type="button"
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
             className="
               inline-flex
               shrink-0
@@ -1552,27 +2196,25 @@ const AccountantTeam = () => {
               gap-2
               self-start
               rounded-lg
-              bg-[#087F5B]
+              bg-primary
               px-5
               py-2.5
               text-xs
               font-bold
-              text-white
-              shadow-sm
-              transition-all
+              text-text-white
+              shadow-button
+              transition-colors
               duration-200
-              hover:bg-[#005E45]
-              hover:-translate-y-0.5
-              hover:shadow-md
+              hover:bg-primary-hover
               sm:self-auto
             "
           >
             <UserPlus className="h-3.5 w-3.5" strokeWidth={2.6} />
             <span>Invite member</span>
-          </button>
+          </motion.button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

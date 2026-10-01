@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import AnnualAccountsHero from "../../../component/annual-accounts/AnnualAccountsHero.jsx";
 import AnnualAccountsTrust from "../../../component/annual-accounts/AnnualAccountsTrust.jsx";
@@ -10,8 +10,22 @@ import AnnualAccountsWhoIsItFor from "../../../component/annual-accounts/AnnualA
 import AnnualAccountsPricing from "../../../component/annual-accounts/AnnualAccountsPricing.jsx";
 import AnnualAccountsFAQ from "../../../component/annual-accounts/AnnualAccountsFAQ.jsx";
 import AnnualAccountsCTA from "../../../component/annual-accounts/AnnualAccountsCTA.jsx";
+import TaxPilotLoader from "../../../component/common/PageLoader.jsx";
 
 const AnnualAccounts = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <TaxPilotLoader />;
+  }
   return (
     <>
       <AnnualAccountsHero />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import MtdVatHero from "../../../component/mtd-vat/MtdVatHero.jsx";
 import MtdVatTrust from "../../../component/mtd-vat/MtdVatTrust.jsx";
@@ -10,8 +10,22 @@ import MtdVatWhoIsItFor from "../../../component/mtd-vat/MtdVatWhoIsItFor.jsx";
 import MtdVatPricing from "../../../component/mtd-vat/MtdVatPricing.jsx";
 import MtdVatFAQ from "../../../component/mtd-vat/MtdVatFAQ.jsx";
 import MtdVatCTA from "../../../component/mtd-vat/MtdVatCTA.jsx";
+import TaxPilotLoader from "../../../component/common/PageLoader.jsx";
 
 const MtdVat = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <TaxPilotLoader />;
+  }
   return (
     <>
       <MtdVatHero />

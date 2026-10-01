@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useReducedMotion, useInView } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Users,
@@ -9,8 +10,6 @@ import {
   ArrowRight,
   Building2,
   Mail,
-  Phone,
-  Calendar,
   FileText,
   AlertCircle,
   CheckCircle2,
@@ -18,21 +17,17 @@ import {
   MoreVertical,
   Eye,
   Edit3,
-  Trash2,
-  UserPlus,
+  Send,
   Download,
   RefreshCw,
-  TrendingUp,
-  Briefcase,
-  Hash,
-  Check,
-  Send,
+  UserPlus,
   Archive,
-  Star,
 } from "lucide-react";
 
 const AccountantClients = () => {
   const navigate = useNavigate();
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
 
   /* ============================================================
      STATE
@@ -46,6 +41,9 @@ const AccountantClients = () => {
   const [openRowMenu, setOpenRowMenu] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const tableRef = useRef(null);
+  const isTableInView = useInView(tableRef, { once: true, amount: 0.1 });
+
   /* ============================================================
      STATS
   ============================================================ */
@@ -57,8 +55,8 @@ const AccountantClients = () => {
       value: 42,
       change: "+3 this month",
       icon: Users,
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
+      iconBg: "bg-primary-light",
+      iconColor: "text-primary",
     },
     {
       id: "active",
@@ -66,8 +64,8 @@ const AccountantClients = () => {
       value: 38,
       change: "90% of total",
       icon: CheckCircle2,
-      iconBg: "bg-emerald-100",
-      iconColor: "text-emerald-600",
+      iconBg: "bg-success-light",
+      iconColor: "text-success",
     },
     {
       id: "onboarding",
@@ -75,8 +73,8 @@ const AccountantClients = () => {
       value: 3,
       change: "In progress",
       icon: Clock3,
-      iconBg: "bg-amber-100",
-      iconColor: "text-amber-600",
+      iconBg: "bg-warning-light",
+      iconColor: "text-warning",
     },
     {
       id: "overdue",
@@ -84,8 +82,8 @@ const AccountantClients = () => {
       value: 4,
       change: "Requires attention",
       icon: AlertCircle,
-      iconBg: "bg-rose-100",
-      iconColor: "text-rose-500",
+      iconBg: "bg-danger-light",
+      iconColor: "text-danger",
     },
   ];
 
@@ -109,7 +107,7 @@ const AccountantClients = () => {
       joinedDate: "12 Mar 2024",
       lastActivity: "2 hours ago",
       initials: "IM",
-      avatarColor: "bg-[#087F5B]",
+      avatarColor: "bg-primary",
     },
     {
       id: 2,
@@ -126,7 +124,7 @@ const AccountantClients = () => {
       joinedDate: "05 Aug 2024",
       lastActivity: "1 day ago",
       initials: "GT",
-      avatarColor: "bg-emerald-500",
+      avatarColor: "bg-success",
     },
     {
       id: 3,
@@ -143,7 +141,7 @@ const AccountantClients = () => {
       joinedDate: "20 Sep 2026",
       lastActivity: "3 hours ago",
       initials: "BI",
-      avatarColor: "bg-amber-500",
+      avatarColor: "bg-warning",
     },
     {
       id: 4,
@@ -160,7 +158,7 @@ const AccountantClients = () => {
       joinedDate: "18 Jan 2024",
       lastActivity: "5 hours ago",
       initials: "SF",
-      avatarColor: "bg-blue-500",
+      avatarColor: "bg-sky",
     },
     {
       id: 5,
@@ -177,7 +175,7 @@ const AccountantClients = () => {
       joinedDate: "08 Nov 2023",
       lastActivity: "Yesterday",
       initials: "DS",
-      avatarColor: "bg-purple-500",
+      avatarColor: "bg-secondary",
     },
     {
       id: 6,
@@ -194,7 +192,7 @@ const AccountantClients = () => {
       joinedDate: "14 Jun 2024",
       lastActivity: "2 days ago",
       initials: "OV",
-      avatarColor: "bg-cyan-500",
+      avatarColor: "bg-sky",
     },
     {
       id: 7,
@@ -211,7 +209,7 @@ const AccountantClients = () => {
       joinedDate: "22 Feb 2024",
       lastActivity: "3 days ago",
       initials: "ST",
-      avatarColor: "bg-rose-500",
+      avatarColor: "bg-danger",
     },
     {
       id: 8,
@@ -228,7 +226,7 @@ const AccountantClients = () => {
       joinedDate: "10 Apr 2024",
       lastActivity: "1 week ago",
       initials: "NT",
-      avatarColor: "bg-indigo-500",
+      avatarColor: "bg-primary",
     },
   ]);
 
@@ -298,23 +296,93 @@ const AccountantClients = () => {
     switch (status) {
       case "Active":
         return {
-          bg: "bg-emerald-100",
-          text: "text-emerald-700",
-          dot: "bg-emerald-500",
+          bg: "bg-success-light",
+          text: "text-success",
+          dot: "bg-success",
         };
       case "Onboarding":
         return {
-          bg: "bg-amber-100",
-          text: "text-amber-700",
-          dot: "bg-amber-500",
+          bg: "bg-warning-light",
+          text: "text-warning",
+          dot: "bg-warning",
         };
       default:
         return {
-          bg: "bg-gray-100",
-          text: "text-gray-600",
-          dot: "bg-gray-400",
+          bg: "bg-background-soft",
+          text: "text-text-secondary",
+          dot: "bg-text-secondary",
         };
     }
+  };
+
+  /* ============================================================
+     ANIMATION VARIANTS
+  ============================================================ */
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.06,
+        delayChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
+
+  const fadeUpVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.55, ease: premiumEase },
+    },
+  };
+
+  const statCardVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 16, scale: 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.5, ease: premiumEase },
+    },
+  };
+
+  /* Row reveal — staggered one by one with 0.05s delay */
+  const rowVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 },
+    visible: (index) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.45,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.05,
+      },
+    }),
+  };
+
+  const dropdownVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: -8, scale: 0.96 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.22, ease: premiumEase },
+    },
+    exit: shouldReduceMotion
+      ? { opacity: 0 }
+      : {
+          opacity: 0,
+          y: -6,
+          scale: 0.97,
+          transition: { duration: 0.15 },
+        },
   };
 
   /* ============================================================
@@ -322,42 +390,60 @@ const AccountantClients = () => {
   ============================================================ */
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* ======================================================
           PAGE HEADER
       ====================================================== */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <motion.div
+        variants={fadeUpVariants}
+        className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"
+      >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#09263A] sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-heading sm:text-3xl">
             Clients
           </h1>
-          <p className="mt-1 text-sm text-[#687B78]">
+          <p className="mt-1 text-sm text-text-secondary">
             Manage your client portfolio and relationships
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <button
+          <motion.button
             type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
+            whileHover={
+              shouldReduceMotion || isRefreshing
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={
+              shouldReduceMotion || isRefreshing
+                ? undefined
+                : { scale: 0.98 }
+            }
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-[#09263A]
-              transition-all
+              text-heading
+              transition-colors
               duration-200
-              hover:border-[#087F5B]
-              hover:text-[#087F5B]
+              hover:border-primary
+              hover:text-primary
               disabled:cursor-not-allowed
               disabled:opacity-60
             "
@@ -369,59 +455,72 @@ const AccountantClients = () => {
             <span className="hidden sm:inline">
               {isRefreshing ? "Refreshing..." : "Refresh"}
             </span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-[#09263A]
-              transition-all
+              text-heading
+              transition-colors
               duration-200
-              hover:border-[#087F5B]
-              hover:text-[#087F5B]
+              hover:border-primary
+              hover:text-primary
             "
           >
             <Download className="h-4 w-4" strokeWidth={2.2} />
             <span className="hidden sm:inline">Export</span>
-          </button>
+          </motion.button>
 
-          <Link
-            to="/accountant/clients/new"
-            className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-lg
-              bg-[#087F5B]
-              px-4
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-sm
-              transition-all
-              duration-200
-              hover:bg-[#005E45]
-              hover:-translate-y-0.5
-              hover:shadow-md
-            "
+          <motion.div
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
           >
-            <Plus className="h-4 w-4" strokeWidth={2.4} />
-            <span>Add Client</span>
-          </Link>
+            <Link
+              to="/accountant/clients/new"
+              className="
+                inline-flex
+                items-center
+                gap-2
+                rounded-lg
+                bg-primary
+                px-4
+                py-2.5
+                text-sm
+                font-semibold
+                text-text-white
+                shadow-button
+                transition-colors
+                duration-200
+                hover:bg-primary-hover
+              "
+            >
+              <Plus className="h-4 w-4" strokeWidth={2.4} />
+              <span>Add Client</span>
+            </Link>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           STATS CARDS
@@ -430,33 +529,39 @@ const AccountantClients = () => {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div
+            <motion.div
               key={stat.id}
+              variants={statCardVariants}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -3, transition: { duration: 0.25 } }
+              }
               className="
                 group
                 relative
                 overflow-hidden
                 rounded-xl
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 p-5
-                shadow-[0_3px_14px_rgba(16,42,67,0.035)]
-                transition-all
+                shadow-card
+                transition-[border-color,box-shadow]
                 duration-300
-                hover:-translate-y-0.5
-                hover:shadow-[0_10px_25px_rgba(16,42,67,0.08)]
+                hover:border-primary/20
+                hover:shadow-card-hover
               "
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     {stat.label}
                   </p>
-                  <p className="mt-2 text-2xl font-bold tracking-tight text-[#09263A] sm:text-3xl">
+                  <p className="mt-2 text-2xl font-bold tracking-tight text-heading sm:text-3xl">
                     {stat.value}
                   </p>
-                  <p className="mt-1.5 text-[10px] font-semibold text-[#687B78]">
+                  <p className="mt-1.5 text-[10px] font-semibold text-text-secondary">
                     {stat.change}
                   </p>
                 </div>
@@ -480,7 +585,7 @@ const AccountantClients = () => {
                   />
                 </div>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
@@ -488,11 +593,14 @@ const AccountantClients = () => {
       {/* ======================================================
           FILTERS BAR
       ====================================================== */}
-      <div className="rounded-xl border border-[#DDEAE6] bg-white p-4 shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
+      <motion.div
+        variants={fadeUpVariants}
+        className="rounded-xl border border-border bg-background p-4 shadow-card"
+      >
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           {/* Search */}
           <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#687B78]" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
             <input
               type="text"
               value={search}
@@ -502,33 +610,39 @@ const AccountantClients = () => {
                 w-full
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-[#F5FCF9]
+                border-border
+                bg-background-soft
                 py-2.5
                 pl-10
                 pr-4
                 text-sm
-                text-[#09263A]
+                text-heading
                 outline-none
                 transition-all
                 duration-200
-                placeholder:text-[#687B78]
-                focus:border-[#087F5B]
-                focus:bg-white
+                placeholder:text-text-secondary
+                focus:border-primary
+                focus:bg-background
                 focus:ring-2
-                focus:ring-[#087F5B]/10
+                focus:ring-primary/10
               "
             />
           </div>
 
           {/* Status filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowStatusDropdown((prev) => !prev);
                 setShowTypeDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -537,17 +651,17 @@ const AccountantClients = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
@@ -558,60 +672,98 @@ const AccountantClients = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showStatusDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showStatusDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-48 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {statusOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setStatusFilter(option.value);
-                      setShowStatusDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        statusFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
+            <AnimatePresence>
+              {showStatusDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-48
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {statusOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      initial={
+                        shouldReduceMotion
+                          ? false
+                          : { opacity: 0, x: -6 }
                       }
-                    `}
-                  >
-                    <span>{option.label}</span>
-                    {statusFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        delay: shouldReduceMotion ? 0 : index * 0.04,
+                        duration: 0.3,
+                        ease: premiumEase,
+                      }}
+                      onClick={() => {
+                        setStatusFilter(option.value);
+                        setShowStatusDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          statusFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span>{option.label}</span>
+                      {statusFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Type filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowTypeDropdown((prev) => !prev);
                 setShowStatusDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -620,17 +772,17 @@ const AccountantClients = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
@@ -641,100 +793,155 @@ const AccountantClients = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showTypeDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showTypeDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {typeOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setTypeFilter(option.value);
-                      setShowTypeDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        typeFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
+            <AnimatePresence>
+              {showTypeDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-56
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {typeOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      initial={
+                        shouldReduceMotion
+                          ? false
+                          : { opacity: 0, x: -6 }
                       }
-                    `}
-                  >
-                    <span>{option.label}</span>
-                    {typeFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        delay: shouldReduceMotion ? 0 : index * 0.04,
+                        duration: 0.3,
+                        ease: premiumEase,
+                      }}
+                      onClick={() => {
+                        setTypeFilter(option.value);
+                        setShowTypeDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          typeFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span>{option.label}</span>
+                      {typeFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Clear filters */}
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-lg
-                border
-                border-[#DDEAE6]
-                bg-white
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-[#687B78]
-                transition-all
-                duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
-              "
-            >
-              <Filter className="h-3.5 w-3.5" strokeWidth={2.2} />
-              <span>Clear</span>
-            </button>
-          )}
+          <AnimatePresence>
+            {hasActiveFilters && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                type="button"
+                onClick={clearFilters}
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -1, transition: { duration: 0.2 } }
+                }
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  px-4
+                  py-2.5
+                  text-sm
+                  font-semibold
+                  text-text-secondary
+                  transition-colors
+                  duration-200
+                  hover:border-primary
+                  hover:text-primary
+                "
+              >
+                <Filter className="h-3.5 w-3.5" strokeWidth={2.2} />
+                <span>Clear</span>
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           CLIENTS TABLE
       ====================================================== */}
-      <div className="overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
+      <motion.div
+        ref={tableRef}
+        variants={fadeUpVariants}
+        className="
+          overflow-hidden
+          rounded-xl
+          border
+          border-border
+          bg-background
+          shadow-card
+        "
+      >
         {/* Table header info */}
-        <div className="flex flex-col gap-2 border-b border-[#DDEAE6] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-[#087F5B]" strokeWidth={2.2} />
-            <h2 className="text-sm font-bold text-[#09263A]">
+            <Users className="h-4 w-4 text-primary" strokeWidth={2.2} />
+            <h2 className="text-sm font-bold text-heading">
               All Clients
             </h2>
-            <span className="rounded-full bg-[#E8F8F2] px-2 py-0.5 text-[10px] font-bold text-[#087F5B]">
+            <span className="rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-bold text-primary">
               {filteredClients.length}
             </span>
           </div>
-          <p className="text-[11px] text-[#687B78]">
+          <p className="text-[11px] text-text-secondary">
             Click a client to view details
           </p>
         </div>
@@ -743,40 +950,49 @@ const AccountantClients = () => {
         <div className="hidden overflow-x-auto lg:block">
           <table className="w-full min-w-[1000px]">
             <thead>
-              <tr className="border-b border-[#DDEAE6] bg-[#F5FCF9]">
-                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+              <tr className="border-b border-border bg-background-soft">
+                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Client
                 </th>
-                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Contact
                 </th>
-                <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Companies
                 </th>
-                <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Open
                 </th>
-                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Status
                 </th>
-                <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Actions
                 </th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-[#DDEAE6]">
-              {filteredClients.map((client) => {
+            <tbody className="divide-y divide-border">
+              {filteredClients.map((client, index) => {
                 const statusStyles = getStatusStyles(client.status);
                 const hasOverdue = client.overdueFilings > 0;
 
                 return (
-                  <tr
+                  <motion.tr
                     key={client.id}
+                    custom={index}
+                    variants={rowVariants}
+                    initial="hidden"
+                    animate={isTableInView ? "visible" : "hidden"}
                     onClick={() =>
                       navigate(`/accountant/clients/${client.id}`)
                     }
-                    className="group cursor-pointer transition-colors hover:bg-[#F5FCF9]"
+                    className="
+                      group
+                      cursor-pointer
+                      transition-colors
+                      hover:bg-background-soft
+                    "
                   >
                     {/* Client */}
                     <td className="px-5 py-4">
@@ -792,17 +1008,18 @@ const AccountantClients = () => {
                             rounded-full
                             text-[11px]
                             font-bold
-                            text-white
+                            text-text-white
+                            shadow-button
                             ${client.avatarColor}
                           `}
                         >
                           {client.initials}
                         </div>
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-bold text-[#09263A] transition-colors group-hover:text-[#087F5B]">
+                          <p className="truncate text-sm font-bold text-heading transition-colors group-hover:text-primary">
                             {client.clientName}
                           </p>
-                          <p className="mt-0.5 font-mono text-[10px] text-[#687B78]">
+                          <p className="mt-0.5 font-mono text-[10px] text-text-secondary">
                             #{client.companyNumber}
                           </p>
                         </div>
@@ -812,10 +1029,10 @@ const AccountantClients = () => {
                     {/* Contact */}
                     <td className="px-5 py-4">
                       <div className="min-w-0">
-                        <p className="truncate text-xs font-semibold text-[#09263A]">
+                        <p className="truncate text-xs font-semibold text-heading">
                           {client.contactPerson}
                         </p>
-                        <p className="mt-0.5 truncate text-[10px] text-[#687B78]">
+                        <p className="mt-0.5 truncate text-[10px] text-text-secondary">
                           {client.email}
                         </p>
                       </div>
@@ -823,9 +1040,9 @@ const AccountantClients = () => {
 
                     {/* Companies */}
                     <td className="px-5 py-4 text-center">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[#F5FCF9] px-2.5 py-1 text-[11px] font-bold text-[#09263A]">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-background-soft px-2.5 py-1 text-[11px] font-bold text-heading">
                         <Building2
-                          className="h-3 w-3 text-[#687B78]"
+                          className="h-3 w-3 text-text-secondary"
                           strokeWidth={2.4}
                         />
                         {client.companiesCount}
@@ -847,8 +1064,8 @@ const AccountantClients = () => {
                             font-bold
                             ${
                               hasOverdue
-                                ? "bg-rose-100 text-rose-700"
-                                : "bg-[#F5FCF9] text-[#09263A]"
+                                ? "bg-danger-light text-danger"
+                                : "bg-background-soft text-heading"
                             }
                           `}
                         >
@@ -866,7 +1083,7 @@ const AccountantClients = () => {
                           {client.openFilings}
                         </span>
                         {hasOverdue && (
-                          <span className="text-[9px] font-bold uppercase tracking-wider text-rose-600">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-danger">
                             {client.overdueFilings} overdue
                           </span>
                         )}
@@ -910,30 +1127,38 @@ const AccountantClients = () => {
                             gap-1
                             rounded-lg
                             border
-                            border-[#DDEAE6]
-                            bg-white
+                            border-border
+                            bg-background
                             px-3
                             py-1.5
                             text-[11px]
                             font-semibold
-                            text-[#09263A]
-                            transition-all
+                            text-heading
+                            transition-colors
                             duration-200
-                            hover:border-[#087F5B]
-                            hover:bg-[#E8F8F2]
-                            hover:text-[#087F5B]
+                            hover:border-primary
+                            hover:bg-primary-light
+                            hover:text-primary
                           "
                         >
                           <Eye className="h-3 w-3" strokeWidth={2.4} />
                           <span>View</span>
                         </Link>
 
-                        <button
+                        <motion.button
                           type="button"
                           onClick={() =>
                             setOpenRowMenu(
                               openRowMenu === client.id ? null : client.id
                             )
+                          }
+                          whileHover={
+                            shouldReduceMotion
+                              ? undefined
+                              : { scale: 1.1, transition: { duration: 0.15 } }
+                          }
+                          whileTap={
+                            shouldReduceMotion ? undefined : { scale: 0.95 }
                           }
                           className="
                             flex
@@ -942,59 +1167,92 @@ const AccountantClients = () => {
                             items-center
                             justify-center
                             rounded-lg
-                            text-[#687B78]
+                            text-text-secondary
                             transition-colors
-                            hover:bg-[#E8F8F2]
-                            hover:text-[#087F5B]
+                            hover:bg-primary-light
+                            hover:text-primary
                           "
                           aria-label="More actions"
                         >
                           <MoreVertical className="h-3.5 w-3.5" />
-                        </button>
+                        </motion.button>
 
-                        {openRowMenu === client.id && (
-                          <div className="absolute right-0 top-full z-20 mt-1 w-48 overflow-hidden rounded-lg border border-[#DDEAE6] bg-white py-1 shadow-2xl">
-                            <button
-                              type="button"
-                              className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]"
+                        <AnimatePresence>
+                          {openRowMenu === client.id && (
+                            <motion.div
+                              initial={
+                                shouldReduceMotion
+                                  ? false
+                                  : { opacity: 0, y: -6, scale: 0.96 }
+                              }
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={
+                                shouldReduceMotion
+                                  ? { opacity: 0 }
+                                  : { opacity: 0, y: -4, scale: 0.97 }
+                              }
+                              transition={{
+                                duration: 0.2,
+                                ease: premiumEase,
+                              }}
+                              className="
+                                absolute
+                                right-0
+                                top-full
+                                z-20
+                                mt-1
+                                w-48
+                                overflow-hidden
+                                rounded-lg
+                                border
+                                border-border
+                                bg-background
+                                py-1
+                                shadow-card-hover
+                              "
                             >
-                              <Eye className="h-3.5 w-3.5" />
-                              <span>View details</span>
-                            </button>
-                            <button
-                              type="button"
-                              className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]"
-                            >
-                              <Edit3 className="h-3.5 w-3.5" />
-                              <span>Edit client</span>
-                            </button>
-                            <button
-                              type="button"
-                              className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]"
-                            >
-                              <Send className="h-3.5 w-3.5" />
-                              <span>Send message</span>
-                            </button>
-                            <button
-                              type="button"
-                              className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]"
-                            >
-                              <FileText className="h-3.5 w-3.5" />
-                              <span>Start filing</span>
-                            </button>
-                            <div className="my-1 border-t border-[#DDEAE6]" />
-                            <button
-                              type="button"
-                              className="flex w-full items-center gap-2 px-3 py-2 text-xs text-rose-600 transition-colors hover:bg-rose-50"
-                            >
-                              <Archive className="h-3.5 w-3.5" />
-                              <span>Archive client</span>
-                            </button>
-                          </div>
-                        )}
+                              <button
+                                type="button"
+                                className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary"
+                              >
+                                <Eye className="h-3.5 w-3.5" />
+                                <span>View details</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary"
+                              >
+                                <Edit3 className="h-3.5 w-3.5" />
+                                <span>Edit client</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary"
+                              >
+                                <Send className="h-3.5 w-3.5" />
+                                <span>Send message</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary"
+                              >
+                                <FileText className="h-3.5 w-3.5" />
+                                <span>Start filing</span>
+                              </button>
+                              <div className="my-1 border-t border-border" />
+                              <button
+                                type="button"
+                                className="flex w-full items-center gap-2 px-3 py-2 text-xs text-danger transition-colors hover:bg-danger-light"
+                              >
+                                <Archive className="h-3.5 w-3.5" />
+                                <span>Archive client</span>
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 );
               })}
             </tbody>
@@ -1002,16 +1260,27 @@ const AccountantClients = () => {
         </div>
 
         {/* Mobile Card List */}
-        <div className="divide-y divide-[#DDEAE6] lg:hidden">
-          {filteredClients.map((client) => {
+        <div className="divide-y divide-border lg:hidden">
+          {filteredClients.map((client, index) => {
             const statusStyles = getStatusStyles(client.status);
             const hasOverdue = client.overdueFilings > 0;
 
             return (
-              <div
+              <motion.div
                 key={client.id}
-                onClick={() => navigate(`/accountant/clients/${client.id}`)}
-                className="cursor-pointer p-4 transition-colors hover:bg-[#F5FCF9]"
+                custom={index}
+                variants={rowVariants}
+                initial="hidden"
+                animate={isTableInView ? "visible" : "hidden"}
+                onClick={() =>
+                  navigate(`/accountant/clients/${client.id}`)
+                }
+                className="
+                  cursor-pointer
+                  p-4
+                  transition-colors
+                  hover:bg-background-soft
+                "
               >
                 <div className="flex items-start gap-3">
                   <div
@@ -1025,7 +1294,8 @@ const AccountantClients = () => {
                       rounded-full
                       text-xs
                       font-bold
-                      text-white
+                      text-text-white
+                      shadow-button
                       ${client.avatarColor}
                     `}
                   >
@@ -1035,10 +1305,10 @@ const AccountantClients = () => {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-bold text-[#09263A]">
+                        <p className="truncate text-sm font-bold text-heading">
                           {client.clientName}
                         </p>
-                        <p className="mt-0.5 font-mono text-[10px] text-[#687B78]">
+                        <p className="mt-0.5 font-mono text-[10px] text-text-secondary">
                           #{client.companyNumber}
                         </p>
                       </div>
@@ -1058,33 +1328,35 @@ const AccountantClients = () => {
                       </span>
                     </div>
 
-                    <div className="mt-2 flex items-center gap-2 text-[11px] text-[#687B78]">
+                    <div className="mt-2 flex items-center gap-2 text-[11px] text-text-secondary">
                       <Mail className="h-3 w-3" />
                       <span className="truncate">{client.email}</span>
                     </div>
 
-                    <div className="mt-3 grid grid-cols-3 gap-2 rounded-lg bg-[#F5FCF9] px-3 py-2">
+                    <div className="mt-3 grid grid-cols-3 gap-2 rounded-lg bg-background-soft px-3 py-2">
                       <div>
-                        <p className="text-[10px] text-[#687B78]">
+                        <p className="text-[10px] text-text-secondary">
                           Companies
                         </p>
-                        <p className="mt-0.5 text-[11px] font-bold text-[#09263A]">
+                        <p className="mt-0.5 text-[11px] font-bold text-heading">
                           {client.companiesCount}
                         </p>
                       </div>
                       <div className="text-center">
-                        <p className="text-[10px] text-[#687B78]">Open</p>
-                        <p className="mt-0.5 text-[11px] font-bold text-[#09263A]">
+                        <p className="text-[10px] text-text-secondary">
+                          Open
+                        </p>
+                        <p className="mt-0.5 text-[11px] font-bold text-heading">
                           {client.openFilings}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] text-[#687B78]">
+                        <p className="text-[10px] text-text-secondary">
                           Overdue
                         </p>
                         <p
                           className={`mt-0.5 text-[11px] font-bold ${
-                            hasOverdue ? "text-rose-600" : "text-[#09263A]"
+                            hasOverdue ? "text-danger" : "text-heading"
                           }`}
                         >
                           {client.overdueFilings}
@@ -1093,21 +1365,26 @@ const AccountantClients = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
 
         {/* Empty state */}
         {filteredClients.length === 0 && (
-          <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F8F2]">
-              <Users className="h-7 w-7 text-[#087F5B]" strokeWidth={2} />
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: premiumEase }}
+            className="flex flex-col items-center justify-center px-5 py-16 text-center"
+          >
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light">
+              <Users className="h-7 w-7 text-primary" strokeWidth={2} />
             </div>
-            <p className="mt-4 text-sm font-bold text-[#09263A]">
+            <p className="mt-4 text-sm font-bold text-heading">
               No clients found
             </p>
-            <p className="mt-1 max-w-xs text-xs text-[#687B78]">
+            <p className="mt-1 max-w-xs text-xs text-text-secondary">
               {hasActiveFilters
                 ? "Try adjusting your search or filters."
                 : "Get started by adding your first client."}
@@ -1123,84 +1400,149 @@ const AccountantClients = () => {
                   gap-2
                   rounded-lg
                   border
-                  border-[#DDEAE6]
-                  bg-white
+                  border-border
+                  bg-background
                   px-4
                   py-2
                   text-xs
                   font-semibold
-                  text-[#09263A]
-                  transition-all
+                  text-heading
+                  transition-colors
                   duration-200
-                  hover:border-[#087F5B]
-                  hover:text-[#087F5B]
+                  hover:border-primary
+                  hover:text-primary
                 "
               >
                 <Filter className="h-3 w-3" strokeWidth={2.4} />
                 <span>Clear filters</span>
               </button>
             )}
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
 
       {/* ======================================================
           BOTTOM CTA BANNER
       ====================================================== */}
-      <div className="relative overflow-hidden rounded-xl border border-[#DDEAE6] bg-gradient-to-r from-[#E8F8F2] via-[#F5FCF9] to-white p-6 sm:p-7">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#087F5B] opacity-[0.06] blur-3xl" />
+      <motion.div
+        variants={fadeUpVariants}
+        className="
+          relative
+          overflow-hidden
+          rounded-xl
+          border
+          border-border
+          bg-gradient-to-r
+          from-primary-light
+          via-background-soft
+          to-background
+          p-6
+          sm:p-7
+        "
+      >
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -right-16
+            -top-16
+            h-48
+            w-48
+            rounded-full
+            bg-primary
+            opacity-[0.06]
+            blur-3xl
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.1, 1], opacity: [0.06, 0.12, 0.06] }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
 
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#087F5B]">
-              <UserPlus className="h-5 w-5 text-white" strokeWidth={2.2} />
-            </div>
+            <motion.div
+              className="
+                flex
+                h-11
+                w-11
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-primary
+                shadow-button
+              "
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : { opacity: 0, scale: 0.6, rotate: -12 }
+              }
+              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.5,
+                ease: [0.34, 1.56, 0.64, 1],
+              }}
+            >
+              <UserPlus
+                className="h-5 w-5 text-text-white"
+                strokeWidth={2.2}
+              />
+            </motion.div>
 
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#087F5B]">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
                 Grow your practice
               </p>
-              <h3 className="mt-1 text-base font-bold text-[#09263A]">
+              <h3 className="mt-1 text-base font-bold text-heading">
                 Onboard a new client in minutes
               </h3>
-              <p className="mt-1 text-xs leading-5 text-[#687B78]">
+              <p className="mt-1 text-xs leading-5 text-text-secondary">
                 Add client details, link companies and set up filing
                 permissions — all in one place.
               </p>
             </div>
           </div>
 
-          <Link
-            to="/accountant/clients/new"
-            className="
-              inline-flex
-              shrink-0
-              items-center
-              justify-center
-              gap-2
-              self-start
-              rounded-lg
-              bg-[#087F5B]
-              px-5
-              py-2.5
-              text-xs
-              font-bold
-              text-white
-              shadow-sm
-              transition-all
-              duration-200
-              hover:bg-[#005E45]
-              hover:-translate-y-0.5
-              hover:shadow-md
-              sm:self-auto
-            "
+          <motion.div
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+            className="shrink-0 self-start sm:self-auto"
           >
-            <Plus className="h-3.5 w-3.5" strokeWidth={2.6} />
-            <span>Add new client</span>
-          </Link>
+            <Link
+              to="/accountant/clients/new"
+              className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                rounded-lg
+                bg-primary
+                px-5
+                py-2.5
+                text-xs
+                font-bold
+                text-text-white
+                shadow-button
+                transition-colors
+                duration-200
+                hover:bg-primary-hover
+              "
+            >
+              <Plus className="h-3.5 w-3.5" strokeWidth={2.6} />
+              <span>Add new client</span>
+            </Link>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

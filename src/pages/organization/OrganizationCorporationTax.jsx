@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import {
   Search,
@@ -28,8 +29,6 @@ import {
   User,
   UserCheck,
   Send,
-  Plus,
-  Eye,
   Briefcase,
 } from "lucide-react";
 
@@ -39,9 +38,11 @@ import {
 
 const OrganizationCorporationTax = () => {
   const navigate = useNavigate();
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
 
   /* ============================================================
-     STATE
+     STATE (unchanged)
   ============================================================ */
 
   const [search, setSearch] = useState("");
@@ -57,23 +58,15 @@ const OrganizationCorporationTax = () => {
     confirmation: true,
   });
 
-  // Modal state
   const [activeModal, setActiveModal] = useState(null);
-  // Values: null | "sent-status" | "pause-reminders" | "who-sent" | "hmrc-request" | "remove-period"
-
-  // Years sidebar
   const [showYearsSidebar, setShowYearsSidebar] = useState(false);
-
-  // Toast
   const [toast, setToast] = useState(null);
-
-  // Simulated action state (replace with API later)
   const [actionState, setActionState] = useState({});
 
   const rowMenuRef = useRef(null);
 
   /* ============================================================
-     COMPANY DATA
+     COMPANY DATA (unchanged)
   ============================================================ */
 
   const [companies, setCompanies] = useState([
@@ -262,7 +255,7 @@ const OrganizationCorporationTax = () => {
   ]);
 
   /* ============================================================
-     YEARS DATA (for View All Years sidebar)
+     YEARS DATA (unchanged)
   ============================================================ */
 
   const years = [
@@ -290,7 +283,7 @@ const OrganizationCorporationTax = () => {
   ];
 
   /* ============================================================
-     FILTERED COMPANIES
+     FILTERED COMPANIES (unchanged)
   ============================================================ */
 
   const filteredCompanies = useMemo(() => {
@@ -307,7 +300,7 @@ const OrganizationCorporationTax = () => {
   }, [companies, search, statusFilter, periodFilter]);
 
   /* ============================================================
-     STATS
+     STATS (unchanged)
   ============================================================ */
 
   const stats = useMemo(() => {
@@ -322,38 +315,38 @@ const OrganizationCorporationTax = () => {
         label: "Total Companies",
         value: total,
         icon: Building2,
-        iconBg: "bg-blue-100",
-        iconColor: "text-blue-600",
+        iconBg: "bg-primary-light",
+        iconColor: "text-primary",
       },
       {
         id: "ready",
         label: "Ready to File",
         value: readyToFile,
         icon: FileCheck2,
-        iconBg: "bg-emerald-100",
-        iconColor: "text-emerald-600",
+        iconBg: "bg-success-light",
+        iconColor: "text-success",
       },
       {
         id: "overdue",
         label: "Overdue",
         value: overdue,
         icon: AlertCircle,
-        iconBg: "bg-rose-100",
-        iconColor: "text-rose-500",
+        iconBg: "bg-danger-light",
+        iconColor: "text-danger",
       },
       {
         id: "early",
         label: "Too Early",
         value: tooEarly,
         icon: Clock3,
-        iconBg: "bg-amber-100",
-        iconColor: "text-amber-600",
+        iconBg: "bg-warning-light",
+        iconColor: "text-warning",
       },
     ];
   }, [companies]);
 
   /* ============================================================
-     CLOSE DROPDOWNS WHEN CLICKING OUTSIDE
+     CLOSE DROPDOWNS (unchanged)
   ============================================================ */
 
   useEffect(() => {
@@ -367,7 +360,7 @@ const OrganizationCorporationTax = () => {
   }, []);
 
   /* ============================================================
-     TOAST HELPER
+     TOAST TIMER (unchanged)
   ============================================================ */
 
   useEffect(() => {
@@ -378,7 +371,7 @@ const OrganizationCorporationTax = () => {
   }, [toast]);
 
   /* ============================================================
-     HANDLERS
+     HANDLERS (unchanged)
   ============================================================ */
 
   const openCompanyDrawer = (company) => {
@@ -402,10 +395,6 @@ const OrganizationCorporationTax = () => {
   const toggleReminder = (key) => {
     setReminders((prev) => ({ ...prev, [key]: !prev[key] }));
   };
-
-  /* ============================================================
-     MODAL HANDLERS
-  ============================================================ */
 
   const closeModal = () => setActiveModal(null);
 
@@ -470,16 +459,11 @@ const OrganizationCorporationTax = () => {
     setSelectedCompany(null);
   };
 
-  /* ============================================================
-     ROW ACTION HANDLER
-  ============================================================ */
-
   const handleRowAction = (action, company) => {
     setOpenRowMenu(null);
 
     switch (action) {
       case "ct600":
-        // Real page navigation
         navigate(
           `/organization/products/corporation-tax/ct600/${company.companyNumber}`,
         );
@@ -517,65 +501,161 @@ const OrganizationCorporationTax = () => {
     search || statusFilter !== "All statuses" || periodFilter !== "All periods";
 
   /* ============================================================
+     ANIMATION VARIANTS
+  ============================================================ */
+
+  const pageContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.06,
+        delayChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
+
+  const fadeUpVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.55, ease: premiumEase },
+    },
+  };
+
+  const statCardVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 16, scale: 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.5, ease: premiumEase },
+    },
+  };
+
+  const rowVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 8 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4, ease: premiumEase },
+    },
+  };
+
+  /* ============================================================
      RENDER
   ============================================================ */
 
   return (
-    <div className="relative min-h-full bg-[#F5FCF9]">
-      <div className="mx-auto max-w-7xl px-5 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <div className="relative min-h-full bg-background-soft">
+      <motion.div
+        className="mx-auto max-w-7xl px-5 py-6 sm:px-6 sm:py-8 lg:px-8"
+        variants={pageContainerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* ====================================================
             PAGE HEADER
         ===================================================== */}
-        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <motion.div
+          variants={fadeUpVariants}
+          className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+        >
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8F8F2]">
-              <FileText className="h-5 w-5 text-[#087F5B]" strokeWidth={2.2} />
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-light">
+              <FileText className="h-5 w-5 text-primary" strokeWidth={2.2} />
             </div>
 
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-[#09263A] sm:text-3xl">
+              <h1 className="text-2xl font-bold tracking-tight text-heading sm:text-3xl">
                 Corporation Tax &amp; Accounts
               </h1>
-              <p className="mt-0.5 text-sm text-[#687B78]">
+              <p className="mt-0.5 text-sm text-text-secondary">
                 Manage your corporation tax returns and annual accounts
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-3 py-2 text-xs">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-              <span className="text-[#687B78]">Synced 12d ago</span>
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
+              <span className="text-text-secondary">Synced 12d ago</span>
             </div>
 
-            <button
+            <motion.button
               type="button"
               onClick={() => console.log("Refreshing...")}
-              className="inline-flex items-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-4 py-2 text-xs font-semibold text-[#09263A] transition-all duration-200 hover:border-[#087F5B] hover:text-[#087F5B]"
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+              className="
+                inline-flex
+                items-center
+                gap-2
+                rounded-lg
+                border
+                border-border
+                bg-background
+                px-4
+                py-2
+                text-xs
+                font-semibold
+                text-heading
+                transition-colors
+                duration-200
+                hover:border-primary
+                hover:text-primary
+              "
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span>Refresh</span>
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
         {/* ====================================================
             STATS CARDS
         ===================================================== */}
         <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {stats.map((stat) => {
+          {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <div
+              <motion.div
                 key={stat.id}
-                className="group relative overflow-hidden rounded-xl border border-[#DDEAE6] bg-white p-4 shadow-[0_3px_14px_rgba(16,42,67,0.035)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(16,42,67,0.08)]"
+                variants={statCardVariants}
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -3, transition: { duration: 0.25 } }
+                }
+                className="
+                  group
+                  relative
+                  overflow-hidden
+                  rounded-xl
+                  border
+                  border-border
+                  bg-background
+                  p-4
+                  shadow-card
+                  transition-[border-color,box-shadow]
+                  duration-300
+                  hover:border-primary/20
+                  hover:shadow-card-hover
+                "
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                       {stat.label}
                     </p>
-                    <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#09263A]">
+                    <p className="mt-1.5 text-2xl font-bold tracking-tight text-heading">
                       {stat.value}
                     </p>
                   </div>
@@ -588,7 +668,7 @@ const OrganizationCorporationTax = () => {
                     />
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
@@ -596,16 +676,38 @@ const OrganizationCorporationTax = () => {
         {/* ====================================================
             FILTER BAR
         ===================================================== */}
-        <div className="mb-5 rounded-xl border border-[#DDEAE6] bg-white p-4 shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
+        <motion.div
+          variants={fadeUpVariants}
+          className="mb-5 rounded-xl border border-border bg-background p-4 shadow-card"
+        >
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#687B78]" />
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by company name or number..."
-                className="w-full rounded-lg border border-[#DDEAE6] bg-[#F5FCF9] py-2.5 pl-10 pr-4 text-sm text-[#09263A] outline-none transition-all duration-200 placeholder:text-[#687B78] focus:border-[#087F5B] focus:bg-white focus:ring-2 focus:ring-[#087F5B]/10"
+                className="
+                  w-full
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background-soft
+                  py-2.5
+                  pl-10
+                  pr-4
+                  text-sm
+                  text-heading
+                  outline-none
+                  transition-all
+                  duration-200
+                  placeholder:text-text-secondary
+                  focus:border-primary
+                  focus:bg-background
+                  focus:ring-2
+                  focus:ring-primary/10
+                "
               />
             </div>
 
@@ -613,64 +715,160 @@ const OrganizationCorporationTax = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-10 w-full min-w-[160px] cursor-pointer appearance-none rounded-lg border border-[#DDEAE6] bg-white px-4 pr-10 text-sm font-semibold text-[#09263A] outline-none transition-all duration-200 hover:border-[#087F5B] focus:border-[#087F5B] focus:ring-2 focus:ring-[#087F5B]/10 lg:w-auto"
+                className="
+                  h-10
+                  w-full
+                  min-w-[160px]
+                  cursor-pointer
+                  appearance-none
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  px-4
+                  pr-10
+                  text-sm
+                  font-semibold
+                  text-heading
+                  outline-none
+                  transition-all
+                  duration-200
+                  hover:border-primary
+                  focus:border-primary
+                  focus:ring-2
+                  focus:ring-primary/10
+                  lg:w-auto
+                "
               >
                 <option>All statuses</option>
                 <option>Active</option>
                 <option>Action Required</option>
               </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#687B78]" />
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
             </div>
 
             <div className="relative">
               <select
                 value={periodFilter}
                 onChange={(e) => setPeriodFilter(e.target.value)}
-                className="h-10 w-full min-w-[160px] cursor-pointer appearance-none rounded-lg border border-[#DDEAE6] bg-white px-4 pr-10 text-sm font-semibold text-[#09263A] outline-none transition-all duration-200 hover:border-[#087F5B] focus:border-[#087F5B] focus:ring-2 focus:ring-[#087F5B]/10 lg:w-auto"
+                className="
+                  h-10
+                  w-full
+                  min-w-[160px]
+                  cursor-pointer
+                  appearance-none
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  px-4
+                  pr-10
+                  text-sm
+                  font-semibold
+                  text-heading
+                  outline-none
+                  transition-all
+                  duration-200
+                  hover:border-primary
+                  focus:border-primary
+                  focus:ring-2
+                  focus:ring-primary/10
+                  lg:w-auto
+                "
               >
                 <option>All periods</option>
                 <option>31 Mar 2026</option>
                 <option>30 Jun 2026</option>
                 <option>31 Dec 2025</option>
               </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#687B78]" />
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
             </div>
 
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={clearFilters}
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-4 py-2.5 text-sm font-semibold text-[#687B78] transition-all duration-200 hover:border-[#087F5B] hover:text-[#087F5B]"
-              >
-                <X className="h-3.5 w-3.5" />
-                <span>Clear</span>
-              </button>
-            )}
+            <AnimatePresence>
+              {hasActiveFilters && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.2 }}
+                  type="button"
+                  onClick={clearFilters}
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-lg
+                    border
+                    border-border
+                    bg-background
+                    px-4
+                    py-2.5
+                    text-sm
+                    font-semibold
+                    text-text-secondary
+                    transition-colors
+                    duration-200
+                    hover:border-primary
+                    hover:text-primary
+                  "
+                >
+                  <X className="h-3.5 w-3.5" />
+                  <span>Clear</span>
+                </motion.button>
+              )}
+            </AnimatePresence>
 
-            <button
+            <motion.button
               type="button"
               onClick={() => console.log("Add company")}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#087F5B] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#005E45] hover:-translate-y-0.5 hover:shadow-md lg:ml-auto"
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+              className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                rounded-lg
+                bg-primary
+                px-5
+                py-2.5
+                text-sm
+                font-semibold
+                text-text-white
+                shadow-button
+                transition-colors
+                duration-200
+                hover:bg-primary-hover
+                lg:ml-auto
+              "
             >
               <Building2 className="h-4 w-4" />
               <span>Add Company</span>
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
         {/* ====================================================
             COMPANY TABLE
         ===================================================== */}
-        <div className="rounded-xl border border-[#DDEAE6] bg-white shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
-          <div className="flex flex-col gap-2 border-b border-[#DDEAE6] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <motion.div
+          variants={fadeUpVariants}
+          className="rounded-xl border border-border bg-background shadow-card"
+        >
+          <div className="flex flex-col gap-2 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-[#087F5B]" />
-              <h2 className="text-sm font-bold text-[#09263A]">Companies</h2>
-              <span className="rounded-full bg-[#E8F8F2] px-2 py-0.5 text-[10px] font-bold text-[#087F5B]">
+              <Building2 className="h-4 w-4 text-primary" />
+              <h2 className="text-sm font-bold text-heading">Companies</h2>
+              <span className="rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-bold text-primary">
                 {filteredCompanies.length}
               </span>
             </div>
-            <p className="text-[11px] text-[#687B78]">
+            <p className="text-[11px] text-text-secondary">
               Select a row to view details
             </p>
           </div>
@@ -679,64 +877,70 @@ const OrganizationCorporationTax = () => {
           <div className="hidden lg:block">
             <table className="w-full min-w-[1000px]">
               <thead>
-                <tr className="border-b border-[#DDEAE6] bg-[#F5FCF9]">
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <tr className="border-b border-border bg-background-soft">
+                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Company
                   </th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Period End
                   </th>
-                  <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Profit
                   </th>
-                  <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Tax
                   </th>
-                  <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Accounts
                   </th>
-                  <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     CT600
                   </th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Next Due
                   </th>
-                  <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#DDEAE6]">
-                {filteredCompanies.map((company) => {
+              <tbody className="divide-y divide-border">
+                {filteredCompanies.map((company, rowIndex) => {
                   const isSelected = selectedCompany?.id === company.id;
                   const isOverdue = company.dueType === "overdue";
                   const isEarly = company.dueType === "early";
 
                   return (
-                    <tr
+                    <motion.tr
                       key={company.id}
+                      variants={rowVariants}
+                      initial="hidden"
+                      animate="visible"
+                      transition={{
+                        delay: shouldReduceMotion ? 0 : rowIndex * 0.04,
+                      }}
                       onClick={() => openCompanyDrawer(company)}
-                      className={`group cursor-pointer transition-colors ${
-                        isSelected
-                          ? "bg-[#E8F8F2]/50"
-                          : isEarly
-                            ? "bg-amber-50/40"
-                            : "bg-white"
-                      } hover:bg-[#E8F8F2]/30`}
+                      className={`
+                        group
+                        cursor-pointer
+                        transition-colors
+                        ${isSelected ? "bg-primary-light/50" : isEarly ? "bg-warning-light/40" : "bg-background"}
+                        hover:bg-primary-light/30
+                      `}
                     >
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#E8F8F2]">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-light">
                             <Building2
-                              className="h-4 w-4 text-[#087F5B]"
+                              className="h-4 w-4 text-primary"
                               strokeWidth={2.2}
                             />
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-bold text-[#09263A] transition-colors group-hover:text-[#087F5B]">
+                            <p className="truncate text-sm font-bold text-heading transition-colors group-hover:text-primary">
                               {company.companyName}
                             </p>
-                            <p className="mt-0.5 font-mono text-[10px] text-[#687B78]">
+                            <p className="mt-0.5 font-mono text-[10px] text-text-secondary">
                               #{company.companyNumber}
                             </p>
                           </div>
@@ -744,21 +948,21 @@ const OrganizationCorporationTax = () => {
                       </td>
                       <td className="px-5 py-4">
                         <div>
-                          <p className="text-xs font-bold text-[#09263A]">
+                          <p className="text-xs font-bold text-heading">
                             {company.periodEnd}
                           </p>
-                          <p className="mt-0.5 text-[10px] text-[#687B78]">
+                          <p className="mt-0.5 text-[10px] text-text-secondary">
                             from {company.periodStart}
                           </p>
                         </div>
                       </td>
                       <td className="px-5 py-4 text-center">
-                        <span className="text-xs text-[#687B78]">
+                        <span className="text-xs text-text-secondary">
                           {company.profit}
                         </span>
                       </td>
                       <td className="px-5 py-4 text-center">
-                        <span className="text-xs text-[#687B78]">
+                        <span className="text-xs text-text-secondary">
                           {company.tax}
                         </span>
                       </td>
@@ -769,10 +973,7 @@ const OrganizationCorporationTax = () => {
                         <StatusCircle completed={company.ct600Filed} />
                       </td>
                       <td className="px-5 py-4">
-                        <NextDue
-                          type={company.dueType}
-                          text={company.nextDue}
-                        />
+                        <NextDue type={company.dueType} text={company.nextDue} />
                       </td>
                       <td
                         className="relative px-5 py-4 text-right"
@@ -782,18 +983,38 @@ const OrganizationCorporationTax = () => {
                           ref={openRowMenu === company.id ? rowMenuRef : null}
                           className="relative inline-block"
                         >
-                          <button
+                          <motion.button
                             type="button"
                             onClick={() =>
                               setOpenRowMenu(
                                 openRowMenu === company.id ? null : company.id,
                               )
                             }
-                            className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[11px] font-bold transition-all duration-200 ${
-                              company.dueType === "normal"
-                                ? "bg-[#087F5B] text-white shadow-sm hover:bg-[#005E45] hover:-translate-y-0.5"
-                                : "border border-[#DDEAE6] bg-white text-[#09263A] hover:border-[#087F5B] hover:text-[#087F5B]"
-                            }`}
+                            whileHover={
+                              shouldReduceMotion
+                                ? undefined
+                                : { y: -1, transition: { duration: 0.2 } }
+                            }
+                            whileTap={
+                              shouldReduceMotion ? undefined : { scale: 0.98 }
+                            }
+                            className={`
+                              inline-flex
+                              items-center
+                              gap-1.5
+                              rounded-lg
+                              px-3.5
+                              py-2
+                              text-[11px]
+                              font-bold
+                              transition-colors
+                              duration-200
+                              ${
+                                company.dueType === "normal"
+                                  ? "bg-primary text-text-white shadow-button hover:bg-primary-hover"
+                                  : "border border-border bg-background text-heading hover:border-primary hover:text-primary"
+                              }
+                            `}
                           >
                             {isEarly
                               ? "Too early"
@@ -801,17 +1022,19 @@ const OrganizationCorporationTax = () => {
                                 ? "Start Filing"
                                 : "Continue"}
                             <ChevronDown className="h-3 w-3" />
-                          </button>
+                          </motion.button>
 
-                          {openRowMenu === company.id && (
-                            <RowActionMenu
-                              company={company}
-                              onAction={handleRowAction}
-                            />
-                          )}
+                          <AnimatePresence>
+                            {openRowMenu === company.id && (
+                              <RowActionMenu
+                                company={company}
+                                onAction={handleRowAction}
+                              />
+                            )}
+                          </AnimatePresence>
                         </div>
                       </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })}
               </tbody>
@@ -819,63 +1042,79 @@ const OrganizationCorporationTax = () => {
           </div>
 
           {/* Mobile Card List */}
-          <div className="divide-y divide-[#DDEAE6] lg:hidden">
-            {filteredCompanies.map((company) => {
+          <div className="divide-y divide-border lg:hidden">
+            {filteredCompanies.map((company, rowIndex) => {
               const isEarly = company.dueType === "early";
               const isOverdue = company.dueType === "overdue";
 
               return (
-                <div
+                <motion.div
                   key={company.id}
+                  variants={rowVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{
+                    delay: shouldReduceMotion ? 0 : rowIndex * 0.05,
+                  }}
                   onClick={() => openCompanyDrawer(company)}
-                  className={`cursor-pointer p-4 transition-colors ${
-                    isEarly ? "bg-amber-50/40" : "bg-white"
-                  } hover:bg-[#E8F8F2]/30`}
+                  className={`
+                    cursor-pointer
+                    p-4
+                    transition-colors
+                    ${isEarly ? "bg-warning-light/40" : "bg-background"}
+                    hover:bg-primary-light/30
+                  `}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#E8F8F2]">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary-light">
                       <Building2
-                        className="h-5 w-5 text-[#087F5B]"
+                        className="h-5 w-5 text-primary"
                         strokeWidth={2.2}
                       />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-bold text-[#09263A]">
+                          <p className="truncate text-sm font-bold text-heading">
                             {company.companyName}
                           </p>
-                          <p className="mt-0.5 font-mono text-[10px] text-[#687B78]">
+                          <p className="mt-0.5 font-mono text-[10px] text-text-secondary">
                             #{company.companyNumber}
                           </p>
                         </div>
                         {isOverdue && (
-                          <span className="shrink-0 rounded-full bg-rose-100 px-2 py-0.5 text-[9px] font-bold text-rose-700">
+                          <span className="shrink-0 rounded-full bg-danger-light px-2 py-0.5 text-[9px] font-bold text-danger">
                             Overdue
                           </span>
                         )}
                         {isEarly && (
-                          <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-bold text-amber-700">
+                          <span className="shrink-0 rounded-full bg-warning-light px-2 py-0.5 text-[9px] font-bold text-warning">
                             Too early
                           </span>
                         )}
                       </div>
 
-                      <div className="mt-3 grid grid-cols-3 gap-2 rounded-lg bg-[#F5FCF9] px-3 py-2">
+                      <div className="mt-3 grid grid-cols-3 gap-2 rounded-lg bg-background-soft px-3 py-2">
                         <div>
-                          <p className="text-[10px] text-[#687B78]">Period</p>
-                          <p className="mt-0.5 text-[11px] font-bold text-[#09263A]">
+                          <p className="text-[10px] text-text-secondary">
+                            Period
+                          </p>
+                          <p className="mt-0.5 text-[11px] font-bold text-heading">
                             {company.periodEnd}
                           </p>
                         </div>
                         <div className="text-center">
-                          <p className="text-[10px] text-[#687B78]">Accounts</p>
+                          <p className="text-[10px] text-text-secondary">
+                            Accounts
+                          </p>
                           <div className="mt-1 flex justify-center">
                             <StatusCircle completed={company.accountsFiled} />
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-[10px] text-[#687B78]">CT600</p>
+                          <p className="text-[10px] text-text-secondary">
+                            CT600
+                          </p>
                           <div className="mt-1 flex justify-end">
                             <StatusCircle completed={company.ct600Filed} />
                           </div>
@@ -889,7 +1128,20 @@ const OrganizationCorporationTax = () => {
                         />
                         <button
                           type="button"
-                          className="inline-flex items-center gap-1 rounded-lg bg-[#087F5B] px-3 py-1.5 text-[10px] font-bold text-white transition-all hover:bg-[#005E45]"
+                          className="
+                            inline-flex
+                            items-center
+                            gap-1
+                            rounded-lg
+                            bg-primary
+                            px-3
+                            py-1.5
+                            text-[10px]
+                            font-bold
+                            text-text-white
+                            transition-colors
+                            hover:bg-primary-hover
+                          "
                         >
                           <span>View</span>
                           <ArrowRight className="h-3 w-3" />
@@ -897,21 +1149,28 @@ const OrganizationCorporationTax = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
 
           {/* Empty state */}
           {filteredCompanies.length === 0 && (
-            <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F8F2]">
-                <Building2 className="h-7 w-7 text-[#087F5B]" strokeWidth={2} />
+            <motion.div
+              initial={
+                shouldReduceMotion ? false : { opacity: 0, y: 12 }
+              }
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: premiumEase }}
+              className="flex flex-col items-center justify-center px-5 py-16 text-center"
+            >
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light">
+                <Building2 className="h-7 w-7 text-primary" strokeWidth={2} />
               </div>
-              <p className="mt-4 text-sm font-bold text-[#09263A]">
+              <p className="mt-4 text-sm font-bold text-heading">
                 No companies found
               </p>
-              <p className="mt-1 max-w-xs text-xs text-[#687B78]">
+              <p className="mt-1 max-w-xs text-xs text-text-secondary">
                 {hasActiveFilters
                   ? "Try adjusting your search or filters."
                   : "No companies have been added yet."}
@@ -920,46 +1179,69 @@ const OrganizationCorporationTax = () => {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="mt-5 inline-flex items-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-4 py-2 text-xs font-semibold text-[#09263A] transition-all duration-200 hover:border-[#087F5B] hover:text-[#087F5B]"
+                  className="
+                    mt-5
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-lg
+                    border
+                    border-border
+                    bg-background
+                    px-4
+                    py-2
+                    text-xs
+                    font-semibold
+                    text-heading
+                    transition-colors
+                    duration-200
+                    hover:border-primary
+                    hover:text-primary
+                  "
                 >
                   <X className="h-3 w-3" />
                   <span>Clear filters</span>
                 </button>
               )}
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
 
         {/* Bottom note */}
-        <div className="mt-5 flex items-start gap-3 rounded-xl border border-[#DDEAE6] bg-[#E8F8F2]/50 p-4">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#087F5B]" />
-          <p className="text-[11px] leading-6 text-[#687B78]">
+        <motion.div
+          variants={fadeUpVariants}
+          className="mt-5 flex items-start gap-3 rounded-xl border border-border bg-primary-light/50 p-4"
+        >
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <p className="text-[11px] leading-6 text-text-secondary">
             This dashboard shows your corporation tax and annual accounts
             periods across all companies. Select a company to view filing
             history and available actions.
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* ======================================================
           COMPANY DRAWER
       ======================================================= */}
-      {selectedCompany && !showYearsSidebar && (
-        <CompanyDrawer
-          company={selectedCompany}
-          closeDrawer={closeDrawer}
-          reminders={reminders}
-          toggleReminder={toggleReminder}
-          openFilingMenu={openFilingMenu}
-          setOpenFilingMenu={setOpenFilingMenu}
-          handleFilingAction={handleFilingAction}
-          showAllPeriods={showAllPeriods}
-          setShowAllPeriods={setShowAllPeriods}
-        />
-      )}
+      <AnimatePresence>
+        {selectedCompany && !showYearsSidebar && (
+          <CompanyDrawer
+            company={selectedCompany}
+            closeDrawer={closeDrawer}
+            reminders={reminders}
+            toggleReminder={toggleReminder}
+            openFilingMenu={openFilingMenu}
+            setOpenFilingMenu={setOpenFilingMenu}
+            handleFilingAction={handleFilingAction}
+            showAllPeriods={showAllPeriods}
+            setShowAllPeriods={setShowAllPeriods}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ======================================================
-          YEARS SIDEBAR (View all years)
+          YEARS SIDEBAR
       ======================================================= */}
       {showYearsSidebar && selectedCompany && (
         <YearsSidebar
@@ -1015,45 +1297,53 @@ const OrganizationCorporationTax = () => {
       )}
 
       {/* Toast */}
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 z-[600] -translate-x-1/2 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <div className="flex items-center gap-2 rounded-xl border border-[#DDEAE6] bg-white px-4 py-3 shadow-[0_12px_40px_rgba(9,38,58,0.15)]">
-            <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-            <span className="text-xs font-semibold text-[#09263A]">
-              {toast}
-            </span>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 12, scale: 0.97 }}
+            transition={{ duration: 0.28, ease: premiumEase }}
+            className="fixed bottom-6 left-1/2 z-[600] -translate-x-1/2"
+          >
+            <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-3 shadow-card-hover">
+              <CheckCircle2 className="h-4 w-4 text-primary" />
+              <span className="text-xs font-semibold text-heading">
+                {toast}
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
 /* ============================================================
-   STATUS CIRCLE
+   STATUS CIRCLE (unchanged logic, tokens)
 ============================================================ */
 
 const StatusCircle = ({ completed }) => {
   if (completed) {
     return (
-      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#087F5B] text-white shadow-sm">
+      <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-text-white shadow-button">
         <Check className="h-3.5 w-3.5" strokeWidth={3} />
       </span>
     );
   }
   return (
-    <span className="inline-flex h-6 w-6 rounded-full border-2 border-dashed border-[#DDEAE6]" />
+    <span className="inline-flex h-6 w-6 rounded-full border-2 border-dashed border-border" />
   );
 };
 
 /* ============================================================
-   NEXT DUE
+   NEXT DUE (unchanged logic, tokens)
 ============================================================ */
 
 const NextDue = ({ type, text }) => {
   if (type === "overdue") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-2.5 py-1 text-[10px] font-bold text-rose-700">
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-danger-light px-2.5 py-1 text-[10px] font-bold text-danger">
         <AlertCircle className="h-3 w-3" strokeWidth={2.4} />
         {text}
       </span>
@@ -1061,14 +1351,14 @@ const NextDue = ({ type, text }) => {
   }
   if (type === "early") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-700">
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-warning-light px-2.5 py-1 text-[10px] font-bold text-warning">
         <Clock3 className="h-3 w-3" strokeWidth={2.4} />
         {text}
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700">
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-success-light px-2.5 py-1 text-[10px] font-bold text-success">
       <CheckCircle2 className="h-3 w-3" strokeWidth={2.4} />
       {text}
     </span>
@@ -1080,10 +1370,40 @@ const NextDue = ({ type, text }) => {
 ============================================================ */
 
 const RowActionMenu = ({ company, onAction }) => {
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
+
   return (
-    <div className="absolute right-0 top-[calc(100%+6px)] z-[100] w-[300px] overflow-hidden rounded-xl border border-[#DDEAE6] bg-white text-left shadow-2xl">
-      <div className="border-b border-[#DDEAE6] bg-[#F5FCF9] px-4 py-2.5">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+    <motion.div
+      initial={
+        shouldReduceMotion
+          ? false
+          : { opacity: 0, y: -6, scale: 0.96 }
+      }
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={
+        shouldReduceMotion
+          ? { opacity: 0 }
+          : { opacity: 0, y: -4, scale: 0.97 }
+      }
+      transition={{ duration: 0.2, ease: premiumEase }}
+      className="
+        absolute
+        right-0
+        top-[calc(100%+6px)]
+        z-[100]
+        w-[300px]
+        overflow-hidden
+        rounded-xl
+        border
+        border-border
+        bg-background
+        text-left
+        shadow-card-hover
+      "
+    >
+      <div className="border-b border-border bg-background-soft px-4 py-2.5">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
           Filing options
         </p>
       </div>
@@ -1109,7 +1429,7 @@ const RowActionMenu = ({ company, onAction }) => {
         icon={CalendarDays}
       />
 
-      <div className="my-1 border-t border-[#DDEAE6]" />
+      <div className="my-1 border-t border-border" />
 
       <MenuItem
         label="Remove this period from dashboard"
@@ -1117,7 +1437,7 @@ const RowActionMenu = ({ company, onAction }) => {
         onClick={() => onAction("remove", company)}
         icon={Archive}
       />
-    </div>
+    </motion.div>
   );
 };
 
@@ -1130,15 +1450,28 @@ const MenuItem = ({ label, onClick, danger = false, icon: Icon }) => {
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center gap-3 px-4 py-3 text-left text-xs font-medium transition-colors ${
-        danger
-          ? "text-rose-600 hover:bg-rose-50"
-          : "text-[#09263A] hover:bg-[#E8F8F2] hover:text-[#087F5B]"
-      }`}
+      className={`
+        flex
+        w-full
+        items-center
+        gap-3
+        px-4
+        py-3
+        text-left
+        text-xs
+        font-medium
+        transition-colors
+        duration-150
+        ${
+          danger
+            ? "text-danger hover:bg-danger-light"
+            : "text-heading hover:bg-primary-light hover:text-primary"
+        }
+      `}
     >
       {Icon && (
         <Icon
-          className={`h-3.5 w-3.5 shrink-0 ${danger ? "text-rose-500" : "text-[#687B78]"}`}
+          className={`h-3.5 w-3.5 shrink-0 ${danger ? "text-danger" : "text-text-secondary"}`}
           strokeWidth={2.2}
         />
       )}
@@ -1148,42 +1481,71 @@ const MenuItem = ({ label, onClick, danger = false, icon: Icon }) => {
 };
 
 /* ============================================================
-   MODAL OVERLAY (Reusable)
+   MODAL OVERLAY
 ============================================================ */
 
 const ModalOverlay = ({ children, onClose, maxWidth = "max-w-[520px]" }) => {
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
+
   return (
     <div className="fixed inset-0 z-[400] flex items-center justify-center px-4">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-[#09263A]/40 backdrop-blur-[2px]"
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="absolute inset-0 bg-dark/40 backdrop-blur-[2px]"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div
-        className={`relative w-full ${maxWidth} overflow-hidden rounded-2xl border border-[#DDEAE6] bg-white shadow-[0_24px_80px_rgba(9,38,58,0.20)] animate-in fade-in zoom-in-95 duration-200`}
+      <motion.div
+        initial={
+          shouldReduceMotion
+            ? false
+            : { opacity: 0, y: 20, scale: 0.96 }
+        }
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={
+          shouldReduceMotion
+            ? { opacity: 0 }
+            : { opacity: 0, y: 12, scale: 0.97 }
+        }
+        transition={{ duration: 0.28, ease: premiumEase }}
+        className={`
+          relative
+          w-full
+          ${maxWidth}
+          overflow-hidden
+          rounded-2xl
+          border
+          border-border
+          bg-background
+          shadow-card-hover
+        `}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
-      </div>
+      </motion.div>
     </div>
   );
 };
 
 /* ============================================================
-   MODAL HEADER (Reusable)
+   MODAL HEADER
 ============================================================ */
 
 const ModalHeader = ({
   title,
   onClose,
   icon: Icon,
-  iconBg = "bg-[#E8F8F2]",
-  iconColor = "text-[#087F5B]",
+  iconBg = "bg-primary-light",
+  iconColor = "text-primary",
 }) => {
   return (
-    <div className="flex items-start justify-between gap-4 border-b border-[#DDEAE6] px-5 py-4 sm:px-6">
+    <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4 sm:px-6">
       <div className="flex items-start gap-3">
         {Icon && (
           <div
@@ -1193,14 +1555,26 @@ const ModalHeader = ({
           </div>
         )}
         <div className="min-w-0 pt-0.5">
-          <h3 className="text-base font-bold text-[#09263A]">{title}</h3>
+          <h3 className="text-base font-bold text-heading">{title}</h3>
         </div>
       </div>
 
       <button
         type="button"
         onClick={onClose}
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#F5FCF9] hover:text-[#09263A]"
+        className="
+          flex
+          h-8
+          w-8
+          shrink-0
+          items-center
+          justify-center
+          rounded-lg
+          text-text-secondary
+          transition-colors
+          hover:bg-background-soft
+          hover:text-heading
+        "
         aria-label="Close"
       >
         <X className="h-4 w-4" />
@@ -1223,27 +1597,44 @@ const SentStatusModal = ({ company, onClose, onNo, onYes }) => {
       />
 
       <div className="px-5 py-5 sm:px-6">
-        <p className="text-sm leading-6 text-[#09263A]">
+        <p className="text-sm leading-6 text-heading">
           This is about the{" "}
           <strong className="font-semibold">CT600 itself</strong>, not your
           accounts. Having accounts accepted by Companies House is not the same
           as filing a Corporation Tax return with HMRC.
         </p>
 
-        <div className="mt-4 flex items-start gap-3 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-3.5">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#087F5B]" />
-          <p className="text-xs leading-5 text-[#687B78]">
+        <div className="mt-4 flex items-start gap-3 rounded-xl border border-border bg-background-soft p-3.5">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <p className="text-xs leading-5 text-text-secondary">
             If you are not sure, close this. Nothing changes and we will keep
             reminding you, which is the safe option.
           </p>
         </div>
       </div>
 
-      <div className="flex flex-col-reverse gap-2 border-t border-[#DDEAE6] bg-[#F5FCF9] px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
+      <div className="flex flex-col-reverse gap-2 border-t border-border bg-background-soft px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
         <button
           type="button"
           onClick={onNo}
-          className="inline-flex items-center justify-center rounded-lg border border-[#DDEAE6] bg-white px-5 py-2.5 text-xs font-bold text-[#09263A] transition-all duration-200 hover:border-[#087F5B] hover:text-[#087F5B]"
+          className="
+            inline-flex
+            items-center
+            justify-center
+            rounded-lg
+            border
+            border-border
+            bg-background
+            px-5
+            py-2.5
+            text-xs
+            font-bold
+            text-heading
+            transition-colors
+            duration-200
+            hover:border-primary
+            hover:text-primary
+          "
         >
           No, not yet
         </button>
@@ -1251,7 +1642,23 @@ const SentStatusModal = ({ company, onClose, onNo, onYes }) => {
         <button
           type="button"
           onClick={onYes}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#087F5B] px-5 py-2.5 text-xs font-bold text-white shadow-sm transition-all duration-200 hover:bg-[#005E45]"
+          className="
+            inline-flex
+            items-center
+            justify-center
+            gap-2
+            rounded-lg
+            bg-primary
+            px-5
+            py-2.5
+            text-xs
+            font-bold
+            text-text-white
+            shadow-button
+            transition-colors
+            duration-200
+            hover:bg-primary-hover
+          "
         >
           Yes, it has been sent
         </button>
@@ -1271,31 +1678,50 @@ const PauseRemindersModal = ({ company, onClose, onPause }) => {
         title="Pause CT600 reminders?"
         onClose={onClose}
         icon={PauseCircle}
-        iconBg="bg-amber-100"
-        iconColor="text-amber-600"
+        iconBg="bg-warning-light"
+        iconColor="text-warning"
       />
 
       <div className="px-5 py-5 sm:px-6">
-        <p className="text-sm leading-6 text-[#09263A]">
+        <p className="text-sm leading-6 text-heading">
           The return is still due and this does{" "}
           <strong className="font-semibold">not</strong> file anything or mark
           the period complete — it only pauses our reminders while you get to
           it.
         </p>
 
-        <div className="mt-4 flex items-start gap-3 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-3.5">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#087F5B]" />
-          <p className="text-xs leading-5 text-[#687B78]">
+        <div className="mt-4 flex items-start gap-3 rounded-xl border border-border bg-background-soft p-3.5">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <p className="text-xs leading-5 text-text-secondary">
             You can resume reminders at any time from the same menu.
           </p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-[#DDEAE6] bg-[#F5FCF9] px-5 py-4 sm:flex-row sm:px-6">
+      <div className="flex flex-col gap-2 border-t border-border bg-background-soft px-5 py-4 sm:flex-row sm:px-6">
         <button
           type="button"
           onClick={() => onPause(1)}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-5 py-2.5 text-xs font-bold text-[#09263A] transition-all duration-200 hover:border-[#087F5B] hover:text-[#087F5B]"
+          className="
+            inline-flex
+            flex-1
+            items-center
+            justify-center
+            gap-2
+            rounded-lg
+            border
+            border-border
+            bg-background
+            px-5
+            py-2.5
+            text-xs
+            font-bold
+            text-heading
+            transition-colors
+            duration-200
+            hover:border-primary
+            hover:text-primary
+          "
         >
           <Clock3 className="h-3.5 w-3.5" />
           Pause for 1 month
@@ -1304,7 +1730,24 @@ const PauseRemindersModal = ({ company, onClose, onPause }) => {
         <button
           type="button"
           onClick={() => onPause(3)}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#087F5B] px-5 py-2.5 text-xs font-bold text-white shadow-sm transition-all duration-200 hover:bg-[#005E45]"
+          className="
+            inline-flex
+            flex-1
+            items-center
+            justify-center
+            gap-2
+            rounded-lg
+            bg-primary
+            px-5
+            py-2.5
+            text-xs
+            font-bold
+            text-text-white
+            shadow-button
+            transition-colors
+            duration-200
+            hover:bg-primary-hover
+          "
         >
           <Clock3 className="h-3.5 w-3.5" />
           Pause for 3 months
@@ -1325,30 +1768,49 @@ const WhoSentModal = ({ company, onClose, onSelect }) => {
         title="Who sent it?"
         onClose={onClose}
         icon={UserCheck}
-        iconBg="bg-blue-100"
-        iconColor="text-blue-600"
+        iconBg="bg-primary-light"
+        iconColor="text-primary"
       />
 
       <div className="px-5 py-5 sm:px-6">
-        <p className="text-sm leading-6 text-[#09263A]">
+        <p className="text-sm leading-6 text-heading">
           We record this so support can see where the return came from if there
           is ever a query. We cannot verify it, so it is stored as your account
           of what happened.
         </p>
 
-        <div className="mt-4 flex items-start gap-3 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-3.5">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#087F5B]" />
-          <p className="text-xs leading-5 text-[#687B78]">
+        <div className="mt-4 flex items-start gap-3 rounded-xl border border-border bg-background-soft p-3.5">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <p className="text-xs leading-5 text-text-secondary">
             This will mark the CT600 as sent. You can change this later.
           </p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-[#DDEAE6] bg-[#F5FCF9] px-5 py-4 sm:flex-row sm:px-6">
+      <div className="flex flex-col gap-2 border-t border-border bg-background-soft px-5 py-4 sm:flex-row sm:px-6">
         <button
           type="button"
           onClick={() => onSelect("self")}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-5 py-2.5 text-xs font-bold text-[#09263A] transition-all duration-200 hover:border-[#087F5B] hover:text-[#087F5B]"
+          className="
+            inline-flex
+            flex-1
+            items-center
+            justify-center
+            gap-2
+            rounded-lg
+            border
+            border-border
+            bg-background
+            px-5
+            py-2.5
+            text-xs
+            font-bold
+            text-heading
+            transition-colors
+            duration-200
+            hover:border-primary
+            hover:text-primary
+          "
         >
           <User className="h-3.5 w-3.5" />I did, another way
         </button>
@@ -1356,7 +1818,24 @@ const WhoSentModal = ({ company, onClose, onSelect }) => {
         <button
           type="button"
           onClick={() => onSelect("accountant")}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#087F5B] px-5 py-2.5 text-xs font-bold text-white shadow-sm transition-all duration-200 hover:bg-[#005E45]"
+          className="
+            inline-flex
+            flex-1
+            items-center
+            justify-center
+            gap-2
+            rounded-lg
+            bg-primary
+            px-5
+            py-2.5
+            text-xs
+            font-bold
+            text-text-white
+            shadow-button
+            transition-colors
+            duration-200
+            hover:bg-primary-hover
+          "
         >
           <Briefcase className="h-3.5 w-3.5" />
           My accountant
@@ -1377,12 +1856,12 @@ const HmrcRequestModal = ({ company, onClose, onSelect }) => {
         title="Has HMRC asked you for a Company Tax Return?"
         onClose={onClose}
         icon={ShieldCheck}
-        iconBg="bg-purple-100"
-        iconColor="text-purple-600"
+        iconBg="bg-primary-light"
+        iconColor="text-primary"
       />
 
       <div className="px-5 py-5 sm:px-6">
-        <p className="text-sm leading-6 text-[#09263A]">
+        <p className="text-sm leading-6 text-heading">
           HMRC sends a{" "}
           <strong className="font-semibold">
             "notice to deliver a Company Tax Return"
@@ -1392,9 +1871,9 @@ const HmrcRequestModal = ({ company, onClose, onSelect }) => {
           dormant.
         </p>
 
-        <div className="mt-4 flex items-start gap-3 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-3.5">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#087F5B]" />
-          <p className="text-xs leading-5 text-[#687B78]">
+        <div className="mt-4 flex items-start gap-3 rounded-xl border border-border bg-background-soft p-3.5">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <p className="text-xs leading-5 text-text-secondary">
             If you are not sure, close this. We will keep treating the return as
             due and keep reminding you, which is the safe option — this answer
             does not file anything or mark the period complete.
@@ -1402,11 +1881,30 @@ const HmrcRequestModal = ({ company, onClose, onSelect }) => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-[#DDEAE6] bg-[#F5FCF9] px-5 py-4 sm:flex-row sm:px-6">
+      <div className="flex flex-col gap-2 border-t border-border bg-background-soft px-5 py-4 sm:flex-row sm:px-6">
         <button
           type="button"
           onClick={() => onSelect(false)}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-5 py-2.5 text-xs font-bold text-[#09263A] transition-all duration-200 hover:border-[#087F5B] hover:text-[#087F5B]"
+          className="
+            inline-flex
+            flex-1
+            items-center
+            justify-center
+            gap-2
+            rounded-lg
+            border
+            border-border
+            bg-background
+            px-5
+            py-2.5
+            text-xs
+            font-bold
+            text-heading
+            transition-colors
+            duration-200
+            hover:border-primary
+            hover:text-primary
+          "
         >
           No notice has arrived
         </button>
@@ -1414,7 +1912,24 @@ const HmrcRequestModal = ({ company, onClose, onSelect }) => {
         <button
           type="button"
           onClick={() => onSelect(true)}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#087F5B] px-5 py-2.5 text-xs font-bold text-white shadow-sm transition-all duration-200 hover:bg-[#005E45]"
+          className="
+            inline-flex
+            flex-1
+            items-center
+            justify-center
+            gap-2
+            rounded-lg
+            bg-primary
+            px-5
+            py-2.5
+            text-xs
+            font-bold
+            text-text-white
+            shadow-button
+            transition-colors
+            duration-200
+            hover:bg-primary-hover
+          "
         >
           Yes, I have a notice
         </button>
@@ -1434,30 +1949,47 @@ const RemovePeriodModal = ({ company, onClose, onRemove }) => {
         title="Remove this period?"
         onClose={onClose}
         icon={AlertTriangle}
-        iconBg="bg-rose-100"
-        iconColor="text-rose-600"
+        iconBg="bg-danger-light"
+        iconColor="text-danger"
       />
 
       <div className="px-5 py-5 sm:px-6">
-        <p className="text-sm leading-6 text-[#09263A]">
+        <p className="text-sm leading-6 text-heading">
           This will remove this accounting period from your dashboard. It will{" "}
           <strong className="font-semibold">not</strong> delete the company's
           records or file anything with HMRC.
         </p>
 
-        <div className="mt-4 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 p-3.5">
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-500" />
-          <p className="text-xs leading-5 text-rose-700">
+        <div className="mt-4 flex items-start gap-3 rounded-xl border border-danger/20 bg-danger-light p-3.5">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
+          <p className="text-xs leading-5 text-danger">
             You can re-add the period later from the company settings.
           </p>
         </div>
       </div>
 
-      <div className="flex flex-col-reverse gap-2 border-t border-[#DDEAE6] bg-[#F5FCF9] px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
+      <div className="flex flex-col-reverse gap-2 border-t border-border bg-background-soft px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex items-center justify-center rounded-lg border border-[#DDEAE6] bg-white px-5 py-2.5 text-xs font-bold text-[#09263A] transition-all duration-200 hover:border-[#087F5B] hover:text-[#087F5B]"
+          className="
+            inline-flex
+            items-center
+            justify-center
+            rounded-lg
+            border
+            border-border
+            bg-background
+            px-5
+            py-2.5
+            text-xs
+            font-bold
+            text-heading
+            transition-colors
+            duration-200
+            hover:border-primary
+            hover:text-primary
+          "
         >
           Cancel
         </button>
@@ -1465,7 +1997,23 @@ const RemovePeriodModal = ({ company, onClose, onRemove }) => {
         <button
           type="button"
           onClick={onRemove}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-rose-500 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition-all duration-200 hover:bg-rose-600"
+          className="
+            inline-flex
+            items-center
+            justify-center
+            gap-2
+            rounded-lg
+            bg-danger
+            px-5
+            py-2.5
+            text-xs
+            font-bold
+            text-text-white
+            shadow-button
+            transition-colors
+            duration-200
+            hover:bg-danger/90
+          "
         >
           <Archive className="h-3.5 w-3.5" />
           Remove period
@@ -1474,15 +2022,6 @@ const RemovePeriodModal = ({ company, onClose, onRemove }) => {
     </ModalOverlay>
   );
 };
-
-/* ============================================================
-   YEARS SIDEBAR (View all years)
-============================================================ */
-// No need for a modal years sidebar
-
-/* ============================================================
-   COMPANY DRAWER (existing, simplified)
-============================================================ */
 
 /* ============================================================
    COMPANY DRAWER (Polished)
@@ -1499,6 +2038,9 @@ const CompanyDrawer = ({
   showAllPeriods,
   setShowAllPeriods,
 }) => {
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
+
   const visiblePeriods = showAllPeriods
     ? company.periods
     : company.periods.slice(0, 3);
@@ -1508,23 +2050,27 @@ const CompanyDrawer = ({
       {/* ============================================================
           BACKDROP
       ============================================================ */}
-      <div
-        className="
-          fixed
-          inset-0
-          z-[200]
-          bg-[#09263A]/40
-          backdrop-blur-[3px]
-          transition-opacity
-          duration-300
-        "
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
+        className="fixed inset-0 z-[200] bg-dark/40 backdrop-blur-[3px]"
         onClick={closeDrawer}
       />
 
       {/* ============================================================
           DRAWER PANEL
       ============================================================ */}
-      <aside
+      <motion.aside
+        initial={
+          shouldReduceMotion ? false : { x: "100%" }
+        }
+        animate={{ x: 0 }}
+        exit={
+          shouldReduceMotion ? { opacity: 0 } : { x: "100%" }
+        }
+        transition={{ duration: 0.35, ease: premiumEase }}
         className="
           fixed
           right-0
@@ -1536,12 +2082,9 @@ const CompanyDrawer = ({
           max-w-[600px]
           flex-col
           border-l
-          border-[#DDEAE6]
-          bg-white
-          shadow-[-20px_0_60px_rgba(9,38,58,0.15)]
-          animate-in
-          slide-in-from-right
-          duration-300
+          border-border
+          bg-background
+          shadow-[-20px_0_60px_rgba(15,39,71,0.15)]
         "
       >
         {/* ============================================================
@@ -1552,17 +2095,16 @@ const CompanyDrawer = ({
             relative
             shrink-0
             border-b
-            border-[#DDEAE6]
+            border-border
             bg-gradient-to-br
-            from-[#E8F8F2]
-            via-[#F5FCF9]
-            to-white
+            from-primary-light
+            via-background-soft
+            to-background
             px-5
             py-5
             sm:px-6
           "
         >
-          {/* Decorative dot */}
           <div
             className="
               pointer-events-none
@@ -1572,14 +2114,13 @@ const CompanyDrawer = ({
               h-32
               w-32
               rounded-full
-              bg-[#087F5B]
+              bg-primary
               opacity-[0.06]
               blur-3xl
             "
           />
 
           <div className="relative flex items-start justify-between gap-4">
-            {/* Left: Company info */}
             <div className="flex items-start gap-3">
               <div
                 className="
@@ -1590,26 +2131,26 @@ const CompanyDrawer = ({
                   items-center
                   justify-center
                   rounded-xl
-                  bg-[#087F5B]
-                  shadow-sm
+                  bg-primary
+                  shadow-button
                 "
               >
-                <Building2 className="h-6 w-6 text-white" strokeWidth={2} />
+                <Building2 className="h-6 w-6 text-text-white" strokeWidth={2} />
               </div>
 
               <div className="min-w-0">
-                <h2 className="truncate text-base font-bold tracking-tight text-[#09263A] sm:text-lg">
+                <h2 className="truncate text-base font-bold tracking-tight text-heading sm:text-lg">
                   {company.companyName}
                 </h2>
 
-                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#687B78]">
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-text-secondary">
                   <span className="flex items-center gap-1 font-mono font-semibold">
                     <Hash className="h-3 w-3" />
                     {company.companyNumber}
                   </span>
 
                   <span className="flex items-center gap-1">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-700">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-success-light px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-success">
                       <CheckCircle2 className="h-2.5 w-2.5" strokeWidth={3} />
                       {company.status}
                     </span>
@@ -1618,7 +2159,6 @@ const CompanyDrawer = ({
               </div>
             </div>
 
-            {/* Right: Close */}
             <button
               type="button"
               onClick={closeDrawer}
@@ -1630,12 +2170,12 @@ const CompanyDrawer = ({
                 items-center
                 justify-center
                 rounded-lg
-                text-[#687B78]
-                transition-all
+                text-text-secondary
+                transition-colors
                 duration-200
-                hover:bg-white
-                hover:text-[#09263A]
-                hover:shadow-sm
+                hover:bg-background
+                hover:text-heading
+                hover:shadow-card
               "
               aria-label="Close"
             >
@@ -1648,22 +2188,20 @@ const CompanyDrawer = ({
             SCROLLABLE CONTENT
         ============================================================ */}
         <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-6">
-          {/* ============================================================
-              FILING HISTORY
-          ============================================================ */}
+          {/* FILING HISTORY */}
           <div className="mb-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E8F8F2]">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-light">
                 <FileText
-                  className="h-4 w-4 text-[#087F5B]"
+                  className="h-4 w-4 text-primary"
                   strokeWidth={2.2}
                 />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-[#09263A]">
+                <h3 className="text-sm font-bold text-heading">
                   Filing History
                 </h3>
-                <p className="text-[10px] text-[#687B78]">
+                <p className="text-[10px] text-text-secondary">
                   {company.periods.length} periods
                 </p>
               </div>
@@ -1676,18 +2214,18 @@ const CompanyDrawer = ({
                 shrink-0
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-3
                 py-1.5
                 text-[10px]
                 font-bold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:bg-[#E8F8F2]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:bg-primary-light
+                hover:text-primary
               "
             >
               {showAllPeriods
@@ -1696,33 +2234,32 @@ const CompanyDrawer = ({
             </button>
           </div>
 
-          {/* Filing Table Wrapper — using relative for dropdown positioning */}
-          <div className="relative rounded-xl border border-[#DDEAE6] bg-white">
+          <div className="relative rounded-xl border border-border bg-background">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#DDEAE6] bg-[#F5FCF9]">
-                  <th className="px-3 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <tr className="border-b border-border bg-background-soft">
+                  <th className="px-3 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Period
                   </th>
-                  <th className="px-3 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-3 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Profit
                   </th>
-                  <th className="px-3 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-3 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Tax
                   </th>
-                  <th className="px-3 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-3 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Acc.
                   </th>
-                  <th className="px-3 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-3 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     CT600
                   </th>
-                  <th className="px-3 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <th className="px-3 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     Actions
                   </th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-[#DDEAE6]">
+              <tbody className="divide-y divide-border">
                 {visiblePeriods.map((period, index) => {
                   const isMenuOpen = openFilingMenu === period.id;
 
@@ -1733,46 +2270,39 @@ const CompanyDrawer = ({
                         relative
                         transition-colors
                         ${isMenuOpen ? "z-30" : "z-0"}
-                        ${index === 0 ? "bg-[#E8F8F2]/40" : "bg-white"}
-                        hover:bg-[#F5FCF9]
+                        ${index === 0 ? "bg-primary-light/40" : "bg-background"}
+                        hover:bg-background-soft
                       `}
                     >
-                      {/* Period */}
                       <td className="px-3 py-3.5">
                         <div>
-                          <p className="text-xs font-bold text-[#09263A]">
+                          <p className="text-xs font-bold text-heading">
                             {period.periodEnd}
                           </p>
-                          <p className="mt-0.5 text-[10px] text-[#687B78]">
+                          <p className="mt-0.5 text-[10px] text-text-secondary">
                             from {period.periodStart}
                           </p>
                         </div>
                       </td>
 
-                      {/* Profit */}
-                      <td className="px-3 py-3.5 text-center text-xs text-[#687B78]">
+                      <td className="px-3 py-3.5 text-center text-xs text-text-secondary">
                         {period.profit}
                       </td>
 
-                      {/* Tax */}
-                      <td className="px-3 py-3.5 text-center text-xs text-[#687B78]">
+                      <td className="px-3 py-3.5 text-center text-xs text-text-secondary">
                         {period.tax}
                       </td>
 
-                      {/* Accounts */}
                       <td className="px-3 py-3.5 text-center">
                         <StatusCircle completed={period.accountsFiled} />
                       </td>
 
-                      {/* CT600 */}
                       <td className="px-3 py-3.5 text-center">
                         <StatusCircle completed={period.ct600Filed} />
                       </td>
 
-                      {/* Actions */}
                       <td className="relative px-3 py-3.5 text-right">
                         <div className="relative inline-flex">
-                          {/* Start Filing button */}
                           <button
                             type="button"
                             onClick={() =>
@@ -1787,12 +2317,12 @@ const CompanyDrawer = ({
                               py-2
                               text-[10px]
                               font-bold
-                              transition-all
+                              transition-colors
                               duration-200
                               ${
                                 isMenuOpen
-                                  ? "bg-[#005E45] text-white shadow-md"
-                                  : "bg-[#087F5B] text-white hover:bg-[#005E45] hover:shadow-sm"
+                                  ? "bg-primary-hover text-text-white shadow-card"
+                                  : "bg-primary text-text-white hover:bg-primary-hover hover:shadow-button"
                               }
                             `}
                           >
@@ -1808,13 +2338,14 @@ const CompanyDrawer = ({
                             />
                           </button>
 
-                          {/* Filign action menu — floats to the LEFT of button, never clips */}
-                          {isMenuOpen && (
-                            <FilingActionMenu
-                              period={period}
-                              onAction={handleFilingAction}
-                            />
-                          )}
+                          <AnimatePresence>
+                            {isMenuOpen && (
+                              <FilingActionMenu
+                                period={period}
+                                onAction={handleFilingAction}
+                              />
+                            )}
+                          </AnimatePresence>
                         </div>
                       </td>
                     </tr>
@@ -1824,18 +2355,21 @@ const CompanyDrawer = ({
             </table>
           </div>
 
-          {/* ============================================================
-              ACCOUNTS OUTSIDE BANNER
-          ============================================================ */}
+          {/* ACCOUNTS OUTSIDE BANNER */}
           {company.accountsOutside && (
-            <div
+            <motion.div
+              initial={
+                shouldReduceMotion ? false : { opacity: 0, y: 8 }
+              }
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: premiumEase, delay: 0.2 }}
               className="
                 mt-5
                 overflow-hidden
                 rounded-xl
                 border
-                border-[#C9EDE1]
-                bg-[#E8F8F2]
+                border-primary/20
+                bg-primary-light
                 p-4
               "
             >
@@ -1849,21 +2383,20 @@ const CompanyDrawer = ({
                     items-center
                     justify-center
                     rounded-lg
-                    bg-[#087F5B]
+                    bg-primary
                   "
                 >
-                  <ShieldCheck
-                    className="h-4 w-4 text-white"
+                  <ShieldCheck                    className="h-4 w-4 text-text-white"
                     strokeWidth={2.2}
                   />
                 </div>
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-xs font-bold text-[#09263A]">
+                    <p className="text-xs font-bold text-heading">
                       Accounts filed outside TaxPilot
                     </p>
-                    <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
+                    <span className="rounded-full bg-success px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-text-white">
                       Verified
                     </span>
                   </div>
@@ -1878,9 +2411,9 @@ const CompanyDrawer = ({
                       gap-1
                       text-[11px]
                       font-semibold
-                      text-[#087F5B]
+                      text-primary
                       transition-colors
-                      hover:text-[#005E45]
+                      hover:text-primary-hover
                       hover:underline
                     "
                   >
@@ -1889,31 +2422,26 @@ const CompanyDrawer = ({
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
 
-          {/* ============================================================
-              DIVIDER
-          ============================================================ */}
-          <div className="my-6 border-t border-[#DDEAE6]" />
+          <div className="my-6 border-t border-border" />
 
-          {/* ============================================================
-              EMAIL REMINDERS
-          ============================================================ */}
+          {/* EMAIL REMINDERS */}
           <section>
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E8F8F2]">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-light">
                 <ShieldCheck
-                  className="h-4 w-4 text-[#087F5B]"
+                  className="h-4 w-4 text-primary"
                   strokeWidth={2.2}
                 />
               </div>
-              <h3 className="text-sm font-bold text-[#09263A]">
+              <h3 className="text-sm font-bold text-heading">
                 Email Reminders
               </h3>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-[#DDEAE6] bg-white">
+            <div className="overflow-hidden rounded-xl border border-border bg-background">
               <ReminderToggle
                 checked={reminders.ct600}
                 onChange={() => toggleReminder("ct600")}
@@ -1933,28 +2461,23 @@ const CompanyDrawer = ({
             </div>
           </section>
 
-          {/* ============================================================
-              DIVIDER
-          ============================================================ */}
-          <div className="my-6 border-t border-[#DDEAE6]" />
+          <div className="my-6 border-t border-border" />
 
-          {/* ============================================================
-              QUICK ACTIONS
-          ============================================================ */}
+          {/* QUICK ACTIONS */}
           <section>
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E8F8F2]">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-light">
                 <TrendingUp
-                  className="h-4 w-4 text-[#087F5B]"
+                  className="h-4 w-4 text-primary"
                   strokeWidth={2.2}
                 />
               </div>
-              <h3 className="text-sm font-bold text-[#09263A]">
+              <h3 className="text-sm font-bold text-heading">
                 Quick Actions
               </h3>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-[#DDEAE6] bg-white">
+            <div className="overflow-hidden rounded-xl border border-border bg-background">
               <QuickAction
                 icon={FileText}
                 title="CT600 only"
@@ -1984,9 +2507,7 @@ const CompanyDrawer = ({
           </section>
         </div>
 
-        {/* ============================================================
-            FOOTER
-        ============================================================ */}
+        {/* FOOTER */}
         <div
           className="
             flex
@@ -1995,8 +2516,8 @@ const CompanyDrawer = ({
             items-center
             gap-2
             border-t
-            border-[#DDEAE6]
-            bg-[#F5FCF9]
+            border-border
+            bg-background-soft
             px-5
             py-4
             sm:px-6
@@ -2011,18 +2532,17 @@ const CompanyDrawer = ({
               gap-2
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-3.5
               py-2
               text-xs
               font-semibold
-              text-[#09263A]
-              transition-all
+              text-heading
+              transition-colors
               duration-200
-              hover:border-[#087F5B]
-              hover:bg-white
-              hover:text-[#087F5B]
+              hover:border-primary
+              hover:text-primary
             "
           >
             <RefreshCw className="h-3.5 w-3.5" />
@@ -2038,24 +2558,24 @@ const CompanyDrawer = ({
               gap-2
               rounded-lg
               border
-              border-rose-200
-              bg-white
+              border-danger/20
+              bg-background
               px-3.5
               py-2
               text-xs
               font-semibold
-              text-rose-600
-              transition-all
+              text-danger
+              transition-colors
               duration-200
-              hover:bg-rose-500
-              hover:text-white
+              hover:bg-danger
+              hover:text-text-white
             "
           >
             <Archive className="h-3.5 w-3.5" />
             <span>Archive</span>
           </button>
         </div>
-      </aside>
+      </motion.aside>
     </>
   );
 };
@@ -2064,14 +2584,24 @@ const CompanyDrawer = ({
    FILING ACTION MENU
 ============================================================ */
 
-/* ============================================================
-   FILING ACTION MENU
-   — Floats to the LEFT of the Start button
-============================================================ */
-
 const FilingActionMenu = ({ period, onAction }) => {
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
+
   return (
-    <div
+    <motion.div
+      initial={
+        shouldReduceMotion
+          ? false
+          : { opacity: 0, x: 8, scale: 0.96 }
+      }
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={
+        shouldReduceMotion
+          ? { opacity: 0 }
+          : { opacity: 0, x: 6, scale: 0.97 }
+      }
+      transition={{ duration: 0.2, ease: premiumEase }}
       className="
         absolute
         right-[calc(100%+8px)]
@@ -2082,17 +2612,12 @@ const FilingActionMenu = ({ period, onAction }) => {
         overflow-hidden
         rounded-xl
         border
-        border-[#DDEAE6]
-        bg-white
+        border-border
+        bg-background
         text-left
-        shadow-[0_16px_48px_rgba(9,38,58,0.18)]
-        animate-in
-        fade-in
-        slide-in-from-right-2
-        duration-150
+        shadow-card-hover
       "
     >
-      {/* Small arrow pointer on the right edge */}
       <div
         className="
           absolute
@@ -2104,19 +2629,17 @@ const FilingActionMenu = ({ period, onAction }) => {
           rotate-45
           border-r
           border-t
-          border-[#DDEAE6]
-          bg-white
+          border-border
+          bg-background
         "
       />
 
-      {/* Header */}
-      <div className="relative border-b border-[#DDEAE6] bg-[#F5FCF9] px-3 py-2">
-        <p className="text-[9px] font-bold uppercase tracking-wider text-[#687B78]">
+      <div className="relative border-b border-border bg-background-soft px-3 py-2">
+        <p className="text-[9px] font-bold uppercase tracking-wider text-text-secondary">
           Filing options
         </p>
       </div>
 
-      {/* Items */}
       <MenuItem
         label="CT600 only"
         onClick={() => onAction("CT600 only", period)}
@@ -2137,7 +2660,7 @@ const FilingActionMenu = ({ period, onAction }) => {
         onClick={() => onAction("Amend Accounts", period)}
         icon={Pencil}
       />
-    </div>
+    </motion.div>
   );
 };
 
@@ -2150,20 +2673,46 @@ const ReminderToggle = ({ checked, onChange, label, last = false }) => {
     <button
       type="button"
       onClick={onChange}
-      className={`flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-[#F5FCF9] ${
-        !last ? "border-b border-[#DDEAE6]" : ""
-      }`}
+      className={`
+        flex
+        w-full
+        items-center
+        justify-between
+        gap-3
+        px-4
+        py-3.5
+        text-left
+        transition-colors
+        hover:bg-background-soft
+        ${!last ? "border-b border-border" : ""}
+      `}
     >
-      <span className="text-xs font-semibold text-[#09263A]">{label}</span>
+      <span className="text-xs font-semibold text-heading">{label}</span>
       <span
-        className={`relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200 ${
-          checked ? "bg-[#087F5B]" : "bg-[#DDEAE6]"
-        }`}
+        className={`
+          relative
+          h-5
+          w-9
+          shrink-0
+          rounded-full
+          transition-colors
+          duration-200
+          ${checked ? "bg-primary" : "bg-border"}
+        `}
       >
         <span
-          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-            checked ? "translate-x-[18px]" : "translate-x-0.5"
-          }`}
+          className={`
+            absolute
+            top-0.5
+            h-4
+            w-4
+            rounded-full
+            bg-background
+            shadow-card
+            transition-transform
+            duration-200
+            ${checked ? "translate-x-[18px]" : "translate-x-0.5"}
+          `}
         />
       </span>
     </button>
@@ -2185,20 +2734,45 @@ const QuickAction = ({
     <button
       type="button"
       onClick={onClick}
-      className={`group flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-[#E8F8F2] ${
-        !last ? "border-b border-[#DDEAE6]" : ""
-      }`}
+      className={`
+        group
+        flex
+        w-full
+        items-center
+        gap-3
+        px-4
+        py-3.5
+        text-left
+        transition-colors
+        hover:bg-primary-light
+        ${!last ? "border-b border-border" : ""}
+      `}
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E8F8F2] text-[#087F5B] transition-colors group-hover:bg-[#087F5B] group-hover:text-white">
+      <span
+        className="
+          flex
+          h-9
+          w-9
+          shrink-0
+          items-center
+          justify-center
+          rounded-lg
+          bg-primary-light
+          text-[var(--primary)]
+          transition-colors
+          group-hover:bg-primary
+          group-hover:text-text-white
+        "
+      >
         <Icon className="h-4 w-4" strokeWidth={2.2} />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-xs font-bold text-[#09263A]">{title}</span>
-        <span className="mt-0.5 block text-[10px] leading-4 text-[#687B78]">
+        <span className="block text-xs font-bold text-heading">{title}</span>
+        <span className="mt-0.5 block text-[10px] leading-4 text-text-secondary">
           {description}
         </span>
       </span>
-      <ChevronRight className="h-4 w-4 shrink-0 text-[#687B78] transition-all group-hover:translate-x-0.5 group-hover:text-[#087F5B]" />
+      <ChevronRight className="h-4 w-4 shrink-0 text-text-secondary transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
     </button>
   );
 };

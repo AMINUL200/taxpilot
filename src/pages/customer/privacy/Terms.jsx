@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight, CheckCircle2, FileText, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
+import TaxPilotLoader from "../../../component/common/PageLoader";
 
 const Terms = () => {
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
+
   const sections = [
     { id: "introduction", label: "Introduction" },
     { id: "definitions", label: "Definitions" },
@@ -22,104 +27,342 @@ const Terms = () => {
     { id: "contact", label: "Contact us" },
   ];
 
-  return (
-    <div className="min-h-screen bg-white text-[#09263A]">
+  /* ============================================================
+     ANIMATION VARIANTS
+  ============================================================ */
 
+  /* Hero container */
+  const heroContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.1,
+        delayChildren: shouldReduceMotion ? 0 : 0.1,
+      },
+    },
+  };
+
+  const heroItemVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.7, ease: premiumEase },
+    },
+  };
+
+  /* Section reveal on scroll */
+  const sectionVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.65, ease: premiumEase },
+    },
+  };
+
+  /* TOC items — stagger */
+  const tocContainerVariants = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.04,
+        delayChildren: shouldReduceMotion ? 0 : 0.2,
+      },
+    },
+  };
+
+  const tocItemVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -8 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.4, ease: premiumEase },
+    },
+  };
+
+  /* CTA reveal */
+  const ctaVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: premiumEase },
+    },
+  };
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <TaxPilotLoader />;
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-heading">
       {/* =====================================================
           HERO
       ===================================================== */}
-      <section className="relative overflow-hidden bg-[#F5FCF9]">
+      <section className="relative overflow-hidden bg-background-soft">
         {/* Decorative elements */}
-        <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full border border-[#65D9BB]/15" />
-        <div className="pointer-events-none absolute -left-10 -top-10 h-48 w-48 rounded-full border border-[#65D9BB]/15" />
-        <div className="pointer-events-none absolute -bottom-32 -right-20 h-80 w-80 rounded-full border border-[#65D9BB]/15" />
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -left-24
+            -top-24
+            h-72
+            w-72
+            rounded-full
+            border
+            border-sky/15
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.06, 1], opacity: [0.6, 1, 0.6] }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -left-10
+            -top-10
+            h-48
+            w-48
+            rounded-full
+            border
+            border-sky/15
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.08, 1], opacity: [0.5, 1, 0.5] }
+          }
+          transition={{
+            duration: 9,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5,
+          }}
+        />
+        <div
+          className="
+            pointer-events-none
+            absolute
+            -bottom-32
+            -right-20
+            h-80
+            w-80
+            rounded-full
+            border
+            border-sky/15
+          "
+        />
 
-        <div className="relative mx-auto max-w-7xl px-5 py-20 sm:px-6 sm:py-24 lg:px-8">
+        <motion.div
+          className="relative mx-auto max-w-7xl px-5 py-20 sm:px-6 sm:py-24 lg:px-8"
+          variants={heroContainerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           <div className="mx-auto max-w-3xl text-center">
-
             {/* Label */}
-            <div className="mb-5 flex justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full bg-[#E5F7F0] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#087F5B]">
+            <motion.div
+              variants={heroItemVariants}
+              className="mb-5 flex justify-center"
+            >
+              <span
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-full
+                  bg-primary-light
+                  px-4
+                  py-2
+                  text-[10px]
+                  font-bold
+                  uppercase
+                  tracking-[0.18em]
+                  text-primary
+                "
+              >
                 <FileText className="h-3.5 w-3.5" />
                 Legal
               </span>
-            </div>
+            </motion.div>
 
             {/* Heading */}
-            <h1 className="text-4xl font-bold tracking-tight text-[#09263A] sm:text-5xl lg:text-6xl">
-              Terms &{" "}
-              <span className="text-[#087F5B]">Conditions</span>
-            </h1>
+            <motion.h1
+              variants={heroItemVariants}
+              className="
+                text-4xl
+                font-bold
+                tracking-tight
+                text-heading
+                sm:text-5xl
+                lg:text-6xl
+              "
+            >
+              Terms & <span className="text-primary">Conditions</span>
+            </motion.h1>
 
-            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#687B78] sm:text-base">
+            <motion.p
+              variants={heroItemVariants}
+              className="
+                mx-auto
+                mt-5
+                max-w-2xl
+                text-sm
+                leading-7
+                text-text-secondary
+                sm:text-base
+              "
+            >
               These terms explain the rules and conditions that apply when you
               use the ComplyTax UK website, platform and services.
-            </p>
+            </motion.p>
 
             {/* Updated date */}
-            <div className="mt-7 inline-flex items-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-4 py-2.5 shadow-[0_4px_15px_rgba(0,62,62,0.04)]">
-              <span className="text-xs text-[#71827F]">
-                Last updated
-              </span>
-              <span className="text-xs font-semibold text-[#09263A]">
+            <motion.div
+              variants={heroItemVariants}
+              className="
+                mt-7
+                inline-flex
+                items-center
+                gap-2
+                rounded-lg
+                border
+                border-border
+                bg-background
+                px-4
+                py-2.5
+                shadow-card
+              "
+            >
+              <span className="text-xs text-text-secondary">Last updated</span>
+              <span className="text-xs font-semibold text-heading">
                 09 September 2026
               </span>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* =====================================================
           MAIN CONTENT
       ===================================================== */}
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-background py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-
           <div className="grid gap-12 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-16">
-
             {/* =================================================
                 TABLE OF CONTENTS
             ================================================= */}
             <aside className="hidden lg:block">
               <div className="sticky top-28">
-
-                <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.16em] text-[#087F5B]">
+                <p
+                  className="
+                    mb-4
+                    text-[10px]
+                    font-bold
+                    uppercase
+                    tracking-[0.16em]
+                    text-primary
+                  "
+                >
                   On this page
                 </p>
 
-                <nav className="border-l border-[#DDEAE6]">
+                <motion.nav
+                  className="border-l border-border"
+                  variants={tocContainerVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
                   {sections.map((section) => (
-                    <a
+                    <motion.a
                       key={section.id}
                       href={`#${section.id}`}
-                      className="block border-l-2 border-transparent px-4 py-2 text-xs leading-5 text-[#71827F] transition-all duration-200 hover:border-[#087F5B] hover:bg-[#F5FCF9] hover:text-[#087F5B]"
+                      variants={tocItemVariants}
+                      className="
+                        block
+                        border-l-2
+                        border-transparent
+                        px-4
+                        py-2
+                        text-xs
+                        leading-5
+                        text-text-secondary
+                        transition-all
+                        duration-200
+                        hover:border-primary
+                        hover:bg-background-soft
+                        hover:text-primary
+                      "
                     >
                       {section.label}
-                    </a>
+                    </motion.a>
                   ))}
-                </nav>
+                </motion.nav>
 
                 {/* Sidebar help card */}
-                <div className="mt-8 rounded-2xl border border-[#DDEAE6] bg-[#F5FCF9] p-5">
-                  <ShieldCheck className="mb-3 h-5 w-5 text-[#087F5B]" />
+                <motion.div
+                  className="
+                    mt-8
+                    rounded-2xl
+                    border
+                    border-border
+                    bg-background-soft
+                    p-5
+                  "
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.6,
+                    ease: premiumEase,
+                    delay: 0.8,
+                  }}
+                >
+                  <ShieldCheck className="mb-3 h-5 w-5 text-primary" />
 
-                  <h3 className="text-sm font-bold text-[#09263A]">
-                    Need help?
-                  </h3>
+                  <h3 className="text-sm font-bold text-heading">Need help?</h3>
 
-                  <p className="mt-2 text-xs leading-5 text-[#71827F]">
+                  <p className="mt-2 text-xs leading-5 text-text-secondary">
                     If you have questions about these terms, our support team
                     can help.
                   </p>
 
                   <Link
                     to="/help"
-                    className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-[#087F5B] hover:text-[#005E45]"
+                    className="
+                      mt-4
+                      inline-flex
+                      items-center
+                      gap-1
+                      text-xs
+                      font-bold
+                      text-primary
+                      transition-colors
+                      duration-200
+                      hover:text-primary-hover
+                    "
                   >
                     Visit Help Centre
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
-                </div>
+                </motion.div>
               </div>
             </aside>
 
@@ -127,10 +370,31 @@ const Terms = () => {
                 TERMS CONTENT
             ================================================= */}
             <article className="max-w-3xl">
-
               {/* Mobile table of contents */}
-              <div className="mb-10 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-5 lg:hidden">
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.15em] text-[#087F5B]">
+              <motion.div
+                className="
+                  mb-10
+                  rounded-xl
+                  border
+                  border-border
+                  bg-background-soft
+                  p-5
+                  lg:hidden
+                "
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: premiumEase }}
+              >
+                <p
+                  className="
+                    mb-3
+                    text-[10px]
+                    font-bold
+                    uppercase
+                    tracking-[0.15em]
+                    text-primary
+                  "
+                >
                   On this page
                 </p>
 
@@ -139,51 +403,69 @@ const Terms = () => {
                     <a
                       key={section.id}
                       href={`#${section.id}`}
-                      className="text-xs text-[#687B78] hover:text-[#087F5B]"
+                      className="
+                        text-xs
+                        text-text-secondary
+                        transition-colors
+                        duration-200
+                        hover:text-primary
+                      "
                     >
                       {section.label}
                     </a>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Introduction */}
-              <div
+              <motion.div
                 id="introduction"
-                className="scroll-mt-28 border-b border-[#EDF3F1] pb-10"
+                className="scroll-mt-28 border-b border-border/50 pb-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  01
-                </span>
+                <span className="text-xs font-bold text-primary">01</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Introduction
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   These Terms & Conditions govern your use of the ComplyTax UK
                   website, platform and services. By creating an account or
                   using our services, you agree to comply with these terms.
                 </p>
 
-                <div className="mt-5 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-5">
-                  <p className="text-sm font-medium leading-6 text-[#4F6460]">
-                    Please read these terms carefully before using our
-                    services.
+                <div
+                  className="
+                    mt-5
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background-soft
+                    p-5
+                  "
+                >
+                  <p className="text-sm font-medium leading-6 text-text-secondary">
+                    Please read these terms carefully before using our services.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Definitions */}
-              <div
+              <motion.div
                 id="definitions"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  02
-                </span>
+                <span className="text-xs font-bold text-primary">02</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Definitions
                 </h2>
 
@@ -205,40 +487,47 @@ const Terms = () => {
                       "Platform",
                       "The ComplyTax online website, software and related systems.",
                     ],
-                    [
-                      "Account",
-                      "Your registered ComplyTax user account.",
-                    ],
+                    ["Account", "Your registered ComplyTax user account."],
                   ].map(([term, definition]) => (
                     <div
                       key={term}
-                      className="rounded-xl border border-[#DDEAE6] p-4"
+                      className="
+                        rounded-xl
+                        border
+                        border-border
+                        p-4
+                        transition-colors
+                        duration-200
+                        hover:border-primary/30
+                      "
                     >
-                      <p className="text-sm font-semibold text-[#09263A]">
+                      <p className="text-sm font-semibold text-heading">
                         {term}
                       </p>
-                      <p className="mt-1.5 text-sm leading-6 text-[#687B78]">
+                      <p className="mt-1.5 text-sm leading-6 text-text-secondary">
                         {definition}
                       </p>
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Using services */}
-              <div
+              <motion.div
                 id="using-services"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  03
-                </span>
+                <span className="text-xs font-bold text-primary">03</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Using our services
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   You agree to use the platform lawfully and in accordance with
                   these terms. You must not misuse the platform or attempt to
                   interfere with its operation, security or availability.
@@ -253,124 +542,157 @@ const Terms = () => {
                   ].map((item) => (
                     <li
                       key={item}
-                      className="flex items-start gap-3 text-sm leading-6 text-[#687B78]"
+                      className="
+                        flex
+                        items-start
+                        gap-3
+                        text-sm
+                        leading-6
+                        text-text-secondary
+                      "
                     >
-                      <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-[#087F5B]" />
+                      <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
                       {item}
                     </li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
 
               {/* Account */}
-              <div
+              <motion.div
                 id="account"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  04
-                </span>
+                <span className="text-xs font-bold text-primary">04</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Your account
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   When you create an account, you are responsible for keeping
                   your account information accurate and your login credentials
                   secure.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   You should notify us promptly if you believe your account has
                   been accessed without your permission or if you become aware
                   of any security issue.
                 </p>
 
-                <div className="mt-5 rounded-xl bg-[#F5FCF9] p-5">
-                  <h3 className="text-sm font-bold text-[#09263A]">
+                <div className="mt-5 rounded-xl bg-background-soft p-5">
+                  <h3 className="text-sm font-bold text-heading">
                     Account security
                   </h3>
-                  <p className="mt-2 text-sm leading-6 text-[#687B78]">
+                  <p className="mt-2 text-sm leading-6 text-text-secondary">
                     Keep your login details confidential and contact us promptly
                     if you believe your account has been accessed without
                     permission.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Services */}
-              <div
+              <motion.div
                 id="services"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  05
-                </span>
+                <span className="text-xs font-bold text-primary">05</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Our services
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   ComplyTax provides online tools and services intended to help
                   users manage tax and company compliance.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Our platform provides tools and information to assist with
                   compliance. You remain responsible for ensuring that
                   information submitted through the platform is complete and
                   accurate.
                 </p>
-              </div>
+              </motion.div>
 
               {/* Payments */}
-              <div
+              <motion.div
                 id="payments"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  06
-                </span>
+                <span className="text-xs font-bold text-primary">06</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Payments and pricing
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Subscription and product prices are displayed on our website
                   and may vary depending on the service or plan selected.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Where applicable, subscriptions may renew automatically until
                   cancelled in accordance with the applicable subscription
                   terms.
                 </p>
 
-                <div className="mt-5 rounded-xl border border-[#DDEAE6] bg-white p-5 shadow-[0_5px_20px_rgba(0,62,62,0.04)]">
-                  <p className="text-xs font-bold uppercase tracking-wider text-[#087F5B]">
+                <div
+                  className="
+                    mt-5
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    p-5
+                    shadow-card
+                  "
+                >
+                  <p
+                    className="
+                      text-xs
+                      font-bold
+                      uppercase
+                      tracking-wider
+                      text-primary
+                    "
+                  >
                     Pricing
                   </p>
 
-                  <p className="mt-2 text-sm leading-6 text-[#687B78]">
+                  <p className="mt-2 text-sm leading-6 text-text-secondary">
                     Prices for our services are displayed on our website and may
                     vary depending on the product or plan selected.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Responsibilities */}
-              <div
+              <motion.div
                 id="responsibilities"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  07
-                </span>
+                <span className="text-xs font-bold text-primary">07</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Your responsibilities
                 </h2>
 
@@ -385,82 +707,100 @@ const Terms = () => {
                   ].map((item) => (
                     <div
                       key={item}
-                      className="flex items-start gap-3 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-4"
+                      className="
+                        flex
+                        items-start
+                        gap-3
+                        rounded-xl
+                        border
+                        border-border
+                        bg-background-soft
+                        p-4
+                        transition-colors
+                        duration-200
+                        hover:border-primary/30
+                      "
                     >
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#087F5B]" />
-                      <span className="text-sm leading-6 text-[#4F6460]">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-sm leading-6 text-text-secondary">
                         {item}
                       </span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Intellectual property */}
-              <div
+              <motion.div
                 id="intellectual-property"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  08
-                </span>
+                <span className="text-xs font-bold text-primary">08</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Intellectual property
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   The ComplyTax website, software, branding, logos, content,
                   graphics and other materials are owned by or licensed to
                   ComplyTax unless otherwise stated.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   You receive a limited right to use the platform for its
                   intended purpose. This does not transfer ownership of the
                   software or intellectual property to you.
                 </p>
-              </div>
+              </motion.div>
 
               {/* Third party */}
-              <div
+              <motion.div
                 id="third-party"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  09
-                </span>
+                <span className="text-xs font-bold text-primary">09</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Third-party services
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   ComplyTax may integrate with or rely on third-party services,
                   including payment providers, HMRC services, Companies House,
                   accounting platforms and other technology providers.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Your use of third-party services may also be subject to their
                   own terms and policies.
                 </p>
-              </div>
+              </motion.div>
 
               {/* Privacy */}
-              <div
+              <motion.div
                 id="privacy"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  10
-                </span>
+                <span className="text-xs font-bold text-primary">10</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Data and privacy
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   We take the protection of personal information seriously.
                   Information collected through our services is handled in
                   accordance with our Privacy Policy.
@@ -468,188 +808,274 @@ const Terms = () => {
 
                 <Link
                   to="/privacy"
-                  className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#E5F7F0] px-4 py-2.5 text-xs font-bold text-[#087F5B] transition-colors hover:bg-[#DDF5EC]"
+                  className="
+                    mt-5
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-lg
+                    bg-primary-light
+                    px-4
+                    py-2.5
+                    text-xs
+                    font-bold
+                    text-primary
+                    transition-colors
+                    duration-200
+                    hover:bg-primary/20
+                  "
                 >
                   Read our Privacy Policy
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
-              </div>
+              </motion.div>
 
               {/* Disclaimers */}
-              <div
+              <motion.div
                 id="disclaimers"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  11
-                </span>
+                <span className="text-xs font-bold text-primary">11</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Disclaimers
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Information provided through the platform is intended to
                   assist users with tax and company compliance processes and
                   should not automatically be treated as professional advice.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Tax rules, filing requirements and regulations can change.
                   Users should review important information and obtain
                   professional advice where appropriate.
                 </p>
-              </div>
+              </motion.div>
 
               {/* Liability */}
-              <div
+              <motion.div
                 id="liability"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  12
-                </span>
+                <span className="text-xs font-bold text-primary">12</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Limitation of liability
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   To the extent permitted by applicable law, our liability in
                   connection with the services will be subject to the
                   limitations and exclusions set out in these Terms.
                 </p>
 
-                <div className="mt-5 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-5">
-                  <p className="text-sm font-semibold text-[#09263A]">
+                <div
+                  className="
+                    mt-5
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background-soft
+                    p-5
+                  "
+                >
+                  <p className="text-sm font-semibold text-heading">
                     Important
                   </p>
 
-                  <p className="mt-2 text-sm leading-6 text-[#687B78]">
+                  <p className="mt-2 text-sm leading-6 text-text-secondary">
                     Nothing in these Terms is intended to exclude or limit
                     liability where doing so would be unlawful.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Termination */}
-              <div
+              <motion.div
                 id="termination"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  13
-                </span>
+                <span className="text-xs font-bold text-primary">13</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Suspension and termination
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   We may suspend or terminate access to an account or service
                   where reasonably necessary, including in circumstances
                   involving a breach of these Terms, fraudulent activity,
                   security concerns, non-payment or legal requirements.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   You may also cancel your account or subscription in accordance
                   with the applicable cancellation process.
                 </p>
-              </div>
+              </motion.div>
 
               {/* Changes */}
-              <div
+              <motion.div
                 id="changes"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  14
-                </span>
+                <span className="text-xs font-bold text-primary">14</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Changes to these terms
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
-                  We may update these Terms from time to time to reflect
-                  changes to our services, legal requirements or business
-                  practices.
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
+                  We may update these Terms from time to time to reflect changes
+                  to our services, legal requirements or business practices.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Where appropriate, we will provide notice of material changes.
                   The latest version will be made available on this page.
                 </p>
 
-                <div className="mt-5 flex items-center gap-3 rounded-xl bg-[#F5FCF9] p-4">
-                  <FileText className="h-5 w-5 text-[#087F5B]" />
+                <div
+                  className="
+                    mt-5
+                    flex
+                    items-center
+                    gap-3
+                    rounded-xl
+                    bg-background-soft
+                    p-4
+                  "
+                >
+                  <FileText className="h-5 w-5 text-primary" />
 
                   <div>
-                    <p className="text-xs font-semibold text-[#71827F]">
+                    <p className="text-xs font-semibold text-text-secondary">
                       Last updated
                     </p>
-                    <p className="mt-0.5 text-sm font-bold text-[#09263A]">
+                    <p className="mt-0.5 text-sm font-bold text-heading">
                       09 September 2026
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Governing law */}
-              <div
+              <motion.div
                 id="governing-law"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  15
-                </span>
+                <span className="text-xs font-bold text-primary">15</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Governing law
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
-                  These Terms are intended to be governed by the applicable
-                  laws and jurisdiction specified by the legal entity operating
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
+                  These Terms are intended to be governed by the applicable laws
+                  and jurisdiction specified by the legal entity operating
                   ComplyTax UK.
                 </p>
 
-                <div className="mt-5 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-5">
-                  <p className="text-sm leading-6 text-[#687B78]">
+                <div
+                  className="
+                    mt-5
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background-soft
+                    p-5
+                  "
+                >
+                  <p className="text-sm leading-6 text-text-secondary">
                     The exact governing law and jurisdiction should be confirmed
-                    based on the registered legal entity and business
-                    structure.
+                    based on the registered legal entity and business structure.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Contact */}
-              <div
+              <motion.div
                 id="contact"
                 className="scroll-mt-28 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  16
-                </span>
+                <span className="text-xs font-bold text-primary">16</span>
 
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Contact us
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   If you have any questions about these Terms & Conditions,
                   please contact our support team.
                 </p>
 
-                <Link
-                  to="/help"
-                  className="group mt-6 inline-flex items-center gap-2 rounded-xl bg-[#087F5B] px-5 py-3 text-sm font-bold text-white shadow-[0_8px_20px_rgba(8,127,91,0.15)] transition-all duration-200 hover:bg-[#005E45]"
+                <motion.div
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : { y: -2, transition: { duration: 0.2 } }
+                  }
+                  className="inline-block"
                 >
-                  Contact support
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </div>
+                  <Link
+                    to="/help"
+                    className="
+                      group
+                      mt-6
+                      inline-flex
+                      items-center
+                      gap-2
+                      rounded-xl
+                      bg-primary
+                      px-5
+                      py-3
+                      text-sm
+                      font-bold
+                      text-text-white
+                      shadow-button
+                      transition-colors
+                      duration-200
+                      hover:bg-primary-hover
+                    "
+                  >
+                    Contact support
+                    <ArrowRight
+                      className="
+                        h-4
+                        w-4
+                        transition-transform
+                        group-hover:translate-x-1
+                      "
+                    />
+                  </Link>
+                </motion.div>
+              </motion.div>
             </article>
           </div>
         </div>
@@ -658,35 +1084,141 @@ const Terms = () => {
       {/* =====================================================
           FINAL CTA
       ===================================================== */}
-      <section className="relative overflow-hidden bg-[#004646] py-16 sm:py-20">
-
+      <motion.section
+        className="relative overflow-hidden bg-dark py-16 sm:py-20"
+        variants={ctaVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+      >
         {/* Decorative circles */}
-        <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full border border-[#65D9BB]/10" />
-        <div className="pointer-events-none absolute -bottom-24 -right-20 h-72 w-72 rounded-full border border-[#65D9BB]/10" />
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -left-20
+            -top-20
+            h-64
+            w-64
+            rounded-full
+            border
+            border-sky/10
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.08, 1], opacity: [0.6, 1, 0.6] }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -bottom-24
+            -right-20
+            h-72
+            w-72
+            rounded-full
+            border
+            border-sky/10
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.06, 1], opacity: [0.6, 1, 0.6] }
+          }
+          transition={{
+            duration: 9,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5,
+          }}
+        />
 
         <div className="relative mx-auto max-w-3xl px-5 text-center sm:px-6">
+          <motion.div
+            className="
+              mx-auto
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
+              rounded-full
+              bg-sky/10
+            "
+            initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.5 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 0.55,
+              ease: [0.34, 1.56, 0.64, 1],
+              delay: 0.2,
+            }}
+          >
+            <ShieldCheck className="h-5 w-5 text-sky" />
+          </motion.div>
 
-          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#65D9BB]/10">
-            <ShieldCheck className="h-5 w-5 text-[#65D9BB]" />
-          </div>
-
-          <h2 className="mt-5 text-2xl font-bold text-white sm:text-3xl">
+          <h2 className="mt-5 text-2xl font-bold text-text-white sm:text-3xl">
             Have questions about our terms?
           </h2>
 
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-white/60">
+          <p
+            className="
+              mx-auto
+              mt-3
+              max-w-xl
+              text-sm
+              leading-7
+              text-text-white/60
+            "
+          >
             If anything is unclear, our support team is here to help.
           </p>
 
-          <Link
-            to="/help"
-            className="group mt-7 inline-flex items-center gap-2 rounded-xl bg-[#65D9BB] px-6 py-3.5 text-sm font-bold text-[#004646] transition-all duration-200 hover:bg-[#7BE5C9]"
+          <motion.div
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -2, transition: { duration: 0.2 } }
+            }
+            className="inline-block"
           >
-            Visit Help Centre
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
+            <Link
+              to="/help"
+              className="
+                group
+                mt-7
+                inline-flex
+                items-center
+                gap-2
+                rounded-xl
+                bg-sky
+                px-6
+                py-3.5
+                text-sm
+                font-bold
+                text-dark
+                shadow-button
+                transition-colors
+                duration-200
+                hover:bg-sky-light
+              "
+            >
+              Visit Help Centre
+              <ArrowRight
+                className="
+                  h-4
+                  w-4
+                  transition-transform
+                  group-hover:translate-x-1
+                "
+              />
+            </Link>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 };

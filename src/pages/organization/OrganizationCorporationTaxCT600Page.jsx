@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -67,7 +68,7 @@ const date = (name, label, box, extra = {}) => ({
 });
 
 /* ============================================================
-   CT600 FORM CONFIGURATION
+   CT600 FORM CONFIGURATION (unchanged)
 ============================================================ */
 
 const ct600Sections = [
@@ -105,7 +106,6 @@ const ct600Sections = [
       checkbox("smeExemption", "Company qualifies for SME exemption", "75"),
     ],
   },
-
   {
     id: "accounts-supplementary",
     page: 2,
@@ -140,7 +140,6 @@ const ct600Sections = [
       checkbox("laterPeriodDeficit", "Figure in box 170 is net of carrying back a deficit from a later accounting period", "172"),
     ],
   },
-
   {
     id: "income-gains-reliefs",
     page: 3,
@@ -168,7 +167,6 @@ const ct600Sections = [
       money("nonTradeDeficitsCurrent", "Non-trade deficits for this accounting period from loan relationships and derivative contracts", "260"),
     ],
   },
-
   {
     id: "deductions-tax-calculation",
     page: 4,
@@ -204,7 +202,6 @@ const ct600Sections = [
       { id: 6, financialYear: "2025", profitBox: "415", rateBox: "420", taxBox: "425" },
     ],
   },
-
   {
     id: "tax-reliefs",
     page: 5,
@@ -236,7 +233,6 @@ const ct600Sections = [
       money("egl", "Electricity Generator Levy exceptional generation receipts", "987"),
     ],
   },
-
   {
     id: "tax-outstanding",
     page: 6,
@@ -267,7 +263,6 @@ const ct600Sections = [
       money("surplusRDCredits", "Surplus R&D credits and creatives tax credit payable", "570"),
     ],
   },
-
   {
     id: "tax-reconciliation",
     page: 7,
@@ -306,7 +301,6 @@ const ct600Sections = [
       },
     ],
   },
-
   {
     id: "rd-capital-allowances",
     page: 8,
@@ -346,7 +340,6 @@ const ct600Sections = [
       money("otherAllowancesBalancing", "Other allowances and charges — balancing charges", "730"),
     ],
   },
-
   {
     id: "capital-allowances-continued",
     page: 9,
@@ -384,7 +377,6 @@ const ct600Sections = [
       money("zeroEmissionCarsOutsideTradingDisposal", "Zero-emission cars — disposal value", "752"),
     ],
   },
-
   {
     id: "losses",
     page: 10,
@@ -417,7 +409,6 @@ const ct600Sections = [
       money("managementExpensesGroupRelief", "Maximum available for surrender as group relief", "855"),
     ],
   },
-
   {
     id: "repayments",
     page: 11,
@@ -443,7 +434,6 @@ const ct600Sections = [
       money("mainstreamLossesNI", "Group relief claimed relating to rest of UK/mainstream losses used against NI trading profits", "858"),
     ],
   },
-
   {
     id: "bank-declaration",
     page: 12,
@@ -477,6 +467,8 @@ const ct600Sections = [
 const OrganizationCorporationTaxCT600Page = () => {
   const navigate = useNavigate();
   const { companyNumber } = useParams();
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
 
   const [formData, setFormData] = useState(() => {
     const initial = {};
@@ -515,7 +507,7 @@ const OrganizationCorporationTaxCT600Page = () => {
   };
 
   /* ============================================================
-     SIMPLE CALCULATIONS
+     CALCULATIONS (unchanged)
   ============================================================ */
 
   const calculatedValues = useMemo(() => {
@@ -661,14 +653,13 @@ const OrganizationCorporationTaxCT600Page = () => {
 
     window.scrollTo({ top, behavior: "smooth" });
 
-    // Release the lock after the scroll settles
     setTimeout(() => {
       isScrollingRef.current = false;
     }, 700);
   };
 
   /* ============================================================
-     OBSERVER — Update active section as user scrolls
+     OBSERVER (unchanged)
   ============================================================ */
 
   useEffect(() => {
@@ -697,46 +688,90 @@ const OrganizationCorporationTaxCT600Page = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const activeIndex = ct600Sections.findIndex((s) => s.id === activeSectionId);
+
   /* ============================================================
-     PROGRESS
+     ANIMATION VARIANTS
   ============================================================ */
 
-  const activeIndex = ct600Sections.findIndex((s) => s.id === activeSectionId);
+  const sectionVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: premiumEase },
+    },
+  };
+
+  const fieldVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 12 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4, ease: premiumEase },
+    },
+  };
 
   /* ============================================================
      RENDER
   ============================================================ */
 
   return (
-    <div className="min-h-screen bg-[#F5FCF9]">
+    <div className="min-h-screen bg-background-soft">
       {/* ======================================================
           TOP HEADER
       ====================================================== */}
-
-      <div className="sticky top-0 z-40 border-b border-[#DDEAE6] bg-white">
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: premiumEase }}
+        className="sticky top-0 z-40 border-b border-border bg-background"
+      >
         <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-5 py-3 lg:px-8">
           <div className="flex min-w-0 items-center gap-3">
-            <button
+            <motion.button
               type="button"
               onClick={() => navigate("/organization/products/corporation-tax")}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#DDEAE6] bg-white text-[#687B78] transition hover:border-[#087F5B] hover:text-[#087F5B]"
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { scale: 1.05, transition: { duration: 0.15 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
+              className="
+                flex
+                h-9
+                w-9
+                shrink-0
+                items-center
+                justify-center
+                rounded-lg
+                border
+                border-border
+                bg-background
+                text-text-secondary
+                transition-colors
+                hover:border-primary
+                hover:text-primary
+              "
             >
               <ArrowLeft className="h-4 w-4" />
-            </button>
+            </motion.button>
 
-            <div className="hidden h-8 w-px bg-[#DDEAE6] sm:block" />
+            <div className="hidden h-8 w-px bg-border sm:block" />
 
             <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E5F7F0]">
-                <FileText className="h-4 w-4 text-[#087F5B]" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-light">
+                <FileText className="h-4 w-4 text-primary" />
               </div>
 
               <div className="min-w-0">
-                <p className="truncate text-sm font-bold text-[#09263A]">
+                <p className="truncate text-sm font-bold text-heading">
                   Corporation Tax — CT600
                 </p>
-
-                <p className="truncate text-[10px] text-[#687B78]">
+                <p className="truncate text-[10px] text-text-secondary">
                   {company.companyName} · #{company.companyNumber}
                 </p>
               </div>
@@ -744,80 +779,159 @@ const OrganizationCorporationTaxCT600Page = () => {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            {saved && (
-              <span className="hidden items-center gap-1.5 rounded-lg bg-[#E8F8F2] px-3 py-2 text-[11px] font-semibold text-[#087F5B] sm:flex">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                Saved
-              </span>
-            )}
+            <AnimatePresence>
+              {saved && (
+                <motion.span
+                  initial={
+                    shouldReduceMotion
+                      ? false
+                      : { opacity: 0, x: 8, scale: 0.9 }
+                  }
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={
+                    shouldReduceMotion
+                      ? { opacity: 0 }
+                      : { opacity: 0, x: 8, scale: 0.9 }
+                  }
+                  transition={{ duration: 0.25, ease: premiumEase }}
+                  className="
+                    hidden
+                    items-center
+                    gap-1.5
+                    rounded-lg
+                    bg-primary-light
+                    px-3
+                    py-2
+                    text-[11px]
+                    font-semibold
+                    text-primary
+                    sm:flex
+                  "
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Saved
+                </motion.span>
+              )}
+            </AnimatePresence>
 
-            <button
+            <motion.button
               type="button"
               onClick={handleSave}
-              className="inline-flex items-center gap-2 rounded-lg border border-[#D8E5E1] bg-white px-3.5 py-2 text-xs font-semibold text-[#09263A] transition hover:border-[#087F5B] hover:text-[#087F5B]"
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+              className="
+                inline-flex
+                items-center
+                gap-2
+                rounded-lg
+                border
+                border-border
+                bg-background
+                px-3.5
+                py-2
+                text-xs
+                font-semibold
+                text-heading
+                transition-colors
+                hover:border-primary
+                hover:text-primary
+              "
             >
               <Save className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Save draft</span>
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
               type="button"
               onClick={() => console.log("Review CT600", formData)}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#087F5B] px-3.5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-[#005E45]"
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+              className="
+                inline-flex
+                items-center
+                gap-2
+                rounded-lg
+                bg-primary
+                px-3.5
+                py-2
+                text-xs
+                font-bold
+                text-text-white
+                shadow-button
+                transition-colors
+                hover:bg-primary-hover
+              "
             >
               Review
               <ArrowRight className="h-3.5 w-3.5" />
-            </button>
+            </motion.button>
           </div>
         </div>
 
-        {/* ======================================================
-            PROGRESS BAR
-        ====================================================== */}
-
+        {/* PROGRESS BAR */}
         <div className="mx-auto max-w-[1500px] px-5 pb-3 lg:px-8">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
               Filing progress
             </span>
-            <span className="text-[10px] font-bold text-[#087F5B]">
+            <span className="text-[10px] font-bold text-primary">
               Section {activeIndex + 1} / {ct600Sections.length}
             </span>
           </div>
 
-          <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-[#E5F7F0]">
-            <div
-              className="h-full rounded-full bg-[#087F5B] transition-all duration-300"
-              style={{
+          <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-primary-light">
+            <motion.div
+              className="h-full rounded-full bg-primary"
+              initial={false}
+              animate={{
                 width: `${((activeIndex + 1) / ct600Sections.length) * 100}%`,
               }}
+              transition={{ duration: 0.4, ease: premiumEase }}
             />
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           MAIN LAYOUT
       ====================================================== */}
-
       <div className="mx-auto max-w-[1500px] px-4 py-5 sm:px-6 lg:px-8 lg:py-7">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[290px_minmax(0,1fr)]">
           {/* ==================================================
-              LEFT SIDEBAR — Section Navigation
+              LEFT SIDEBAR
           ================================================== */}
-
           <aside className="lg:sticky lg:top-[135px] lg:h-[calc(100vh-160px)]">
-            <div className="flex h-full flex-col rounded-2xl border border-[#DDEAE6] bg-white shadow-[0_4px_18px_rgba(16,42,67,0.04)]">
-              <div className="border-b border-[#DDEAE6] px-4 py-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#687B78]">
+            <motion.div
+              initial={shouldReduceMotion ? false : { opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, ease: premiumEase }}
+              className="
+                flex
+                h-full
+                flex-col
+                rounded-2xl
+                border
+                border-border
+                bg-background
+                shadow-card
+              "
+            >
+              <div className="border-b border-border px-4 py-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary">
                   CT600 Return
                 </p>
-
-                <p className="mt-1 text-sm font-bold text-[#09263A]">
+                <p className="mt-1 text-sm font-bold text-heading">
                   Form sections
                 </p>
-
-                <p className="mt-1 text-[10px] text-[#687B78]">
+                <p className="mt-1 text-[10px] text-text-secondary">
                   Click a section to jump to it
                 </p>
               </div>
@@ -828,23 +942,57 @@ const OrganizationCorporationTaxCT600Page = () => {
                   const active = item.id === activeSectionId;
 
                   return (
-                    <button
+                    <motion.button
                       key={item.id}
                       type="button"
                       onClick={() => scrollToSection(item.id)}
+                      initial={
+                        shouldReduceMotion
+                          ? false
+                          : { opacity: 0, x: -8 }
+                      }
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        duration: 0.35,
+                        ease: premiumEase,
+                        delay: shouldReduceMotion ? 0 : index * 0.025,
+                      }}
+                      whileHover={
+                        shouldReduceMotion
+                          ? undefined
+                          : { x: 2, transition: { duration: 0.2 } }
+                      }
+                      whileTap={
+                        shouldReduceMotion ? undefined : { scale: 0.98 }
+                      }
                       className={`
-                        mb-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all
+                        mb-1
+                        flex
+                        w-full
+                        items-center
+                        gap-3
+                        rounded-xl
+                        px-3
+                        py-2.5
+                        text-left
+                        transition-colors
                         ${
                           active
-                            ? "bg-[#087F5B] text-white shadow-sm"
-                            : "text-[#687B78] hover:bg-[#E8F8F2] hover:text-[#087F5B]"
+                            ? "bg-primary text-text-white shadow-button"
+                            : "text-text-secondary hover:bg-primary-light hover:text-primary"
                         }
                       `}
                     >
                       <span
                         className={`
-                          flex h-7 w-7 shrink-0 items-center justify-center rounded-lg
-                          ${active ? "bg-white/15" : "bg-[#F5FCF9]"}
+                          flex
+                          h-7
+                          w-7
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-lg
+                          ${active ? "bg-text-white/15" : "bg-background-soft"}
                         `}
                       >
                         <Icon className="h-3.5 w-3.5" />
@@ -853,17 +1001,24 @@ const OrganizationCorporationTaxCT600Page = () => {
                       <span className="min-w-0 flex-1">
                         <span
                           className={`
-                            block text-[11px] font-bold
-                            ${active ? "text-white" : "text-[#09263A]"}
+                            block
+                            text-[11px]
+                            font-bold
+                            ${active ? "text-text-white" : "text-heading"}
                           `}
                         >
                           {item.title}
                         </span>
-
                         <span
                           className={`
-                            mt-0.5 block text-[9px]
-                            ${active ? "text-white/70" : "text-[#687B78]"}
+                            mt-0.5
+                            block
+                            text-[9px]
+                            ${
+                              active
+                                ? "text-text-white/70"
+                                : "text-text-secondary"
+                            }
                           `}
                         >
                           Page {item.page}
@@ -873,92 +1028,180 @@ const OrganizationCorporationTaxCT600Page = () => {
                       {active && (
                         <ChevronRight className="h-3.5 w-3.5 shrink-0" />
                       )}
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
 
-              {/* Footer button */}
-              <div className="border-t border-[#DDEAE6] p-3">
-                <button
+              <div className="border-t border-border p-3">
+                <motion.button
                   type="button"
                   onClick={() =>
                     scrollToSection(ct600Sections[ct600Sections.length - 1].id)
                   }
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#087F5B] px-3 py-2.5 text-[11px] font-bold text-white shadow-sm transition hover:bg-[#005E45]"
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : { y: -1, transition: { duration: 0.2 } }
+                  }
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-lg
+                    bg-primary
+                    px-3
+                    py-2.5
+                    text-[11px]
+                    font-bold
+                    text-text-white
+                    shadow-button
+                    transition-colors
+                    hover:bg-primary-hover
+                  "
                 >
                   Jump to declaration
                   <ArrowRight className="h-3 w-3" />
-                </button>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
           </aside>
 
           {/* ==================================================
-              CONTENT — Single page with all sections
+              CONTENT
           ================================================== */}
-
           <main className="min-w-0 space-y-6">
             {/* Info banner */}
-            <div className="rounded-xl border border-[#DDEAE6] bg-[#E8F8F2] p-4">
+            <motion.div
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: premiumEase }}
+              className="rounded-xl border border-border bg-primary-light p-4"
+            >
               <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white">
-                  <Info className="h-4 w-4 text-[#087F5B]" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-background">
+                  <Info className="h-4 w-4 text-primary" />
                 </div>
 
                 <div>
-                  <p className="text-xs font-bold text-[#09263A]">
+                  <p className="text-xs font-bold text-heading">
                     Single-page CT600 form
                   </p>
-
-                  <p className="mt-1 text-[11px] leading-5 text-[#687B78]">
+                  <p className="mt-1 text-[11px] leading-5 text-text-secondary">
                     All 12 sections are shown on one page. Use the sidebar
                     navigation to jump between sections. Your progress scrolls
                     with you.
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* All sections */}
             {ct600Sections.map((section, index) => {
               const SectionIcon = section.icon;
 
               return (
-                <section
+                <motion.section
                   key={section.id}
                   id={section.id}
                   ref={(el) => {
                     sectionRefs.current[section.id] = el;
                   }}
-                  className="overflow-hidden rounded-2xl border border-[#DDEAE6] bg-white shadow-[0_4px_18px_rgba(16,42,67,0.04)] scroll-mt-[140px]"
+                  variants={sectionVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.1 }}
+                  className="
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card
+                    scroll-mt-[140px]
+                  "
                 >
                   {/* Section header */}
-                  <div className="border-b border-[#DDEAE6] bg-gradient-to-r from-[#E8F8F2] to-white px-5 py-4 sm:px-6">
+                  <div className="border-b border-border bg-gradient-to-r from-primary-light to-background px-5 py-4 sm:px-6">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#087F5B] text-white">
+                        <motion.div
+                          initial={
+                            shouldReduceMotion
+                              ? false
+                              : { opacity: 0, scale: 0.6, rotate: -12 }
+                          }
+                          whileInView={{
+                            opacity: 1,
+                            scale: 1,
+                            rotate: 0,
+                          }}
+                          viewport={{ once: true }}
+                          transition={{
+                            duration: 0.5,
+                            ease: [0.34, 1.56, 0.64, 1],
+                          }}
+                          className="
+                            flex
+                            h-10
+                            w-10
+                            shrink-0
+                            items-center
+                            justify-center
+                            rounded-xl
+                            bg-primary
+                            text-text-white
+                          "
+                        >
                           <SectionIcon className="h-5 w-5" />
-                        </div>
+                        </motion.div>
 
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
-                            <h2 className="text-sm font-bold text-[#09263A]">
+                            <h2 className="text-sm font-bold text-heading">
                               {section.title}
                             </h2>
-
-                            <span className="rounded-full bg-white px-2 py-0.5 text-[9px] font-semibold text-[#687B78] ring-1 ring-[#DDEAE6]">
+                            <span
+                              className="
+                                rounded-full
+                                bg-background
+                                px-2
+                                py-0.5
+                                text-[9px]
+                                font-semibold
+                                text-text-secondary
+                                ring-1
+                                ring-border
+                              "
+                            >
                               Page {section.page} of 12
                             </span>
                           </div>
 
-                          <p className="mt-1 text-[11px] text-[#687B78]">
+                          <p className="mt-1 text-[11px] text-text-secondary">
                             {section.description}
                           </p>
                         </div>
                       </div>
 
-                      <span className="rounded-full bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-[#087F5B] ring-1 ring-[#C9EBDD]">
+                      <span
+                        className="
+                          rounded-full
+                          bg-background
+                          px-2.5
+                          py-1
+                          text-[9px]
+                          font-bold
+                          uppercase
+                          tracking-wider
+                          text-primary
+                          ring-1
+                          ring-primary/30
+                        "
+                      >
                         Section {index + 1}
                       </span>
                     </div>
@@ -967,13 +1210,26 @@ const OrganizationCorporationTaxCT600Page = () => {
                   {/* Fields */}
                   <div className="p-5 sm:p-6">
                     <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-                      {section.fields?.map((field) => (
-                        <DynamicField
+                      {section.fields?.map((field, fieldIndex) => (
+                        <motion.div
                           key={field.name}
-                          field={field}
-                          value={getValue(field)}
-                          onChange={handleChange}
-                        />
+                          variants={fieldVariants}
+                          initial="hidden"
+                          whileInView="visible"
+                          viewport={{ once: true, amount: 0.2 }}
+                          transition={{
+                            delay: shouldReduceMotion
+                              ? 0
+                              : Math.min(fieldIndex * 0.02, 0.4),
+                          }}
+                          className={field.multiline ? "xl:col-span-2" : ""}
+                        >
+                          <DynamicField
+                            field={field}
+                            value={getValue(field)}
+                            onChange={handleChange}
+                          />
+                        </motion.div>
                       ))}
                     </div>
 
@@ -985,47 +1241,111 @@ const OrganizationCorporationTaxCT600Page = () => {
                       />
                     )}
                   </div>
-                </section>
+                </motion.section>
               );
             })}
 
             {/* Bottom action bar */}
-            <div className="flex flex-col gap-3 rounded-2xl border border-[#DDEAE6] bg-white p-4 shadow-[0_4px_18px_rgba(16,42,67,0.04)] sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <motion.div
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: premiumEase }}
+              className="
+                flex
+                flex-col
+                gap-3
+                rounded-2xl
+                border
+                border-border
+                bg-background
+                p-4
+                shadow-card
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+                sm:p-5
+              "
+            >
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#E8F8F2]">
-                  <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-light">
+                  <CheckCircle2 className="h-4 w-4 text-primary" />
                 </div>
 
                 <div>
-                  <p className="text-xs font-bold text-[#09263A]">
+                  <p className="text-xs font-bold text-heading">
                     You've reached the end of the form
                   </p>
-                  <p className="text-[10px] text-[#687B78]">
+                  <p className="text-[10px] text-text-secondary">
                     Review all sections before submitting
                   </p>
                 </div>
               </div>
 
               <div className="flex gap-2">
-                <button
+                <motion.button
                   type="button"
                   onClick={handleSave}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#D8E5E1] bg-white px-4 py-2.5 text-xs font-semibold text-[#09263A] transition hover:border-[#087F5B] hover:text-[#087F5B]"
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : { y: -1, transition: { duration: 0.2 } }
+                  }
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-lg
+                    border
+                    border-border
+                    bg-background
+                    px-4
+                    py-2.5
+                    text-xs
+                    font-semibold
+                    text-heading
+                    transition-colors
+                    hover:border-primary
+                    hover:text-primary
+                  "
                 >
                   <Save className="h-3.5 w-3.5" />
                   Save draft
-                </button>
+                </motion.button>
 
-                <button
+                <motion.button
                   type="button"
                   onClick={() => console.log("Review CT600", formData)}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#087F5B] px-5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#005E45]"
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : { y: -1, transition: { duration: 0.2 } }
+                  }
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-lg
+                    bg-primary
+                    px-5
+                    py-2.5
+                    text-xs
+                    font-bold
+                    text-text-white
+                    shadow-button
+                    transition-colors
+                    hover:bg-primary-hover
+                  "
                 >
                   Review CT600
                   <ArrowRight className="h-3.5 w-3.5" />
-                </button>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
           </main>
         </div>
       </div>
@@ -1038,12 +1358,15 @@ const OrganizationCorporationTaxCT600Page = () => {
 ============================================================ */
 
 const DynamicField = ({ field, value, onChange }) => {
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
+
   /* RADIO */
   if (field.type === "radio") {
     return (
-      <div className="xl:col-span-2 rounded-xl border border-[#DDEAE6] bg-[#FAFCFB] p-4">
+      <div className="xl:col-span-2 rounded-xl border border-border bg-background-soft p-4">
         <div className="mb-3">
-          <label className="text-xs font-bold text-[#09263A]">
+          <label className="text-xs font-bold text-heading">
             {field.label}
           </label>
         </div>
@@ -1053,39 +1376,74 @@ const DynamicField = ({ field, value, onChange }) => {
             const active = value === option.value;
 
             return (
-              <button
+              <motion.button
                 key={option.value}
                 type="button"
                 onClick={() => onChange(field.name, option.value)}
-                className={`
-                  flex items-center gap-3 rounded-lg border px-3 py-3 text-left transition
-                  ${
-                    active
-                      ? "border-[#087F5B] bg-[#E8F8F2]"
-                      : "border-[#DDEAE6] bg-white hover:border-[#087F5B]"
-                  }
-                `}
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -2, transition: { duration: 0.2 } }
+                }
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                animate={{
+                  backgroundColor: active
+                    ? "var(--color-primary-light)"
+                    : "#ffffff",
+                  borderColor: active
+                    ? "var(--color-primary)"
+                    : "var(--color-border)",
+                }}
+                transition={{ duration: 0.25, ease: premiumEase }}
+                className="
+                  flex
+                  items-center
+                  gap-3
+                  rounded-lg
+                  border
+                  px-3
+                  py-3
+                  text-left
+                  transition-colors
+                "
               >
                 <span
                   className={`
-                    flex h-4 w-4 items-center justify-center rounded-full border
-                    ${active ? "border-[#087F5B]" : "border-[#B7C8C3]"}
+                    flex
+                    h-4
+                    w-4
+                    items-center
+                    justify-center
+                    rounded-full
+                    border
+                    transition-colors
+                    ${active ? "border-primary" : "border-border-dark"}
                   `}
                 >
                   {active && (
-                    <span className="h-2 w-2 rounded-full bg-[#087F5B]" />
+                    <motion.span
+                      initial={
+                        shouldReduceMotion ? false : { scale: 0 }
+                      }
+                      animate={{ scale: 1 }}
+                      transition={{
+                        duration: 0.25,
+                        ease: [0.34, 1.56, 0.64, 1],
+                      }}
+                      className="h-2 w-2 rounded-full bg-primary"
+                    />
                   )}
                 </span>
 
                 <span>
-                  <span className="block text-[11px] font-semibold text-[#09263A]">
+                  <span className="block text-[11px] font-semibold text-heading">
                     {option.label}
                   </span>
-                  <span className="text-[9px] text-[#687B78]">
+                  <span className="text-[9px] text-text-secondary">
                     Box {option.box}
                   </span>
                 </span>
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -1096,7 +1454,28 @@ const DynamicField = ({ field, value, onChange }) => {
   /* CHECKBOX */
   if (field.type === "checkbox") {
     return (
-      <label className="group flex cursor-pointer items-start gap-3 rounded-xl border border-[#DDEAE6] bg-[#FAFCFB] p-4 transition hover:border-[#087F5B] hover:bg-[#F5FCF9]">
+      <motion.label
+        whileHover={
+          shouldReduceMotion
+            ? undefined
+            : { y: -1, transition: { duration: 0.2 } }
+        }
+        className="
+          group
+          flex
+          cursor-pointer
+          items-start
+          gap-3
+          rounded-xl
+          border
+          border-border
+          bg-background-soft
+          p-4
+          transition-colors
+          hover:border-primary
+          hover:bg-primary-light
+        "
+      >
         <input
           type="checkbox"
           checked={Boolean(value)}
@@ -1106,26 +1485,47 @@ const DynamicField = ({ field, value, onChange }) => {
 
         <span
           className={`
-            mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition
+            mt-0.5
+            flex
+            h-5
+            w-5
+            shrink-0
+            items-center
+            justify-center
+            rounded-md
+            border
+            transition-all
+            duration-200
             ${
               value
-                ? "border-[#087F5B] bg-[#087F5B]"
-                : "border-[#B7C8C3] bg-white"
+                ? "border-primary bg-primary"
+                : "border-border-dark bg-background"
             }
           `}
         >
-          {value && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+          {value && (
+            <motion.span
+              initial={shouldReduceMotion ? false : { scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{
+                duration: 0.2,
+                ease: [0.34, 1.56, 0.64, 1],
+              }}
+            >
+              <Check className="h-3 w-3 text-text-white" strokeWidth={3} />
+            </motion.span>
+          )}
         </span>
 
         <span className="min-w-0 flex-1">
-          <span className="block text-xs font-semibold leading-5 text-[#09263A]">
+          <span className="block text-xs font-semibold leading-5 text-heading">
             {field.label}
           </span>
-          <span className="mt-1 block text-[9px] font-medium uppercase tracking-wider text-[#687B78]">
+          <span className="mt-1 block text-[9px] font-medium uppercase tracking-wider text-text-secondary">
             Box {field.box}
           </span>
         </span>
-      </label>
+      </motion.label>
     );
   }
 
@@ -1133,18 +1533,30 @@ const DynamicField = ({ field, value, onChange }) => {
   return (
     <div className={`${field.multiline ? "xl:col-span-2" : ""}`}>
       <div className="mb-1.5 flex items-center justify-between gap-3">
-        <label className="text-[11px] font-bold text-[#09263A]">
+        <label className="text-[11px] font-bold text-heading">
           {field.label}
         </label>
 
-        <span className="shrink-0 rounded-md bg-[#E8F8F2] px-1.5 py-0.5 font-mono text-[9px] font-bold text-[#087F5B]">
+        <span
+          className="
+            shrink-0
+            rounded-md
+            bg-primary-light
+            px-1.5
+            py-0.5
+            font-mono
+            text-[9px]
+            font-bold
+            text-primary
+          "
+        >
           Box {field.box}
         </span>
       </div>
 
       <div className="relative">
         {field.prefix && (
-          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#687B78]">
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-text-secondary">
             {field.prefix}
           </span>
         )}
@@ -1153,7 +1565,22 @@ const DynamicField = ({ field, value, onChange }) => {
           <select
             value={value || ""}
             onChange={(e) => onChange(field.name, e.target.value)}
-            className="w-full rounded-lg border border-[#D8E5E1] bg-white px-3 py-2.5 text-xs text-[#09263A] outline-none transition focus:border-[#087F5B] focus:ring-2 focus:ring-[#087F5B]/10"
+            className="
+              w-full
+              rounded-lg
+              border
+              border-border
+              bg-background
+              px-3
+              py-2.5
+              text-xs
+              text-heading
+              outline-none
+              transition
+              focus:border-primary
+              focus:ring-2
+              focus:ring-primary/10
+            "
           >
             <option value="">Select...</option>
             {field.options?.map((option) => (
@@ -1167,7 +1594,24 @@ const DynamicField = ({ field, value, onChange }) => {
             value={value || ""}
             onChange={(e) => onChange(field.name, e.target.value)}
             rows={4}
-            className="w-full resize-none rounded-lg border border-[#D8E5E1] bg-white px-3 py-2.5 text-xs text-[#09263A] outline-none transition placeholder:text-[#9BAAA7] focus:border-[#087F5B] focus:ring-2 focus:ring-[#087F5B]/10"
+            className="
+              w-full
+              resize-none
+              rounded-lg
+              border
+              border-border
+              bg-background
+              px-3
+              py-2.5
+              text-xs
+              text-heading
+              outline-none
+              transition
+              placeholder:text-text-light
+              focus:border-primary
+              focus:ring-2
+              focus:ring-primary/10
+            "
           />
         ) : (
           <input
@@ -1181,12 +1625,19 @@ const DynamicField = ({ field, value, onChange }) => {
                 : `Enter ${field.label.toLowerCase()}`
             }
             className={`
-              w-full rounded-lg border px-3 py-2.5 text-xs outline-none transition
+              w-full
+              rounded-lg
+              border
+              px-3
+              py-2.5
+              text-xs
+              outline-none
+              transition
               ${field.prefix ? "pl-8" : ""}
               ${
                 field.calculated
-                  ? "border-[#BFE5D7] bg-[#E8F8F2] font-bold text-[#087F5B]"
-                  : "border-[#D8E5E1] bg-white text-[#09263A] focus:border-[#087F5B] focus:ring-2 focus:ring-[#087F5B]/10"
+                  ? "border-primary/30 bg-primary-light font-bold text-primary"
+                  : "border-border bg-background text-heading focus:border-primary focus:ring-2 focus:ring-primary/10"
               }
             `}
           />
@@ -1194,7 +1645,7 @@ const DynamicField = ({ field, value, onChange }) => {
       </div>
 
       {field.calculated && (
-        <p className="mt-1 text-[9px] font-medium text-[#087F5B]">
+        <p className="mt-1 text-[9px] font-medium text-primary">
           Calculated automatically from related fields.
         </p>
       )}
@@ -1207,17 +1658,26 @@ const DynamicField = ({ field, value, onChange }) => {
 ============================================================ */
 
 const TaxCalculationTable = ({ rows, formData, onChange }) => {
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
+
   return (
-    <div className="mt-6 overflow-hidden rounded-xl border border-[#DDEAE6]">
-      <div className="border-b border-[#DDEAE6] bg-[#E8F8F2] px-4 py-3">
+    <motion.div
+      initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5, ease: premiumEase }}
+      className="mt-6 overflow-hidden rounded-xl border border-border"
+    >
+      <div className="border-b border-border bg-primary-light px-4 py-3">
         <div className="flex items-center gap-2">
-          <CalendarDays className="h-4 w-4 text-[#087F5B]" />
+          <CalendarDays className="h-4 w-4 text-primary" />
 
           <div>
-            <h3 className="text-xs font-bold text-[#09263A]">
+            <h3 className="text-xs font-bold text-heading">
               Tax calculation
             </h3>
-            <p className="text-[9px] text-[#687B78]">
+            <p className="text-[9px] text-text-secondary">
               Enter how much profit has to be charged and at what rate.
             </p>
           </div>
@@ -1227,36 +1687,61 @@ const TaxCalculationTable = ({ rows, formData, onChange }) => {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[720px]">
           <thead>
-            <tr className="border-b border-[#DDEAE6] bg-[#FAFCFB]">
-              <th className="px-3 py-3 text-left text-[9px] font-bold uppercase tracking-wider text-[#687B78]">
+            <tr className="border-b border-border bg-background-soft">
+              <th className="px-3 py-3 text-left text-[9px] font-bold uppercase tracking-wider text-text-secondary">
                 Financial year
               </th>
-              <th className="px-3 py-3 text-left text-[9px] font-bold uppercase tracking-wider text-[#687B78]">
+              <th className="px-3 py-3 text-left text-[9px] font-bold uppercase tracking-wider text-text-secondary">
                 Amount of profit
               </th>
-              <th className="px-3 py-3 text-left text-[9px] font-bold uppercase tracking-wider text-[#687B78]">
+              <th className="px-3 py-3 text-left text-[9px] font-bold uppercase tracking-wider text-text-secondary">
                 Rate of tax %
               </th>
-              <th className="px-3 py-3 text-left text-[9px] font-bold uppercase tracking-wider text-[#687B78]">
+              <th className="px-3 py-3 text-left text-[9px] font-bold uppercase tracking-wider text-text-secondary">
                 Tax
               </th>
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-[#DDEAE6]">
-            {rows.map((row) => (
-              <tr key={row.id}>
+          <tbody className="divide-y divide-border">
+            {rows.map((row, index) => (
+              <motion.tr
+                key={row.id}
+                initial={shouldReduceMotion ? false : { opacity: 0, x: -8 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  duration: 0.4,
+                  ease: premiumEase,
+                  delay: shouldReduceMotion ? 0 : index * 0.04,
+                }}
+              >
                 <td className="px-3 py-3">
                   <input
                     type="text"
                     defaultValue={row.financialYear}
-                    className="w-24 rounded-lg border border-[#D8E5E1] px-2.5 py-2 text-xs text-[#09263A] outline-none focus:border-[#087F5B]"
+                    className="
+                      w-24
+                      rounded-lg
+                      border
+                      border-border
+                      bg-background
+                      px-2.5
+                      py-2
+                      text-xs
+                      text-heading
+                      outline-none
+                      transition
+                      focus:border-primary
+                      focus:ring-2
+                      focus:ring-primary/10
+                    "
                   />
                 </td>
 
                 <td className="px-3 py-3">
                   <div className="relative">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-[#687B78]">
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-text-secondary">
                       £
                     </span>
                     <input
@@ -1265,10 +1750,26 @@ const TaxCalculationTable = ({ rows, formData, onChange }) => {
                       onChange={(e) =>
                         onChange(`taxProfit_${row.id}`, e.target.value)
                       }
-                      className="w-full rounded-lg border border-[#D8E5E1] py-2 pl-7 pr-2 text-xs text-[#09263A] outline-none focus:border-[#087F5B]"
+                      className="
+                        w-full
+                        rounded-lg
+                        border
+                        border-border
+                        bg-background
+                        py-2
+                        pl-7
+                        pr-2
+                        text-xs
+                        text-heading
+                        outline-none
+                        transition
+                        focus:border-primary
+                        focus:ring-2
+                        focus:ring-primary/10
+                      "
                     />
                   </div>
-                  <p className="mt-1 text-[8px] text-[#687B78]">
+                  <p className="mt-1 text-[8px] text-text-secondary">
                     Box {row.profitBox}
                   </p>
                 </td>
@@ -1281,20 +1782,36 @@ const TaxCalculationTable = ({ rows, formData, onChange }) => {
                       onChange={(e) =>
                         onChange(`taxRate_${row.id}`, e.target.value)
                       }
-                      className="w-full rounded-lg border border-[#D8E5E1] py-2 pr-7 pl-2 text-xs text-[#09263A] outline-none focus:border-[#087F5B]"
+                      className="
+                        w-full
+                        rounded-lg
+                        border
+                        border-border
+                        bg-background
+                        py-2
+                        pr-7
+                        pl-2
+                        text-xs
+                        text-heading
+                        outline-none
+                        transition
+                        focus:border-primary
+                        focus:ring-2
+                        focus:ring-primary/10
+                      "
                     />
-                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#687B78]">
+                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-text-secondary">
                       %
                     </span>
                   </div>
-                  <p className="mt-1 text-[8px] text-[#687B78]">
+                  <p className="mt-1 text-[8px] text-text-secondary">
                     Box {row.rateBox}
                   </p>
                 </td>
 
                 <td className="px-3 py-3">
                   <div className="relative">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-[#687B78]">
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-text-secondary">
                       £
                     </span>
                     <input
@@ -1303,19 +1820,35 @@ const TaxCalculationTable = ({ rows, formData, onChange }) => {
                       onChange={(e) =>
                         onChange(`tax_${row.id}`, e.target.value)
                       }
-                      className="w-full rounded-lg border border-[#D8E5E1] py-2 pl-7 pr-2 text-xs text-[#09263A] outline-none focus:border-[#087F5B]"
+                      className="
+                        w-full
+                        rounded-lg
+                        border
+                        border-border
+                        bg-background
+                        py-2
+                        pl-7
+                        pr-2
+                        text-xs
+                        text-heading
+                        outline-none
+                        transition
+                        focus:border-primary
+                        focus:ring-2
+                        focus:ring-primary/10
+                      "
                     />
                   </div>
-                  <p className="mt-1 text-[8px] text-[#687B78]">
+                  <p className="mt-1 text-[8px] text-text-secondary">
                     Box {row.taxBox}
                   </p>
                 </td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

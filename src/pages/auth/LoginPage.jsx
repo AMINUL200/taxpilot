@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, LogIn, ArrowLeft } from "lucide-react";
 import CustomInput from "../../component/form/CustomInput";
@@ -13,8 +14,65 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
 
-  // Handle input change
+  /* ============================================================
+     ANIMATION VARIANTS
+  ============================================================ */
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.08,
+        delayChildren: shouldReduceMotion ? 0 : 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: premiumEase },
+    },
+  };
+
+  const cardVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 32, scale: 0.97 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.75, ease: premiumEase, delay: 0.15 },
+    },
+  };
+
+  const logoVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, scale: 0.6, rotate: -12 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      rotate: 0,
+      transition: {
+        duration: 0.55,
+        ease: [0.34, 1.56, 0.64, 1],
+        delay: 0.35,
+      },
+    },
+  };
+
+  /* ============================================================
+     HANDLERS
+  ============================================================ */
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -23,7 +81,6 @@ const LoginPage = () => {
       [name]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -32,7 +89,6 @@ const LoginPage = () => {
     }
   };
 
-  // Validate form
   const validateForm = () => {
     const newErrors = {};
 
@@ -53,60 +109,151 @@ const LoginPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validateForm()) {
       setIsLoading(true);
 
-      // Simulate API call
       setTimeout(() => {
         console.log("Login data:", formData);
-
-        // Add your login API call here
-
         setIsLoading(false);
-
-        // navigate("/dashboard");
       }, 1500);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F5FCF9] via-[#EAF9F4] to-[#F8FCFA] py-12 px-4 sm:px-6 lg:px-8">
-      
-      {/* Background decoration */}
+    <div
+      className="
+        relative
+        min-h-screen
+        flex
+        items-center
+        justify-center
+        bg-gradient-to-br
+        from-background-soft
+        via-background-blue-pale
+        to-background-soft
+        py-12
+        px-4
+        sm:px-6
+        lg:px-8
+      "
+    >
+      {/* ============================================================
+          BACKGROUND DECORATION
+      ============================================================ */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#65D9BB]/20 rounded-full blur-3xl"></div>
-
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#087F5B]/10 rounded-full blur-3xl"></div>
+        <motion.div
+          className="
+            absolute
+            -top-40
+            -right-40
+            w-80
+            h-80
+            bg-sky/20
+            rounded-full
+            blur-3xl
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.1, 1], opacity: [0.6, 1, 0.6] }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="
+            absolute
+            -bottom-40
+            -left-40
+            w-80
+            h-80
+            bg-primary/10
+            rounded-full
+            blur-3xl
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.12, 1], opacity: [0.5, 1, 0.5] }
+          }
+          transition={{
+            duration: 9,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.8,
+          }}
+        />
       </div>
 
-      <div className="max-w-md w-full relative z-10">
-
-        {/* Back button */}
-        <button
+      <motion.div
+        className="max-w-md w-full relative z-10"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* ============================================================
+            BACK BUTTON
+        ============================================================ */}
+        <motion.button
+          variants={itemVariants}
           onClick={() => navigate("/")}
-          className="mb-6 flex items-center space-x-2 text-[#607773] hover:text-[#087F5B] transition-colors group"
+          className="
+            group
+            mb-6
+            flex
+            items-center
+            space-x-2
+            text-text-secondary
+            transition-colors
+            hover:text-primary
+          "
         >
-          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft
+            className="
+              w-5
+              h-5
+              transition-transform
+              group-hover:-translate-x-1
+            "
+          />
+          <span className="font-medium">Back to Home</span>
+        </motion.button>
 
-          <span className="font-medium">
-            Back to Home
-          </span>
-        </button>
-
-        {/* Login Card */}
-        <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-[#DDEBE5]">
-
-          {/* Logo and Title */}
+        {/* ============================================================
+            LOGIN CARD
+        ============================================================ */}
+        <motion.div
+          variants={cardVariants}
+          className="
+            bg-background/90
+            backdrop-blur-lg
+            rounded-2xl
+            shadow-card-hover
+            p-8
+            border
+            border-border-light
+          "
+        >
+          {/* ============================================================
+              LOGO AND TITLE
+          ============================================================ */}
           <div className="text-center mb-8">
-
-            <div className="flex justify-center mb-4">
-
-              <div className="p-3 bg-gradient-to-br from-[#087F5B] to-[#004646] rounded-2xl shadow-lg">
-
+            <motion.div
+              variants={logoVariants}
+              className="flex justify-center mb-4"
+            >
+              <div
+                className="
+                  p-3
+                  bg-gradient-to-br
+                  from-primary
+                  to-primary-hover
+                  rounded-2xl
+                  shadow-button
+                "
+              >
                 <svg
                   width="40"
                   height="40"
@@ -121,32 +268,32 @@ const LoginPage = () => {
                     stroke="white"
                     strokeWidth="3"
                   />
-
-                  <path
-                    d="M16 24L24 14L32 24L24 34L16 24Z"
-                    fill="white"
-                  />
+                  <path d="M16 24L24 14L32 24L24 34L16 24Z" fill="white" />
                 </svg>
-
               </div>
-            </div>
+            </motion.div>
 
-            <h2 className="text-3xl font-bold text-[#09263A] mb-2">
+            <motion.h2
+              variants={itemVariants}
+              className="text-3xl font-bold text-heading mb-2"
+            >
               Welcome Back
-            </h2>
+            </motion.h2>
 
-            <p className="text-[#687B78]">
+            <motion.p
+              variants={itemVariants}
+              className="text-text-secondary"
+            >
               Sign in to continue to MySite
-            </p>
-
+            </motion.p>
           </div>
 
-          {/* Login Form */}
+          {/* ============================================================
+              LOGIN FORM
+          ============================================================ */}
           <form onSubmit={handleSubmit} className="space-y-6">
-
             {/* Email Field */}
-            <div>
-
+            <motion.div variants={itemVariants}>
               <CustomInput
                 label="Email Address"
                 name="email"
@@ -157,23 +304,21 @@ const LoginPage = () => {
                 placeholder=""
                 className={
                   errors.email
-                    ? "border-red-500 focus:ring-red-200/50 focus:border-red-400"
-                    : "border-[#D8E5E1] focus:ring-[#087F5B]/20 focus:border-[#087F5B]"
+                    ? "border-danger focus:ring-danger/20 focus:border-danger"
+                    : "border-border focus:ring-primary/20 focus:border-primary"
                 }
               />
 
               {errors.email && (
-                <p className="mt-2 text-sm text-red-600 flex items-center">
-                  <span className="inline-block w-1 h-1 bg-red-600 rounded-full mr-2"></span>
+                <p className="mt-2 text-sm text-danger flex items-center">
+                  <span className="inline-block w-1 h-1 bg-danger rounded-full mr-2"></span>
                   {errors.email}
                 </p>
               )}
-
-            </div>
+            </motion.div>
 
             {/* Password Field */}
-            <div>
-
+            <motion.div variants={itemVariants}>
               <CustomInput
                 label="Password"
                 name="password"
@@ -184,123 +329,173 @@ const LoginPage = () => {
                 placeholder=""
                 className={
                   errors.password
-                    ? "border-red-500 focus:ring-red-200/50 focus:border-red-400"
-                    : "border-[#D8E5E1] focus:ring-[#087F5B]/20 focus:border-[#087F5B]"
+                    ? "border-danger focus:ring-danger/20 focus:border-danger"
+                    : "border-border focus:ring-primary/20 focus:border-primary"
                 }
               />
 
               {errors.password && (
-                <p className="mt-2 text-sm text-red-600 flex items-center">
-                  <span className="inline-block w-1 h-1 bg-red-600 rounded-full mr-2"></span>
+                <p className="mt-2 text-sm text-danger flex items-center">
+                  <span className="inline-block w-1 h-1 bg-danger rounded-full mr-2"></span>
                   {errors.password}
                 </p>
               )}
-
-            </div>
+            </motion.div>
 
             {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-
+            <motion.div
+              variants={itemVariants}
+              className="flex items-center justify-between"
+            >
               <div className="flex items-center">
-
                 <input
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-[#087F5B] focus:ring-[#087F5B] border-[#C9D9D5] rounded cursor-pointer accent-[#087F5B]"
+                  className="
+                    h-4
+                    w-4
+                    text-primary
+                    focus:ring-primary
+                    border-border
+                    rounded
+                    cursor-pointer
+                    accent-primary
+                  "
                 />
-
                 <label
                   htmlFor="remember-me"
-                  className="ml-2 block text-sm text-[#607773] cursor-pointer"
+                  className="
+                    ml-2
+                    block
+                    text-sm
+                    text-text-secondary
+                    cursor-pointer
+                  "
                 >
                   Remember me
                 </label>
-
               </div>
 
               <div className="text-sm">
-
                 <a
                   href="/forgot-password"
-                  className="font-semibold text-[#087F5B] hover:text-[#005E45] transition-colors"
+                  className="
+                    font-semibold
+                    text-primary
+                    transition-colors
+                    hover:text-primary-hover
+                  "
                 >
                   Forgot password?
                 </a>
-
               </div>
-
-            </div>
+            </motion.div>
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex justify-center items-center space-x-2 py-3 px-4 border border-transparent rounded-lg shadow-lg text-white bg-gradient-to-r from-[#087F5B] to-[#004646] hover:from-[#005E45] hover:to-[#003737] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#087F5B] transition-all duration-300 font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-
-                  <span>
-                    Signing in...
-                  </span>
-                </>
-              ) : (
-                <>
-                  <LogIn className="w-5 h-5" />
-
-                  <span>
-                    Sign In
-                  </span>
-                </>
-              )}
-
-            </button>
-
+            <motion.div variants={itemVariants}>
+              <motion.button
+                type="submit"
+                disabled={isLoading}
+                whileHover={
+                  shouldReduceMotion || isLoading
+                    ? undefined
+                    : { y: -2, transition: { duration: 0.2 } }
+                }
+                whileTap={
+                  shouldReduceMotion || isLoading
+                    ? undefined
+                    : { scale: 0.98 }
+                }
+                className="
+                  group
+                  w-full
+                  flex
+                  justify-center
+                  items-center
+                  space-x-2
+                  py-3
+                  px-4
+                  border
+                  border-transparent
+                  rounded-lg
+                  shadow-button
+                  text-text-white
+                  bg-gradient-to-r
+                  from-primary
+                  to-primary-hover
+                  hover:from-primary-hover
+                  hover:to-primary
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-offset-2
+                  focus:ring-primary
+                  transition-all
+                  duration-300
+                  font-semibold
+                  text-lg
+                  disabled:opacity-50
+                  disabled:cursor-not-allowed
+                "
+              >
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-5 h-5" />
+                    <span>Sign In</span>
+                  </>
+                )}
+              </motion.button>
+            </motion.div>
           </form>
 
-          {/* Divider */}
-          <div className="mt-6">
-
+          {/* ============================================================
+              DIVIDER
+          ============================================================ */}
+          <motion.div
+            variants={itemVariants}
+            className="mt-6"
+          >
             <div className="relative">
-
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#DDEBE5]"></div>
+                <div className="w-full border-t border-border-light"></div>
               </div>
-
               <div className="relative flex justify-center text-sm">
-
-                <span className="px-2 bg-white text-[#8A9B97]">
+                <span className="px-2 bg-background text-text-light">
                   Or continue with
                 </span>
-
               </div>
-
             </div>
+          </motion.div>
 
-          </div>
-
-          {/* Sign Up Link */}
-          <div className="mt-6 text-center">
-
-            <p className="text-sm text-[#687B78]">
+          {/* ============================================================
+              SIGN UP LINK
+          ============================================================ */}
+          <motion.div
+            variants={itemVariants}
+            className="mt-6 text-center"
+          >
+            <p className="text-sm text-text-secondary">
               Don't have an account?{" "}
-
               <a
                 href="/register"
-                className="font-semibold text-[#087F5B] hover:text-[#005E45] transition-colors"
+                className="
+                  font-semibold
+                  text-primary
+                  transition-colors
+                  hover:text-primary-hover
+                "
               >
                 Sign up now
               </a>
-
             </p>
-
-          </div>
-
-        </div>
-      </div>
+          </motion.div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

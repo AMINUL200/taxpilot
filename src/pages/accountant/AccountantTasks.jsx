@@ -1,4 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useInView,
+} from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   CheckSquare,
@@ -19,7 +25,6 @@ import {
   Calendar,
   Bell,
   TrendingUp,
-  Layers,
   FileText,
   Timer,
   UserCheck,
@@ -27,7 +32,6 @@ import {
   Send,
   Archive,
   Play,
-  Info,
   Flag,
   MessageSquare,
   Edit3,
@@ -36,12 +40,12 @@ import {
   Circle,
   LayoutGrid,
   List,
-  User,
-  Briefcase,
 } from "lucide-react";
 
 const AccountantTasks = () => {
   const navigate = useNavigate();
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
 
   /* ============================================================
      STATE
@@ -51,12 +55,15 @@ const AccountantTasks = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [assigneeFilter, setAssigneeFilter] = useState("All");
-  const [viewMode, setViewMode] = useState("list"); // "list" | "board"
+  const [viewMode, setViewMode] = useState("list");
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
   const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
   const [openRowMenu, setOpenRowMenu] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const listRef = useRef(null);
+  const isListInView = useInView(listRef, { once: true, amount: 0.05 });
 
   /* ============================================================
      STATS
@@ -69,8 +76,8 @@ const AccountantTasks = () => {
       value: 42,
       change: "This period",
       icon: CheckSquare,
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
+      iconBg: "bg-primary-light",
+      iconColor: "text-primary",
     },
     {
       id: "overdue",
@@ -78,10 +85,10 @@ const AccountantTasks = () => {
       value: 5,
       change: "Requires attention",
       icon: AlertCircle,
-      iconBg: "bg-rose-100",
-      iconColor: "text-rose-500",
+      iconBg: "bg-danger-light",
+      iconColor: "text-danger",
       highlight: true,
-      highlightColor: "border-rose-200",
+      highlightColor: "border-danger/30",
     },
     {
       id: "in-progress",
@@ -89,8 +96,8 @@ const AccountantTasks = () => {
       value: 12,
       change: "Currently active",
       icon: Timer,
-      iconBg: "bg-purple-100",
-      iconColor: "text-purple-600",
+      iconBg: "bg-secondary-light",
+      iconColor: "text-secondary",
     },
     {
       id: "completed",
@@ -98,8 +105,8 @@ const AccountantTasks = () => {
       value: 24,
       change: "This week",
       icon: CheckCircle2,
-      iconBg: "bg-emerald-100",
-      iconColor: "text-emerald-600",
+      iconBg: "bg-success-light",
+      iconColor: "text-success",
     },
     {
       id: "awaiting",
@@ -107,8 +114,8 @@ const AccountantTasks = () => {
       value: 6,
       change: "Pending input",
       icon: UserCheck,
-      iconBg: "bg-amber-100",
-      iconColor: "text-amber-600",
+      iconBg: "bg-warning-light",
+      iconColor: "text-warning",
     },
   ];
 
@@ -132,7 +139,7 @@ const AccountantTasks = () => {
       daysLeft: -2,
       assignee: "Alice Johnson",
       assigneeInitials: "AJ",
-      assigneeColor: "bg-[#087F5B]",
+      assigneeColor: "bg-primary",
       tags: ["VAT", "Q3"],
       subtasks: { completed: 3, total: 5 },
       comments: 4,
@@ -152,7 +159,7 @@ const AccountantTasks = () => {
       daysLeft: 1,
       assignee: "John Smith",
       assigneeInitials: "JS",
-      assigneeColor: "bg-blue-500",
+      assigneeColor: "bg-sky",
       tags: ["CT600", "Tax"],
       subtasks: { completed: 2, total: 4 },
       comments: 2,
@@ -172,7 +179,7 @@ const AccountantTasks = () => {
       daysLeft: 3,
       assignee: "Sarah Martin",
       assigneeInitials: "SM",
-      assigneeColor: "bg-purple-500",
+      assigneeColor: "bg-secondary",
       tags: ["Documents", "Follow-up"],
       subtasks: { completed: 0, total: 2 },
       comments: 6,
@@ -191,7 +198,7 @@ const AccountantTasks = () => {
       daysLeft: 8,
       assignee: "Alice Johnson",
       assigneeInitials: "AJ",
-      assigneeColor: "bg-[#087F5B]",
+      assigneeColor: "bg-primary",
       tags: ["CS01", "Annual"],
       subtasks: { completed: 1, total: 3 },
       comments: 1,
@@ -211,7 +218,7 @@ const AccountantTasks = () => {
       daysLeft: 13,
       assignee: "Unassigned",
       assigneeInitials: "?",
-      assigneeColor: "bg-gray-400",
+      assigneeColor: "bg-text-secondary",
       tags: ["Accounts", "Year-end"],
       subtasks: { completed: 0, total: 6 },
       comments: 0,
@@ -230,7 +237,7 @@ const AccountantTasks = () => {
       daysLeft: 36,
       assignee: "John Smith",
       assigneeInitials: "JS",
-      assigneeColor: "bg-blue-500",
+      assigneeColor: "bg-sky",
       tags: ["VAT", "HMRC"],
       subtasks: { completed: 0, total: 2 },
       comments: 0,
@@ -249,7 +256,7 @@ const AccountantTasks = () => {
       daysLeft: 121,
       assignee: "Sarah Martin",
       assigneeInitials: "SM",
-      assigneeColor: "bg-purple-500",
+      assigneeColor: "bg-secondary",
       tags: ["Self Assessment"],
       subtasks: { completed: 2, total: 3 },
       comments: 3,
@@ -268,7 +275,7 @@ const AccountantTasks = () => {
       daysLeft: -7,
       assignee: "Alice Johnson",
       assigneeInitials: "AJ",
-      assigneeColor: "bg-[#087F5B]",
+      assigneeColor: "bg-primary",
       tags: ["Reporting", "Q3"],
       subtasks: { completed: 3, total: 3 },
       comments: 2,
@@ -342,7 +349,7 @@ const AccountantTasks = () => {
       "Not Started": filteredTasks.filter((t) => t.status === "Not Started"),
       "In Progress": filteredTasks.filter((t) => t.status === "In Progress"),
       "Awaiting Client": filteredTasks.filter(
-        (t) => t.status === "Awaiting Client"
+        (t) => t.status === "Awaiting Client",
       ),
       Completed: filteredTasks.filter((t) => t.status === "Completed"),
     };
@@ -378,26 +385,26 @@ const AccountantTasks = () => {
     switch (priority) {
       case "high":
         return {
-          bg: "bg-rose-100",
-          text: "text-rose-700",
-          dot: "bg-rose-500",
-          border: "border-l-rose-500",
+          bg: "bg-danger-light",
+          text: "text-danger",
+          dot: "bg-danger",
+          border: "border-l-danger",
           label: "High",
         };
       case "medium":
         return {
-          bg: "bg-amber-100",
-          text: "text-amber-700",
-          dot: "bg-amber-500",
-          border: "border-l-amber-500",
+          bg: "bg-warning-light",
+          text: "text-warning",
+          dot: "bg-warning",
+          border: "border-l-warning",
           label: "Medium",
         };
       default:
         return {
-          bg: "bg-emerald-100",
-          text: "text-emerald-700",
-          dot: "bg-emerald-500",
-          border: "border-l-emerald-500",
+          bg: "bg-success-light",
+          text: "text-success",
+          dot: "bg-success",
+          border: "border-l-success",
           label: "Low",
         };
     }
@@ -407,37 +414,37 @@ const AccountantTasks = () => {
     switch (status) {
       case "Completed":
         return {
-          bg: "bg-emerald-100",
-          text: "text-emerald-700",
-          dot: "bg-emerald-500",
+          bg: "bg-success-light",
+          text: "text-success",
+          dot: "bg-success",
           icon: CheckCircle2,
         };
       case "In Progress":
         return {
-          bg: "bg-blue-100",
-          text: "text-blue-700",
-          dot: "bg-blue-500",
+          bg: "bg-primary-light",
+          text: "text-primary",
+          dot: "bg-primary",
           icon: Timer,
         };
       case "Awaiting Client":
         return {
-          bg: "bg-amber-100",
-          text: "text-amber-700",
-          dot: "bg-amber-500",
+          bg: "bg-warning-light",
+          text: "text-warning",
+          dot: "bg-warning",
           icon: UserCheck,
         };
       case "Not Started":
         return {
-          bg: "bg-gray-100",
-          text: "text-gray-700",
-          dot: "bg-gray-500",
+          bg: "bg-background-soft",
+          text: "text-text-secondary",
+          dot: "bg-text-secondary",
           icon: Circle,
         };
       default:
         return {
-          bg: "bg-gray-100",
-          text: "text-gray-600",
-          dot: "bg-gray-400",
+          bg: "bg-background-soft",
+          text: "text-text-secondary",
+          dot: "bg-text-secondary",
           icon: Circle,
         };
     }
@@ -451,10 +458,108 @@ const AccountantTasks = () => {
   };
 
   const getDaysColor = (days) => {
-    if (days < 0) return "text-rose-600";
-    if (days <= 3) return "text-amber-600";
-    if (days <= 7) return "text-blue-600";
-    return "text-emerald-600";
+    if (days < 0) return "text-danger";
+    if (days <= 3) return "text-warning";
+    if (days <= 7) return "text-primary";
+    return "text-success";
+  };
+
+  /* ============================================================
+     ANIMATION VARIANTS
+  ============================================================ */
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.06,
+        delayChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
+
+  const fadeUpVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.55, ease: premiumEase },
+    },
+  };
+
+  const statCardVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 16, scale: 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.5, ease: premiumEase },
+    },
+  };
+
+  const taskRowVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -12 },
+    visible: (index) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.45,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.05,
+      },
+    }),
+  };
+
+  const boardCardVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 12, scale: 0.96 },
+    visible: (index) => ({
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.45,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.06,
+      },
+    }),
+  };
+
+  const dropdownVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: -8, scale: 0.96 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.22, ease: premiumEase },
+    },
+    exit: shouldReduceMotion
+      ? { opacity: 0 }
+      : {
+          opacity: 0,
+          y: -6,
+          scale: 0.97,
+          transition: { duration: 0.15 },
+        },
+  };
+
+  const menuItemVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -6 },
+    visible: (index) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.04,
+      },
+    }),
   };
 
   /* ============================================================
@@ -462,42 +567,60 @@ const AccountantTasks = () => {
   ============================================================ */
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* ======================================================
           PAGE HEADER
       ====================================================== */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <motion.div
+        variants={fadeUpVariants}
+        className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"
+      >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#09263A] sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-heading sm:text-3xl">
             Tasks
           </h1>
-          <p className="mt-1 text-sm text-[#687B78]">
+          <p className="mt-1 text-sm text-text-secondary">
             Manage workflow tasks across your client portfolio
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <button
+          <motion.button
             type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
+            whileHover={
+              shouldReduceMotion || isRefreshing
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={
+              shouldReduceMotion || isRefreshing
+                ? undefined
+                : { scale: 0.98 }
+            }
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-[#09263A]
-              transition-all
+              text-heading
+              transition-colors
               duration-200
-              hover:border-[#087F5B]
-              hover:text-[#087F5B]
+              hover:border-primary
+              hover:text-primary
               disabled:cursor-not-allowed
               disabled:opacity-60
             "
@@ -509,34 +632,41 @@ const AccountantTasks = () => {
             <span className="hidden sm:inline">
               {isRefreshing ? "Refreshing..." : "Refresh"}
             </span>
-          </button>
+          </motion.button>
 
-          <Link
-            to="/accountant/tasks/new"
-            className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-lg
-              bg-[#087F5B]
-              px-4
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-sm
-              transition-all
-              duration-200
-              hover:bg-[#005E45]
-              hover:-translate-y-0.5
-              hover:shadow-md
-            "
+          <motion.div
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
           >
-            <Plus className="h-4 w-4" strokeWidth={2.4} />
-            <span>Add Task</span>
-          </Link>
+            <Link
+              to="/accountant/tasks/new"
+              className="
+                inline-flex
+                items-center
+                gap-2
+                rounded-lg
+                bg-primary
+                px-4
+                py-2.5
+                text-sm
+                font-semibold
+                text-text-white
+                shadow-button
+                transition-colors
+                duration-200
+                hover:bg-primary-hover
+              "
+            >
+              <Plus className="h-4 w-4" strokeWidth={2.4} />
+              <span>Add Task</span>
+            </Link>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           STATS CARDS
@@ -545,34 +675,35 @@ const AccountantTasks = () => {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div
+            <motion.div
               key={stat.id}
+              variants={statCardVariants}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -3, transition: { duration: 0.25 } }
+              }
               className={`
                 group
                 relative
                 overflow-hidden
                 rounded-xl
                 border
-                bg-white
+                bg-background
                 p-4
-                shadow-[0_3px_14px_rgba(16,42,67,0.035)]
-                transition-all
+                shadow-card
+                transition-[border-color,box-shadow]
                 duration-300
-                hover:-translate-y-0.5
-                hover:shadow-[0_10px_25px_rgba(16,42,67,0.08)]
-                ${
-                  stat.highlight
-                    ? stat.highlightColor
-                    : "border-[#DDEAE6]"
-                }
+                hover:shadow-card-hover
+                ${stat.highlight ? stat.highlightColor : "border-border"}
               `}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     {stat.label}
                   </p>
-                  <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#09263A]">
+                  <p className="mt-1.5 text-2xl font-bold tracking-tight text-heading">
                     {stat.value}
                   </p>
                 </div>
@@ -594,10 +725,10 @@ const AccountantTasks = () => {
                   />
                 </div>
               </div>
-              <p className="mt-2 text-[10px] font-semibold text-[#687B78]">
+              <p className="mt-2 text-[10px] font-semibold text-text-secondary">
                 {stat.change}
               </p>
-            </div>
+            </motion.div>
           );
         })}
       </div>
@@ -605,11 +736,14 @@ const AccountantTasks = () => {
       {/* ======================================================
           FILTERS + VIEW TOGGLE
       ====================================================== */}
-      <div className="rounded-xl border border-[#DDEAE6] bg-white p-4 shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
+      <motion.div
+        variants={fadeUpVariants}
+        className="rounded-xl border border-border bg-background p-4 shadow-card"
+      >
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           {/* Search */}
           <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#687B78]" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
             <input
               type="text"
               value={search}
@@ -619,34 +753,40 @@ const AccountantTasks = () => {
                 w-full
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-[#F5FCF9]
+                border-border
+                bg-background-soft
                 py-2.5
                 pl-10
                 pr-4
                 text-sm
-                text-[#09263A]
+                text-heading
                 outline-none
                 transition-all
                 duration-200
-                placeholder:text-[#687B78]
-                focus:border-[#087F5B]
-                focus:bg-white
+                placeholder:text-text-secondary
+                focus:border-primary
+                focus:bg-background
                 focus:ring-2
-                focus:ring-[#087F5B]/10
+                focus:ring-primary/10
               "
             />
           </div>
 
           {/* Status filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowStatusDropdown((prev) => !prev);
                 setShowPriorityDropdown(false);
                 setShowAssigneeDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -655,17 +795,17 @@ const AccountantTasks = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
@@ -676,61 +816,92 @@ const AccountantTasks = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showStatusDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showStatusDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {statusOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setStatusFilter(option.value);
-                      setShowStatusDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        statusFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
-                      }
-                    `}
-                  >
-                    <span>{option.label}</span>
-                    {statusFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showStatusDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-56
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {statusOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      custom={index}
+                      variants={menuItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      onClick={() => {
+                        setStatusFilter(option.value);
+                        setShowStatusDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          statusFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span>{option.label}</span>
+                      {statusFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Priority filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowPriorityDropdown((prev) => !prev);
                 setShowStatusDropdown(false);
                 setShowAssigneeDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -739,17 +910,17 @@ const AccountantTasks = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
@@ -760,61 +931,92 @@ const AccountantTasks = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showPriorityDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showPriorityDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-48 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {priorityOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setPriorityFilter(option.value);
-                      setShowPriorityDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        priorityFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
-                      }
-                    `}
-                  >
-                    <span>{option.label}</span>
-                    {priorityFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showPriorityDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-48
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {priorityOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      custom={index}
+                      variants={menuItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      onClick={() => {
+                        setPriorityFilter(option.value);
+                        setShowPriorityDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          priorityFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span>{option.label}</span>
+                      {priorityFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Assignee filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowAssigneeDropdown((prev) => !prev);
                 setShowStatusDropdown(false);
                 setShowPriorityDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -823,17 +1025,17 @@ const AccountantTasks = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
@@ -844,87 +1046,125 @@ const AccountantTasks = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showAssigneeDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showAssigneeDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {assigneeOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setAssigneeFilter(option.value);
-                      setShowAssigneeDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        assigneeFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
-                      }
-                    `}
-                  >
-                    <span>{option.label}</span>
-                    {assigneeFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showAssigneeDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-56
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {assigneeOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      custom={index}
+                      variants={menuItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      onClick={() => {
+                        setAssigneeFilter(option.value);
+                        setShowAssigneeDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          assigneeFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span>{option.label}</span>
+                      {assigneeFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Clear filters */}
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-lg
-                border
-                border-[#DDEAE6]
-                bg-white
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-[#687B78]
-                transition-all
-                duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
-              "
-            >
-              <Filter className="h-3.5 w-3.5" strokeWidth={2.2} />
-              <span>Clear</span>
-            </button>
-          )}
+          <AnimatePresence>
+            {hasActiveFilters && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                type="button"
+                onClick={clearFilters}
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -1, transition: { duration: 0.2 } }
+                }
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  px-4
+                  py-2.5
+                  text-sm
+                  font-semibold
+                  text-text-secondary
+                  transition-colors
+                  duration-200
+                  hover:border-primary
+                  hover:text-primary
+                "
+              >
+                <Filter className="h-3.5 w-3.5" strokeWidth={2.2} />
+                <span>Clear</span>
+              </motion.button>
+            )}
+          </AnimatePresence>
 
           {/* View toggle */}
-          <div className="hidden rounded-lg border border-[#DDEAE6] bg-white p-1 lg:flex">
-            <button
+          <div className="hidden rounded-lg border border-border bg-background p-1 lg:flex">
+            <motion.button
               type="button"
               onClick={() => setViewMode("list")}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
               className={`
                 inline-flex
                 items-center
@@ -934,20 +1174,22 @@ const AccountantTasks = () => {
                 py-1.5
                 text-xs
                 font-bold
-                transition-all
+                transition-colors
+                duration-200
                 ${
                   viewMode === "list"
-                    ? "bg-[#087F5B] text-white"
-                    : "text-[#687B78] hover:bg-[#F5FCF9]"
+                    ? "bg-primary text-text-white shadow-button"
+                    : "text-text-secondary hover:bg-background-soft"
                 }
               `}
             >
               <List className="h-3.5 w-3.5" strokeWidth={2.4} />
               List
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               onClick={() => setViewMode("board")}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
               className={`
                 inline-flex
                 items-center
@@ -957,625 +1199,889 @@ const AccountantTasks = () => {
                 py-1.5
                 text-xs
                 font-bold
-                transition-all
+                transition-colors
+                duration-200
                 ${
                   viewMode === "board"
-                    ? "bg-[#087F5B] text-white"
-                    : "text-[#687B78] hover:bg-[#F5FCF9]"
+                    ? "bg-primary text-text-white shadow-button"
+                    : "text-text-secondary hover:bg-background-soft"
                 }
               `}
             >
               <LayoutGrid className="h-3.5 w-3.5" strokeWidth={2.4} />
               Board
-            </button>
+            </motion.button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           LIST VIEW
       ====================================================== */}
-      {viewMode === "list" && (
-        <div className="overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
-          <div className="flex flex-col gap-2 border-b border-[#DDEAE6] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              <CheckSquare
-                className="h-4 w-4 text-[#087F5B]"
-                strokeWidth={2.2}
-              />
-              <h2 className="text-sm font-bold text-[#09263A]">
-                All Tasks
-              </h2>
-              <span className="rounded-full bg-[#E8F8F2] px-2 py-0.5 text-[10px] font-bold text-[#087F5B]">
-                {filteredTasks.length}
-              </span>
-            </div>
-            <p className="text-[11px] text-[#687B78]">
-              Sorted by priority and deadline
-            </p>
-          </div>
-
-          {/* Tasks list */}
-          {filteredTasks.length > 0 ? (
-            <div className="divide-y divide-[#DDEAE6]">
-              {filteredTasks.map((task) => {
-                const priority = getPriorityStyles(task.priority);
-                const status = getStatusStyles(task.status);
-                const StatusIcon = status.icon;
-
-                return (
-                  <div
-                    key={task.id}
-                    onClick={() =>
-                      navigate(`/accountant/tasks/${task.id}`)
-                    }
-                    className={`
-                      group
-                      cursor-pointer
-                      border-l-4
-                      px-5
-                      py-4
-                      transition-colors
-                      hover:bg-[#F5FCF9]
-                      ${priority.border}
-                      ${task.status === "Completed" ? "opacity-60" : ""}
-                    `}
-                  >
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                      {/* Left: Checkbox + Title */}
-                      <div className="flex min-w-0 flex-1 items-start gap-3">
-                        <button
-                          type="button"
-                          onClick={(e) => e.stopPropagation()}
-                          className={`
-                            mt-0.5
-                            flex
-                            h-5
-                            w-5
-                            shrink-0
-                            items-center
-                            justify-center
-                            rounded-md
-                            border-2
-                            transition-all
-                            ${
-                              task.status === "Completed"
-                                ? "border-[#087F5B] bg-[#087F5B]"
-                                : "border-[#DDEAE6] hover:border-[#087F5B]"
-                            }
-                          `}
-                        >
-                          {task.status === "Completed" && (
-                            <Check
-                              className="h-3 w-3 text-white"
-                              strokeWidth={3}
-                            />
-                          )}
-                        </button>
-
-                        <div className="min-w-0 flex-1">
-                          {/* Title row */}
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p
-                              className={`
-                                truncate text-sm font-bold text-[#09263A] transition-colors group-hover:text-[#087F5B]
-                                ${
-                                  task.status === "Completed"
-                                    ? "line-through"
-                                    : ""
-                                }
-                              `}
-                            >
-                              {task.title}
-                            </p>
-
-                            {/* Priority badge */}
-                            <span
-                              className={`
-                                inline-flex
-                                items-center
-                                gap-1
-                                rounded-full
-                                px-2
-                                py-0.5
-                                text-[9px]
-                                font-bold
-                                uppercase
-                                tracking-wider
-                                ${priority.bg}
-                                ${priority.text}
-                              `}
-                            >
-                              <Flag className="h-2.5 w-2.5" strokeWidth={3} />
-                              {priority.label}
-                            </span>
-                          </div>
-
-                          {/* Description */}
-                          <p className="mt-1 line-clamp-1 text-xs text-[#687B78]">
-                            {task.description}
-                          </p>
-
-                          {/* Meta row */}
-                          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#687B78]">
-                            <Link
-                              to={`/accountant/companies/${task.companyNumber}`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 font-semibold transition-colors hover:text-[#087F5B]"
-                            >
-                              <Building2
-                                className="h-3 w-3"
-                                strokeWidth={2.2}
-                              />
-                              <span className="truncate max-w-[160px]">
-                                {task.company}
-                              </span>
-                            </Link>
-
-                            {/* Tags */}
-                            {task.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="rounded-full bg-[#F5FCF9] px-2 py-0.5 text-[9px] font-semibold text-[#687B78]"
-                              >
-                                #{tag}
-                              </span>
-                            ))}
-
-                            {/* Subtasks */}
-                            {task.subtasks.total > 0 && (
-                              <span className="inline-flex items-center gap-1">
-                                <CheckCircle2
-                                  className="h-3 w-3"
-                                  strokeWidth={2.2}
-                                />
-                                {task.subtasks.completed}/
-                                {task.subtasks.total}
-                              </span>
-                            )}
-
-                            {/* Comments */}
-                            {task.comments > 0 && (
-                              <span className="inline-flex items-center gap-1">
-                                <MessageSquare
-                                  className="h-3 w-3"
-                                  strokeWidth={2.2}
-                                />
-                                {task.comments}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right: Status + Assignee + Due + Actions */}
-                      <div
-                        className="flex flex-wrap items-center gap-3 pl-8 lg:pl-0"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {/* Status */}
-                        <span
-                          className={`
-                            inline-flex
-                            items-center
-                            gap-1.5
-                            rounded-full
-                            px-2.5
-                            py-1
-                            text-[10px]
-                            font-bold
-                            ${status.bg}
-                            ${status.text}
-                          `}
-                        >
-                          <StatusIcon
-                            className="h-3 w-3"
-                            strokeWidth={2.4}
-                          />
-                          {task.status}
-                        </span>
-
-                        {/* Due date */}
-                        <div className="text-right">
-                          <p className="text-[11px] font-bold text-[#09263A]">
-                            {task.dueDate}
-                          </p>
-                          <p
-                            className={`mt-0.5 text-[10px] font-bold ${getDaysColor(
-                              task.daysLeft
-                            )}`}
-                          >
-                            {getDaysLabel(task.daysLeft)}
-                          </p>
-                        </div>
-
-                        {/* Assignee */}
-                        <div
-                          className={`
-                            flex
-                            h-8
-                            w-8
-                            shrink-0
-                            items-center
-                            justify-center
-                            rounded-full
-                            text-[10px]
-                            font-bold
-                            text-white
-                            ${task.assigneeColor}
-                          `}
-                          title={task.assignee}
-                        >
-                          {task.assigneeInitials}
-                        </div>
-
-                        {/* Menu */}
-                        <div className="relative">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setOpenRowMenu(
-                                openRowMenu === task.id ? null : task.id
-                              )
-                            }
-                            className="
-                              flex
-                              h-8
-                              w-8
-                              items-center
-                              justify-center
-                              rounded-lg
-                              text-[#687B78]
-                              transition-colors
-                              hover:bg-[#E8F8F2]
-                              hover:text-[#087F5B]
-                            "
-                            aria-label="More actions"
-                          >
-                            <MoreVertical className="h-3.5 w-3.5" />
-                          </button>
-
-                          {openRowMenu === task.id && (
-                            <div className="absolute right-0 top-full z-20 mt-1 w-48 overflow-hidden rounded-lg border border-[#DDEAE6] bg-white py-1 shadow-2xl">
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Eye className="h-3.5 w-3.5" />
-                                <span>View details</span>
-                              </button>
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Edit3 className="h-3.5 w-3.5" />
-                                <span>Edit task</span>
-                              </button>
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <UserCheck className="h-3.5 w-3.5" />
-                                <span>Reassign</span>
-                              </button>
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Send className="h-3.5 w-3.5" />
-                                <span>Send reminder</span>
-                              </button>
-                              <div className="my-1 border-t border-[#DDEAE6]" />
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-rose-600 transition-colors hover:bg-rose-50">
-                                <Trash2 className="h-3.5 w-3.5" />
-                                <span>Delete task</span>
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F8F2]">
+      <AnimatePresence mode="wait">
+        {viewMode === "list" && (
+          <motion.div
+            key="list"
+            ref={listRef}
+            initial={
+              shouldReduceMotion ? false : { opacity: 0, y: 12 }
+            }
+            animate={{ opacity: 1, y: 0 }}
+            exit={
+              shouldReduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, y: -8 }
+            }
+            transition={{ duration: 0.35, ease: premiumEase }}
+            className="
+              overflow-hidden
+              rounded-xl
+              border
+              border-border
+              bg-background
+              shadow-card
+            "
+          >
+            <div className="flex flex-col gap-2 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-2">
                 <CheckSquare
-                  className="h-7 w-7 text-[#087F5B]"
-                  strokeWidth={2}
+                  className="h-4 w-4 text-primary"
+                  strokeWidth={2.2}
                 />
+                <h2 className="text-sm font-bold text-heading">
+                  All Tasks
+                </h2>
+                <span className="rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-bold text-primary">
+                  {filteredTasks.length}
+                </span>
               </div>
-              <p className="mt-4 text-sm font-bold text-[#09263A]">
-                No tasks found
+              <p className="text-[11px] text-text-secondary">
+                Sorted by priority and deadline
               </p>
-              <p className="mt-1 max-w-xs text-xs text-[#687B78]">
-                {hasActiveFilters
-                  ? "Try adjusting your search or filters."
-                  : "Create your first task to get started."}
-              </p>
-              {hasActiveFilters && (
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  className="
-                    mt-5
-                    inline-flex
-                    items-center
-                    gap-2
-                    rounded-lg
-                    border
-                    border-[#DDEAE6]
-                    bg-white
-                    px-4
-                    py-2
-                    text-xs
-                    font-semibold
-                    text-[#09263A]
-                    transition-all
-                    duration-200
-                    hover:border-[#087F5B]
-                    hover:text-[#087F5B]
-                  "
-                >
-                  <Filter className="h-3 w-3" strokeWidth={2.4} />
-                  <span>Clear filters</span>
-                </button>
-              )}
             </div>
-          )}
-        </div>
-      )}
 
-      {/* ======================================================
-          BOARD VIEW
-      ====================================================== */}
-      {viewMode === "board" && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {Object.entries(groupedTasks).map(([status, tasksInColumn]) => {
-            const statusStyles = getStatusStyles(status);
-            const StatusIcon = statusStyles.icon;
+            {filteredTasks.length > 0 ? (
+              <div className="divide-y divide-border">
+                {filteredTasks.map((task, index) => {
+                  const priority = getPriorityStyles(task.priority);
+                  const status = getStatusStyles(task.status);
+                  const StatusIcon = status.icon;
 
-            return (
-              <div
-                key={status}
-                className="flex flex-col rounded-xl border border-[#DDEAE6] bg-[#F5FCF9]"
-              >
-                {/* Column header */}
-                <div className="flex items-center justify-between gap-2 border-b border-[#DDEAE6] bg-white px-4 py-3 rounded-t-xl">
-                  <div className="flex items-center gap-2">
-                    <StatusIcon
-                      className={`h-4 w-4 ${statusStyles.text}`}
-                      strokeWidth={2.4}
-                    />
-                    <h3 className="text-xs font-bold text-[#09263A]">
-                      {status}
-                    </h3>
-                  </div>
-                  <span
-                    className={`
-                      rounded-full
-                      px-2
-                      py-0.5
-                      text-[10px]
-                      font-bold
-                      ${statusStyles.bg}
-                      ${statusStyles.text}
-                    `}
-                  >
-                    {tasksInColumn.length}
-                  </span>
-                </div>
-
-                {/* Tasks column */}
-                <div className="flex-1 space-y-2 overflow-y-auto p-3">
-                  {tasksInColumn.map((task) => {
-                    const priority = getPriorityStyles(task.priority);
-
-                    return (
-                      <div
-                        key={task.id}
-                        onClick={() =>
-                          navigate(`/accountant/tasks/${task.id}`)
-                        }
-                        className={`
-                          cursor-pointer
-                          rounded-lg
-                          border
-                          border-[#DDEAE6]
-                          border-l-4
-                          bg-white
-                          p-3
-                          transition-all
-                          duration-200
-                          hover:-translate-y-0.5
-                          hover:shadow-md
-                          ${priority.border}
-                          ${task.status === "Completed" ? "opacity-60" : ""}
-                        `}
-                      >
-                        {/* Title + priority */}
-                        <div className="flex items-start justify-between gap-2">
-                          <p
+                  return (
+                    <motion.div
+                      key={task.id}
+                      custom={index}
+                      variants={taskRowVariants}
+                      initial="hidden"
+                      animate={isListInView ? "visible" : "hidden"}
+                      onClick={() =>
+                        navigate(`/accountant/tasks/${task.id}`)
+                      }
+                      className={`
+                        group
+                        cursor-pointer
+                        border-l-4
+                        px-5
+                        py-4
+                        transition-colors
+                        hover:bg-background-soft
+                        ${priority.border}
+                        ${task.status === "Completed" ? "opacity-60" : ""}
+                      `}
+                    >
+                      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                        {/* Left: Checkbox + Title */}
+                        <div className="flex min-w-0 flex-1 items-start gap-3">
+                          <motion.button
+                            type="button"
+                            onClick={(e) => e.stopPropagation()}
+                            whileTap={
+                              shouldReduceMotion
+                                ? undefined
+                                : { scale: 0.9 }
+                            }
                             className={`
-                              line-clamp-2 text-xs font-bold text-[#09263A]
-                              ${task.status === "Completed" ? "line-through" : ""}
-                            `}
-                          >
-                            {task.title}
-                          </p>
-                          <span
-                            className={`
-                              inline-flex
-                              h-4
-                              w-4
+                              mt-0.5
+                              flex
+                              h-5
+                              w-5
                               shrink-0
                               items-center
                               justify-center
-                              rounded
-                              ${priority.bg}
-                              ${priority.text}
+                              rounded-md
+                              border-2
+                              transition-colors
+                              duration-200
+                              ${
+                                task.status === "Completed"
+                                  ? "border-primary bg-primary"
+                                  : "border-border hover:border-primary"
+                              }
                             `}
-                            title={`${priority.label} priority`}
                           >
-                            <Flag className="h-2.5 w-2.5" strokeWidth={3} />
-                          </span>
+                            {task.status === "Completed" && (
+                              <motion.span
+                                initial={
+                                  shouldReduceMotion
+                                    ? false
+                                    : { scale: 0 }
+                                }
+                                animate={{ scale: 1 }}
+                                transition={{
+                                  duration: 0.2,
+                                  ease: [0.34, 1.56, 0.64, 1],
+                                }}
+                              >
+                                <Check
+                                  className="h-3 w-3 text-text-white"
+                                  strokeWidth={3}
+                                />
+                              </motion.span>
+                            )}
+                          </motion.button>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p
+                                className={`
+                                  truncate text-sm font-bold text-heading transition-colors group-hover:text-primary
+                                  ${task.status === "Completed" ? "line-through" : ""}
+                                `}
+                              >
+                                {task.title}
+                              </p>
+
+                              <span
+                                className={`
+                                  inline-flex
+                                  items-center
+                                  gap-1
+                                  rounded-full
+                                  px-2
+                                  py-0.5
+                                  text-[9px]
+                                  font-bold
+                                  uppercase
+                                  tracking-wider
+                                  ${priority.bg}
+                                  ${priority.text}
+                                `}
+                              >
+                                <Flag className="h-2.5 w-2.5" strokeWidth={3} />
+                                {priority.label}
+                              </span>
+                            </div>
+
+                            <p className="mt-1 line-clamp-1 text-xs text-text-secondary">
+                              {task.description}
+                            </p>
+
+                            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-text-secondary">
+                              <Link
+                                to={`/accountant/companies/${task.companyNumber}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="
+                                  inline-flex
+                                  items-center
+                                  gap-1
+                                  font-semibold
+                                  transition-colors
+                                  hover:text-primary
+                                "
+                              >
+                                <Building2
+                                  className="h-3 w-3"
+                                  strokeWidth={2.2}
+                                />
+                                <span className="truncate max-w-[160px]">
+                                  {task.company}
+                                </span>
+                              </Link>
+
+                              {task.tags.map((tag) => (
+                                <span
+                                  key={tag}
+                                  className="
+                                    rounded-full
+                                    bg-background-soft
+                                    px-2
+                                    py-0.5
+                                    text-[9px]
+                                    font-semibold
+                                    text-text-secondary
+                                  "
+                                >
+                                  #{tag}
+                                </span>
+                              ))}
+
+                              {task.subtasks.total > 0 && (
+                                <span className="inline-flex items-center gap-1">
+                                  <CheckCircle2
+                                    className="h-3 w-3"
+                                    strokeWidth={2.2}
+                                  />
+                                  {task.subtasks.completed}/
+                                  {task.subtasks.total}
+                                </span>
+                              )}
+
+                              {task.comments > 0 && (
+                                <span className="inline-flex items-center gap-1">
+                                  <MessageSquare
+                                    className="h-3 w-3"
+                                    strokeWidth={2.2}
+                                  />
+                                  {task.comments}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
 
-                        {/* Company */}
-                        <div className="mt-2 flex items-center gap-1 text-[10px] text-[#687B78]">
-                          <Building2 className="h-3 w-3" strokeWidth={2.2} />
-                          <span className="truncate">{task.company}</span>
-                        </div>
-
-                        {/* Footer */}
-                        <div className="mt-3 flex items-center justify-between gap-2">
-                          {/* Due */}
+                        {/* Right: Status + Assignee + Due + Actions */}
+                        <div
+                          className="flex flex-wrap items-center gap-3 pl-8 lg:pl-0"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <span
-                            className={`text-[10px] font-bold ${getDaysColor(task.daysLeft)}`}
+                            className={`
+                              inline-flex
+                              items-center
+                              gap-1.5
+                              rounded-full
+                              px-2.5
+                              py-1
+                              text-[10px]
+                              font-bold
+                              ${status.bg}
+                              ${status.text}
+                            `}
                           >
-                            {getDaysLabel(task.daysLeft)}
+                            <StatusIcon
+                              className="h-3 w-3"
+                              strokeWidth={2.4}
+                            />
+                            {task.status}
                           </span>
 
-                          {/* Assignee */}
+                          <div className="text-right">
+                            <p className="text-[11px] font-bold text-heading">
+                              {task.dueDate}
+                            </p>
+                            <p
+                              className={`mt-0.5 text-[10px] font-bold ${getDaysColor(
+                                task.daysLeft,
+                              )}`}
+                            >
+                              {getDaysLabel(task.daysLeft)}
+                            </p>
+                          </div>
+
                           <div
                             className={`
                               flex
-                              h-6
-                              w-6
+                              h-8
+                              w-8
                               shrink-0
                               items-center
                               justify-center
                               rounded-full
-                              text-[9px]
+                              text-[10px]
                               font-bold
-                              text-white
+                              text-text-white
+                              shadow-button
                               ${task.assigneeColor}
                             `}
                             title={task.assignee}
                           >
                             {task.assigneeInitials}
                           </div>
-                        </div>
 
-                        {/* Subtasks + comments progress */}
-                        {(task.subtasks.total > 0 || task.comments > 0) && (
-                          <div className="mt-3 flex items-center gap-3 border-t border-[#DDEAE6] pt-2 text-[10px] text-[#687B78]">
-                            {task.subtasks.total > 0 && (
-                              <span className="inline-flex items-center gap-1">
-                                <CheckCircle2
-                                  className="h-3 w-3"
-                                  strokeWidth={2.2}
-                                />
-                                {task.subtasks.completed}/
-                                {task.subtasks.total}
-                              </span>
-                            )}
-                            {task.comments > 0 && (
-                              <span className="inline-flex items-center gap-1">
-                                <MessageSquare
-                                  className="h-3 w-3"
-                                  strokeWidth={2.2}
-                                />
-                                {task.comments}
-                              </span>
-                            )}
+                          <div className="relative">
+                            <motion.button
+                              type="button"
+                              onClick={() =>
+                                setOpenRowMenu(
+                                  openRowMenu === task.id ? null : task.id,
+                                )
+                              }
+                              whileHover={
+                                shouldReduceMotion
+                                  ? undefined
+                                  : {
+                                      scale: 1.1,
+                                      transition: { duration: 0.15 },
+                                    }
+                              }
+                              whileTap={
+                                shouldReduceMotion
+                                  ? undefined
+                                  : { scale: 0.95 }
+                              }
+                              className="
+                                flex
+                                h-8
+                                w-8
+                                items-center
+                                justify-center
+                                rounded-lg
+                                text-text-secondary
+                                transition-colors
+                                hover:bg-primary-light
+                                hover:text-primary
+                              "
+                              aria-label="More actions"
+                            >
+                              <MoreVertical className="h-3.5 w-3.5" />
+                            </motion.button>
+
+                            <AnimatePresence>
+                              {openRowMenu === task.id && (
+                                <motion.div
+                                  initial={
+                                    shouldReduceMotion
+                                      ? false
+                                      : {
+                                          opacity: 0,
+                                          y: -6,
+                                          scale: 0.96,
+                                        }
+                                  }
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  exit={
+                                    shouldReduceMotion
+                                      ? { opacity: 0 }
+                                      : {
+                                          opacity: 0,
+                                          y: -4,
+                                          scale: 0.97,
+                                        }
+                                  }
+                                  transition={{
+                                    duration: 0.2,
+                                    ease: premiumEase,
+                                  }}
+                                  className="
+                                    absolute
+                                    right-0
+                                    top-full
+                                    z-20
+                                    mt-1
+                                    w-48
+                                    overflow-hidden
+                                    rounded-lg
+                                    border
+                                    border-border
+                                    bg-background
+                                    py-1
+                                    shadow-card-hover
+                                  "
+                                >
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Eye className="h-3.5 w-3.5" />
+                                    <span>View details</span>
+                                  </button>
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Edit3 className="h-3.5 w-3.5" />
+                                    <span>Edit task</span>
+                                  </button>
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <UserCheck className="h-3.5 w-3.5" />
+                                    <span>Reassign</span>
+                                  </button>
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Send className="h-3.5 w-3.5" />
+                                    <span>Send reminder</span>
+                                  </button>
+                                  <div className="my-1 border-t border-border" />
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-danger transition-colors hover:bg-danger-light">
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    <span>Delete task</span>
+                                  </button>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
-                        )}
+                        </div>
                       </div>
-                    );
-                  })}
-
-                  {tasksInColumn.length === 0 && (
-                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#DDEAE6] bg-white/50 px-3 py-6 text-center">
-                      <p className="text-[10px] font-semibold text-[#687B78]">
-                        No tasks
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Add task button */}
+                    </motion.div>
+                  );
+                })}
+              </div>
+            ) : (
+              <motion.div
+                initial={
+                  shouldReduceMotion ? false : { opacity: 0, y: 12 }
+                }
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: premiumEase }}
+                className="flex flex-col items-center justify-center px-5 py-16 text-center"
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light">
+                  <CheckSquare
+                    className="h-7 w-7 text-primary"
+                    strokeWidth={2}
+                  />
+                </div>
+                <p className="mt-4 text-sm font-bold text-heading">
+                  No tasks found
+                </p>
+                <p className="mt-1 max-w-xs text-xs text-text-secondary">
+                  {hasActiveFilters
+                    ? "Try adjusting your search or filters."
+                    : "Create your first task to get started."}
+                </p>
+                {hasActiveFilters && (
                   <button
                     type="button"
+                    onClick={clearFilters}
                     className="
-                      flex
-                      w-full
+                      mt-5
+                      inline-flex
                       items-center
-                      justify-center
-                      gap-1.5
+                      gap-2
                       rounded-lg
-                      border-2
-                      border-dashed
-                      border-[#DDEAE6]
-                      bg-white/50
-                      px-3
+                      border
+                      border-border
+                      bg-background
+                      px-4
                       py-2
-                      text-[10px]
+                      text-xs
                       font-semibold
-                      text-[#687B78]
-                      transition-all
+                      text-heading
+                      transition-colors
                       duration-200
-                      hover:border-[#087F5B]
-                      hover:bg-white
-                      hover:text-[#087F5B]
+                      hover:border-primary
+                      hover:text-primary
                     "
                   >
-                    <Plus className="h-3 w-3" strokeWidth={2.6} />
-                    Add task
+                    <Filter className="h-3 w-3" strokeWidth={2.4} />
+                    <span>Clear filters</span>
                   </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+                )}
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+
+        {/* ======================================================
+            BOARD VIEW
+        ====================================================== */}
+        {viewMode === "board" && (
+          <motion.div
+            key="board"
+            initial={
+              shouldReduceMotion ? false : { opacity: 0, y: 12 }
+            }
+            animate={{ opacity: 1, y: 0 }}
+            exit={
+              shouldReduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, y: -8 }
+            }
+            transition={{ duration: 0.35, ease: premiumEase }}
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"
+          >
+            {Object.entries(groupedTasks).map(
+              ([status, tasksInColumn], colIndex) => {
+                const statusStyles = getStatusStyles(status);
+                const StatusIcon = statusStyles.icon;
+
+                return (
+                  <motion.div
+                    key={status}
+                    initial={
+                      shouldReduceMotion
+                        ? false
+                        : { opacity: 0, y: 16 }
+                    }
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: shouldReduceMotion ? 0 : colIndex * 0.08,
+                      duration: 0.5,
+                      ease: premiumEase,
+                    }}
+                    className="
+                      flex
+                      flex-col
+                      rounded-xl
+                      border
+                      border-border
+                      bg-background-soft
+                    "
+                  >
+                    {/* Column header */}
+                    <div
+                      className="
+                        flex
+                        items-center
+                        justify-between
+                        gap-2
+                        rounded-t-xl
+                        border-b
+                        border-border
+                        bg-background
+                        px-4
+                        py-3
+                      "
+                    >
+                      <div className="flex items-center gap-2">
+                        <StatusIcon
+                          className={`h-4 w-4 ${statusStyles.text}`}
+                          strokeWidth={2.4}
+                        />
+                        <h3 className="text-xs font-bold text-heading">
+                          {status}
+                        </h3>
+                      </div>
+                      <span
+                        className={`
+                          rounded-full
+                          px-2
+                          py-0.5
+                          text-[10px]
+                          font-bold
+                          ${statusStyles.bg}
+                          ${statusStyles.text}
+                        `}
+                      >
+                        {tasksInColumn.length}
+                      </span>
+                    </div>
+
+                    {/* Tasks column */}
+                    <div className="flex-1 space-y-2 overflow-y-auto p-3">
+                      {tasksInColumn.map((task, cardIndex) => {
+                        const priority = getPriorityStyles(task.priority);
+
+                        return (
+                          <motion.div
+                            key={task.id}
+                            custom={cardIndex}
+                            variants={boardCardVariants}
+                            initial="hidden"
+                            animate="visible"
+                            whileHover={
+                              shouldReduceMotion
+                                ? undefined
+                                : {
+                                    y: -3,
+                                    transition: { duration: 0.2 },
+                                  }
+                            }
+                            onClick={() =>
+                              navigate(`/accountant/tasks/${task.id}`)
+                            }
+                            className={`
+                              cursor-pointer
+                              rounded-lg
+                              border
+                              border-border
+                              border-l-4
+                              bg-background
+                              p-3
+                              transition-[border-color,box-shadow]
+                              duration-200
+                              hover:border-primary/30
+                              hover:shadow-card
+                              ${priority.border}
+                              ${task.status === "Completed" ? "opacity-60" : ""}
+                            `}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <p
+                                className={`
+                                  line-clamp-2 text-xs font-bold text-heading
+                                  ${task.status === "Completed" ? "line-through" : ""}
+                                `}
+                              >
+                                {task.title}
+                              </p>
+                              <span
+                                className={`
+                                  inline-flex
+                                  h-4
+                                  w-4
+                                  shrink-0
+                                  items-center
+                                  justify-center
+                                  rounded
+                                  ${priority.bg}
+                                  ${priority.text}
+                                `}
+                                title={`${priority.label} priority`}
+                              >
+                                <Flag
+                                  className="h-2.5 w-2.5"
+                                  strokeWidth={3}
+                                />
+                              </span>
+                            </div>
+
+                            <div className="mt-2 flex items-center gap-1 text-[10px] text-text-secondary">
+                              <Building2
+                                className="h-3 w-3"
+                                strokeWidth={2.2}
+                              />
+                              <span className="truncate">{task.company}</span>
+                            </div>
+
+                            <div className="mt-3 flex items-center justify-between gap-2">
+                              <span
+                                className={`text-[10px] font-bold ${getDaysColor(task.daysLeft)}`}
+                              >
+                                {getDaysLabel(task.daysLeft)}
+                              </span>
+
+                              <div
+                                className={`
+                                  flex
+                                  h-6
+                                  w-6
+                                  shrink-0
+                                  items-center
+                                  justify-center
+                                  rounded-full
+                                  text-[9px]
+                                  font-bold
+                                  text-text-white
+                                  shadow-button
+                                  ${task.assigneeColor}
+                                `}
+                                title={task.assignee}
+                              >
+                                {task.assigneeInitials}
+                              </div>
+                            </div>
+
+                            {(task.subtasks.total > 0 ||
+                              task.comments > 0) && (
+                              <div
+                                className="
+                                  mt-3
+                                  flex
+                                  items-center
+                                  gap-3
+                                  border-t
+                                  border-border
+                                  pt-2
+                                  text-[10px]
+                                  text-text-secondary
+                                "
+                              >
+                                {task.subtasks.total > 0 && (
+                                  <span className="inline-flex items-center gap-1">
+                                    <CheckCircle2
+                                      className="h-3 w-3"
+                                      strokeWidth={2.2}
+                                    />
+                                    {task.subtasks.completed}/
+                                    {task.subtasks.total}
+                                  </span>
+                                )}
+                                {task.comments > 0 && (
+                                  <span className="inline-flex items-center gap-1">
+                                    <MessageSquare
+                                      className="h-3 w-3"
+                                      strokeWidth={2.2}
+                                    />
+                                    {task.comments}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+
+                      {tasksInColumn.length === 0 && (
+                        <div
+                          className="
+                            flex
+                            flex-col
+                            items-center
+                            justify-center
+                            rounded-lg
+                            border-2
+                            border-dashed
+                            border-border
+                            bg-background/50
+                            px-3
+                            py-6
+                            text-center
+                          "
+                        >
+                          <p className="text-[10px] font-semibold text-text-secondary">
+                            No tasks
+                          </p>
+                        </div>
+                      )}
+
+                      <motion.button
+                        type="button"
+                        whileHover={
+                          shouldReduceMotion
+                            ? undefined
+                            : { y: -1, transition: { duration: 0.2 } }
+                        }
+                        whileTap={
+                          shouldReduceMotion ? undefined : { scale: 0.98 }
+                        }
+                        className="
+                          flex
+                          w-full
+                          items-center
+                          justify-center
+                          gap-1.5
+                          rounded-lg
+                          border-2
+                          border-dashed
+                          border-border
+                          bg-background/50
+                          px-3
+                          py-2
+                          text-[10px]
+                          font-semibold
+                          text-text-secondary
+                          transition-colors
+                          duration-200
+                          hover:border-primary
+                          hover:bg-background
+                          hover:text-primary
+                        "
+                      >
+                        <Plus className="h-3 w-3" strokeWidth={2.6} />
+                        Add task
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                );
+              },
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ======================================================
           BOTTOM CTA BANNER
       ====================================================== */}
-      <div className="relative overflow-hidden rounded-xl border border-[#DDEAE6] bg-gradient-to-r from-[#E8F8F2] via-[#F5FCF9] to-white p-6 sm:p-7">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#087F5B] opacity-[0.06] blur-3xl" />
+      <motion.div
+        variants={fadeUpVariants}
+        className="
+          relative
+          overflow-hidden
+          rounded-xl
+          border
+          border-border
+          bg-gradient-to-r
+          from-primary-light
+          via-background-soft
+          to-background
+          p-6
+          sm:p-7
+        "
+      >
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -right-16
+            -top-16
+            h-48
+            w-48
+            rounded-full
+            bg-primary
+            opacity-[0.06]
+            blur-3xl
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.1, 1], opacity: [0.06, 0.12, 0.06] }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
 
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#087F5B]">
-              <Zap className="h-5 w-5 text-white" strokeWidth={2.2} />
-            </div>
+            <motion.div
+              className="
+                flex
+                h-11
+                w-11
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-primary
+                shadow-button
+              "
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : { opacity: 0, scale: 0.6, rotate: -12 }
+              }
+              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.5,
+                ease: [0.34, 1.56, 0.64, 1],
+              }}
+            >
+              <Zap className="h-5 w-5 text-text-white" strokeWidth={2.2} />
+            </motion.div>
 
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#087F5B]">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
                 Boost productivity
               </p>
-              <h3 className="mt-1 text-base font-bold text-[#09263A]">
+              <h3 className="mt-1 text-base font-bold text-heading">
                 Automate routine tasks
               </h3>
-              <p className="mt-1 text-xs leading-5 text-[#687B78]">
+              <p className="mt-1 text-xs leading-5 text-text-secondary">
                 Create task templates for recurring work and assign them
                 automatically to team members.
               </p>
             </div>
           </div>
 
-          <Link
-            to="/accountant/tasks/templates"
-            className="
-              inline-flex
-              shrink-0
-              items-center
-              justify-center
-              gap-2
-              self-start
-              rounded-lg
-              bg-[#087F5B]
-              px-5
-              py-2.5
-              text-xs
-              font-bold
-              text-white
-              shadow-sm
-              transition-all
-              duration-200
-              hover:bg-[#005E45]
-              hover:-translate-y-0.5
-              hover:shadow-md
-              sm:self-auto
-            "
+          <motion.div
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+            className="shrink-0 self-start sm:self-auto"
           >
-            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
-            <span>Task templates</span>
-          </Link>
+            <Link
+              to="/accountant/tasks/templates"
+              className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                rounded-lg
+                bg-primary
+                px-5
+                py-2.5
+                text-xs
+                font-bold
+                text-text-white
+                shadow-button
+                transition-colors
+                duration-200
+                hover:bg-primary-hover
+              "
+            >
+              <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+              <span>Task templates</span>
+            </Link>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

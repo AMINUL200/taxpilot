@@ -1,4 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useInView,
+} from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   CalendarClock,
@@ -6,7 +12,6 @@ import {
   Search,
   Filter,
   ChevronDown,
-  ArrowRight,
   Eye,
   MoreVertical,
   AlertCircle,
@@ -19,7 +24,6 @@ import {
   Calendar,
   Bell,
   TrendingUp,
-  Layers,
   FileText,
   Timer,
   UserCheck,
@@ -27,11 +31,12 @@ import {
   Send,
   Archive,
   Play,
-  Info,
 } from "lucide-react";
 
 const AccountantDeadlines = () => {
   const navigate = useNavigate();
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
 
   /* ============================================================
      STATE
@@ -47,6 +52,9 @@ const AccountantDeadlines = () => {
   const [openRowMenu, setOpenRowMenu] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const tableRef = useRef(null);
+  const isTableInView = useInView(tableRef, { once: true, amount: 0.1 });
+
   /* ============================================================
      STATS
   ============================================================ */
@@ -58,10 +66,10 @@ const AccountantDeadlines = () => {
       value: 3,
       change: "Requires immediate action",
       icon: AlertCircle,
-      iconBg: "bg-rose-100",
-      iconColor: "text-rose-500",
+      iconBg: "bg-danger-light",
+      iconColor: "text-danger",
       highlight: true,
-      highlightColor: "border-rose-200",
+      highlightColor: "border-danger/30",
     },
     {
       id: "due-week",
@@ -69,10 +77,10 @@ const AccountantDeadlines = () => {
       value: 5,
       change: "Next 7 days",
       icon: Clock3,
-      iconBg: "bg-amber-100",
-      iconColor: "text-amber-600",
+      iconBg: "bg-warning-light",
+      iconColor: "text-warning",
       highlight: true,
-      highlightColor: "border-amber-200",
+      highlightColor: "border-warning/30",
     },
     {
       id: "due-month",
@@ -80,8 +88,8 @@ const AccountantDeadlines = () => {
       value: 12,
       change: "Next 30 days",
       icon: CalendarClock,
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
+      iconBg: "bg-primary-light",
+      iconColor: "text-primary",
     },
     {
       id: "upcoming",
@@ -89,8 +97,8 @@ const AccountantDeadlines = () => {
       value: 24,
       change: "Next 90 days",
       icon: TrendingUp,
-      iconBg: "bg-purple-100",
-      iconColor: "text-purple-600",
+      iconBg: "bg-secondary-light",
+      iconColor: "text-secondary",
     },
     {
       id: "completed",
@@ -98,8 +106,8 @@ const AccountantDeadlines = () => {
       value: 156,
       change: "This year",
       icon: CheckCircle2,
-      iconBg: "bg-emerald-100",
-      iconColor: "text-emerald-600",
+      iconBg: "bg-success-light",
+      iconColor: "text-success",
     },
   ];
 
@@ -352,35 +360,35 @@ const AccountantDeadlines = () => {
     switch (urgency) {
       case "overdue":
         return {
-          bg: "bg-rose-50",
-          border: "border-rose-200",
-          text: "text-rose-700",
-          badge: "bg-rose-100 text-rose-700",
-          dot: "bg-rose-500",
+          bg: "bg-danger-light",
+          border: "border-danger/20",
+          text: "text-danger",
+          badge: "bg-danger-light text-danger",
+          dot: "bg-danger",
         };
       case "high":
         return {
-          bg: "bg-amber-50",
-          border: "border-amber-200",
-          text: "text-amber-700",
-          badge: "bg-amber-100 text-amber-700",
-          dot: "bg-amber-500",
+          bg: "bg-warning-light",
+          border: "border-warning/20",
+          text: "text-warning",
+          badge: "bg-warning-light text-warning",
+          dot: "bg-warning",
         };
       case "medium":
         return {
-          bg: "bg-blue-50",
-          border: "border-blue-200",
-          text: "text-blue-700",
-          badge: "bg-blue-100 text-blue-700",
-          dot: "bg-blue-500",
+          bg: "bg-primary-light",
+          border: "border-primary/20",
+          text: "text-primary",
+          badge: "bg-primary-light text-primary",
+          dot: "bg-primary",
         };
       default:
         return {
-          bg: "bg-emerald-50",
-          border: "border-emerald-200",
-          text: "text-emerald-700",
-          badge: "bg-emerald-100 text-emerald-700",
-          dot: "bg-emerald-500",
+          bg: "bg-success-light",
+          border: "border-success/20",
+          text: "text-success",
+          badge: "bg-success-light text-success",
+          dot: "bg-success",
         };
     }
   };
@@ -396,32 +404,32 @@ const AccountantDeadlines = () => {
     switch (status) {
       case "In Progress":
         return {
-          bg: "bg-blue-100",
-          text: "text-blue-700",
+          bg: "bg-primary-light",
+          text: "text-primary",
           icon: Timer,
         };
       case "Awaiting Client":
         return {
-          bg: "bg-amber-100",
-          text: "text-amber-700",
+          bg: "bg-warning-light",
+          text: "text-warning",
           icon: UserCheck,
         };
       case "Overdue":
         return {
-          bg: "bg-rose-100",
-          text: "text-rose-700",
+          bg: "bg-danger-light",
+          text: "text-danger",
           icon: AlertCircle,
         };
       case "Not Started":
         return {
-          bg: "bg-gray-100",
-          text: "text-gray-700",
+          bg: "bg-background-soft",
+          text: "text-text-secondary",
           icon: Clock3,
         };
       default:
         return {
-          bg: "bg-gray-100",
-          text: "text-gray-600",
+          bg: "bg-background-soft",
+          text: "text-text-secondary",
           icon: Clock3,
         };
     }
@@ -430,18 +438,100 @@ const AccountantDeadlines = () => {
   const getFilingTypeStyles = (type) => {
     switch (type) {
       case "VAT Return":
-        return "bg-purple-100 text-purple-700";
+        return "bg-secondary-light text-secondary";
       case "Corporation Tax (CT600)":
-        return "bg-blue-100 text-blue-700";
+        return "bg-primary-light text-primary";
       case "Annual Accounts":
-        return "bg-emerald-100 text-emerald-700";
+        return "bg-success-light text-success";
       case "Confirmation Statement":
-        return "bg-amber-100 text-amber-700";
+        return "bg-warning-light text-warning";
       case "Self Assessment":
-        return "bg-rose-100 text-rose-700";
+        return "bg-danger-light text-danger";
       default:
-        return "bg-gray-100 text-gray-700";
+        return "bg-background-soft text-text-secondary";
     }
+  };
+
+  /* ============================================================
+     ANIMATION VARIANTS
+  ============================================================ */
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.06,
+        delayChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
+
+  const fadeUpVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.55, ease: premiumEase },
+    },
+  };
+
+  const statCardVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 16, scale: 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.5, ease: premiumEase },
+    },
+  };
+
+  const rowVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 },
+    visible: (index) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.45,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.05,
+      },
+    }),
+  };
+
+  const dropdownVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: -8, scale: 0.96 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.22, ease: premiumEase },
+    },
+    exit: shouldReduceMotion
+      ? { opacity: 0 }
+      : {
+          opacity: 0,
+          y: -6,
+          scale: 0.97,
+          transition: { duration: 0.15 },
+        },
+  };
+
+  const menuItemVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -6 },
+    visible: (index) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.04,
+      },
+    }),
   };
 
   /* ============================================================
@@ -449,42 +539,60 @@ const AccountantDeadlines = () => {
   ============================================================ */
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* ======================================================
           PAGE HEADER
       ====================================================== */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <motion.div
+        variants={fadeUpVariants}
+        className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"
+      >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#09263A] sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-heading sm:text-3xl">
             Deadlines
           </h1>
-          <p className="mt-1 text-sm text-[#687B78]">
+          <p className="mt-1 text-sm text-text-secondary">
             Track upcoming and overdue deadlines across your clients
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <button
+          <motion.button
             type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
+            whileHover={
+              shouldReduceMotion || isRefreshing
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={
+              shouldReduceMotion || isRefreshing
+                ? undefined
+                : { scale: 0.98 }
+            }
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-[#09263A]
-              transition-all
+              text-heading
+              transition-colors
               duration-200
-              hover:border-[#087F5B]
-              hover:text-[#087F5B]
+              hover:border-primary
+              hover:text-primary
               disabled:cursor-not-allowed
               disabled:opacity-60
             "
@@ -496,84 +604,100 @@ const AccountantDeadlines = () => {
             <span className="hidden sm:inline">
               {isRefreshing ? "Refreshing..." : "Refresh"}
             </span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-[#09263A]
-              transition-all
+              text-heading
+              transition-colors
               duration-200
-              hover:border-[#087F5B]
-              hover:text-[#087F5B]
+              hover:border-primary
+              hover:text-primary
             "
           >
             <Bell className="h-4 w-4" strokeWidth={2.2} />
             <span className="hidden sm:inline">Reminders</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-[#09263A]
-              transition-all
+              text-heading
+              transition-colors
               duration-200
-              hover:border-[#087F5B]
-              hover:text-[#087F5B]
+              hover:border-primary
+              hover:text-primary
             "
           >
             <Download className="h-4 w-4" strokeWidth={2.2} />
             <span className="hidden sm:inline">Export</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
-              bg-[#087F5B]
+              bg-primary
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-white
-              shadow-sm
-              transition-all
+              text-text-white
+              shadow-button
+              transition-colors
               duration-200
-              hover:bg-[#005E45]
-              hover:-translate-y-0.5
-              hover:shadow-md
+              hover:bg-primary-hover
             "
           >
             <Plus className="h-4 w-4" strokeWidth={2.4} />
             <span>Add Deadline</span>
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           STATS CARDS
@@ -582,34 +706,37 @@ const AccountantDeadlines = () => {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div
+            <motion.div
               key={stat.id}
+              variants={statCardVariants}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -3, transition: { duration: 0.25 } }
+              }
               className={`
                 group
                 relative
                 overflow-hidden
                 rounded-xl
                 border
-                bg-white
+                bg-background
                 p-4
-                shadow-[0_3px_14px_rgba(16,42,67,0.035)]
-                transition-all
+                shadow-card
+                transition-[border-color,box-shadow]
                 duration-300
-                hover:-translate-y-0.5
-                hover:shadow-[0_10px_25px_rgba(16,42,67,0.08)]
+                hover:shadow-card-hover
                 ${
-                  stat.highlight
-                    ? stat.highlightColor
-                    : "border-[#DDEAE6]"
+                  stat.highlight ? stat.highlightColor : "border-border"
                 }
               `}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     {stat.label}
                   </p>
-                  <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#09263A]">
+                  <p className="mt-1.5 text-2xl font-bold tracking-tight text-heading">
                     {stat.value}
                   </p>
                 </div>
@@ -631,10 +758,10 @@ const AccountantDeadlines = () => {
                   />
                 </div>
               </div>
-              <p className="mt-2 text-[10px] font-semibold text-[#687B78]">
+              <p className="mt-2 text-[10px] font-semibold text-text-secondary">
                 {stat.change}
               </p>
-            </div>
+            </motion.div>
           );
         })}
       </div>
@@ -642,67 +769,127 @@ const AccountantDeadlines = () => {
       {/* ======================================================
           OVERDUE ALERT BANNER
       ====================================================== */}
-      {filteredDeadlines.filter((d) => d.daysLeft < 0).length > 0 && (
-        <div className="flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rose-100">
-              <AlertCircle
-                className="h-5 w-5 text-rose-500"
-                strokeWidth={2.4}
-              />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-rose-900">
-                {filteredDeadlines.filter((d) => d.daysLeft < 0).length}{" "}
-                deadline
-                {filteredDeadlines.filter((d) => d.daysLeft < 0).length > 1
-                  ? "s"
-                  : ""}{" "}
-                overdue
-              </p>
-              <p className="mt-0.5 text-xs text-rose-700">
-                Take action now to avoid HMRC penalties for your clients.
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setTimeFilter("overdue")}
+      <AnimatePresence>
+        {filteredDeadlines.filter((d) => d.daysLeft < 0).length > 0 && (
+          <motion.div
+            initial={
+              shouldReduceMotion
+                ? false
+                : { opacity: 0, y: 12, scale: 0.98 }
+            }
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{
+              opacity: 0,
+              y: -8,
+              scale: 0.98,
+              transition: { duration: 0.2 },
+            }}
+            transition={{ duration: 0.45, ease: premiumEase }}
             className="
-              inline-flex
-              shrink-0
-              items-center
-              justify-center
-              gap-2
-              self-start
-              rounded-lg
-              bg-rose-500
-              px-4
-              py-2.5
-              text-xs
-              font-bold
-              text-white
-              transition-all
-              duration-200
-              hover:bg-rose-600
-              sm:self-auto
+              flex
+              flex-col
+              gap-3
+              rounded-xl
+              border
+              border-danger/20
+              bg-danger-light
+              p-4
+              sm:flex-row
+              sm:items-center
+              sm:justify-between
             "
           >
-            <Zap className="h-3.5 w-3.5" strokeWidth={2.6} />
-            <span>View overdue only</span>
-          </button>
-        </div>
-      )}
+            <div className="flex items-start gap-3">
+              <motion.div
+                className="
+                  flex
+                  h-10
+                  w-10
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-lg
+                  bg-danger/15
+                "
+                animate={
+                  shouldReduceMotion
+                    ? undefined
+                    : { scale: [1, 1.08, 1] }
+                }
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <AlertCircle
+                  className="h-5 w-5 text-danger"
+                  strokeWidth={2.4}
+                />
+              </motion.div>
+              <div>
+                <p className="text-sm font-bold text-danger">
+                  {filteredDeadlines.filter((d) => d.daysLeft < 0).length}{" "}
+                  deadline
+                  {filteredDeadlines.filter((d) => d.daysLeft < 0).length > 1
+                    ? "s"
+                    : ""}{" "}
+                  overdue
+                </p>
+                <p className="mt-0.5 text-xs text-danger/80">
+                  Take action now to avoid HMRC penalties for your clients.
+                </p>
+              </div>
+            </div>
+
+            <motion.button
+              type="button"
+              onClick={() => setTimeFilter("overdue")}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+              className="
+                inline-flex
+                shrink-0
+                items-center
+                justify-center
+                gap-2
+                self-start
+                rounded-lg
+                bg-danger
+                px-4
+                py-2.5
+                text-xs
+                font-bold
+                text-text-white
+                shadow-button
+                transition-colors
+                duration-200
+                hover:bg-danger/90
+                sm:self-auto
+              "
+            >
+              <Zap className="h-3.5 w-3.5" strokeWidth={2.6} />
+              <span>View overdue only</span>
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ======================================================
           FILTERS BAR
       ====================================================== */}
-      <div className="rounded-xl border border-[#DDEAE6] bg-white p-4 shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
+      <motion.div
+        variants={fadeUpVariants}
+        className="rounded-xl border border-border bg-background p-4 shadow-card"
+      >
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           {/* Search */}
           <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#687B78]" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
             <input
               type="text"
               value={search}
@@ -712,34 +899,40 @@ const AccountantDeadlines = () => {
                 w-full
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-[#F5FCF9]
+                border-border
+                bg-background-soft
                 py-2.5
                 pl-10
                 pr-4
                 text-sm
-                text-[#09263A]
+                text-heading
                 outline-none
                 transition-all
                 duration-200
-                placeholder:text-[#687B78]
-                focus:border-[#087F5B]
-                focus:bg-white
+                placeholder:text-text-secondary
+                focus:border-primary
+                focus:bg-background
                 focus:ring-2
-                focus:ring-[#087F5B]/10
+                focus:ring-primary/10
               "
             />
           </div>
 
           {/* Time filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowTimeDropdown((prev) => !prev);
                 setShowTypeDropdown(false);
                 setShowClientDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -748,22 +941,25 @@ const AccountantDeadlines = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
               <div className="flex items-center gap-2">
-                <Calendar className="h-3.5 w-3.5 text-[#687B78]" strokeWidth={2.2} />
+                <Calendar
+                  className="h-3.5 w-3.5 text-text-secondary"
+                  strokeWidth={2.2}
+                />
                 <span>
                   {timeOptions.find((o) => o.value === timeFilter)?.label}
                 </span>
@@ -772,61 +968,92 @@ const AccountantDeadlines = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showTimeDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showTimeDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {timeOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setTimeFilter(option.value);
-                      setShowTimeDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        timeFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
-                      }
-                    `}
-                  >
-                    <span>{option.label}</span>
-                    {timeFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showTimeDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-56
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {timeOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      custom={index}
+                      variants={menuItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      onClick={() => {
+                        setTimeFilter(option.value);
+                        setShowTimeDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          timeFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span>{option.label}</span>
+                      {timeFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Type filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowTypeDropdown((prev) => !prev);
                 setShowTimeDropdown(false);
                 setShowClientDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -835,22 +1062,25 @@ const AccountantDeadlines = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
               <div className="flex items-center gap-2">
-                <FileText className="h-3.5 w-3.5 text-[#687B78]" strokeWidth={2.2} />
+                <FileText
+                  className="h-3.5 w-3.5 text-text-secondary"
+                  strokeWidth={2.2}
+                />
                 <span>
                   {typeOptions.find((o) => o.value === typeFilter)?.label}
                 </span>
@@ -859,61 +1089,92 @@ const AccountantDeadlines = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showTypeDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showTypeDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {typeOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setTypeFilter(option.value);
-                      setShowTypeDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        typeFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
-                      }
-                    `}
-                  >
-                    <span>{option.label}</span>
-                    {typeFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showTypeDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-56
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {typeOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      custom={index}
+                      variants={menuItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      onClick={() => {
+                        setTypeFilter(option.value);
+                        setShowTypeDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          typeFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span>{option.label}</span>
+                      {typeFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Client filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowClientDropdown((prev) => !prev);
                 setShowTimeDropdown(false);
                 setShowTypeDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -922,22 +1183,25 @@ const AccountantDeadlines = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
               <div className="flex items-center gap-2">
-                <Users className="h-3.5 w-3.5 text-[#687B78]" strokeWidth={2.2} />
+                <Users
+                  className="h-3.5 w-3.5 text-text-secondary"
+                  strokeWidth={2.2}
+                />
                 <span className="truncate max-w-[120px]">
                   {clientOptions.find((o) => o.value === clientFilter)?.label}
                 </span>
@@ -946,103 +1210,151 @@ const AccountantDeadlines = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showClientDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showClientDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-64 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {clientOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setClientFilter(option.value);
-                      setShowClientDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        clientFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
-                      }
-                    `}
-                  >
-                    <span className="truncate">{option.label}</span>
-                    {clientFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showClientDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-64
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {clientOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      custom={index}
+                      variants={menuItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      onClick={() => {
+                        setClientFilter(option.value);
+                        setShowClientDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          clientFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span className="truncate">{option.label}</span>
+                      {clientFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Clear filters */}
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-lg
-                border
-                border-[#DDEAE6]
-                bg-white
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-[#687B78]
-                transition-all
-                duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
-              "
-            >
-              <Filter className="h-3.5 w-3.5" strokeWidth={2.2} />
-              <span>Clear</span>
-            </button>
-          )}
+          <AnimatePresence>
+            {hasActiveFilters && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                type="button"
+                onClick={clearFilters}
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -1, transition: { duration: 0.2 } }
+                }
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  px-4
+                  py-2.5
+                  text-sm
+                  font-semibold
+                  text-text-secondary
+                  transition-colors
+                  duration-200
+                  hover:border-primary
+                  hover:text-primary
+                "
+              >
+                <Filter className="h-3.5 w-3.5" strokeWidth={2.2} />
+                <span>Clear</span>
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           DEADLINES LIST
       ====================================================== */}
-      <div className="overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
+      <motion.div
+        ref={tableRef}
+        variants={fadeUpVariants}
+        className="
+          overflow-hidden
+          rounded-xl
+          border
+          border-border
+          bg-background
+          shadow-card
+        "
+      >
         {/* Table header info */}
-        <div className="flex flex-col gap-2 border-b border-[#DDEAE6] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <CalendarClock
-              className="h-4 w-4 text-[#087F5B]"
+              className="h-4 w-4 text-primary"
               strokeWidth={2.2}
             />
-            <h2 className="text-sm font-bold text-[#09263A]">
+            <h2 className="text-sm font-bold text-heading">
               All Deadlines
             </h2>
-            <span className="rounded-full bg-[#E8F8F2] px-2 py-0.5 text-[10px] font-bold text-[#087F5B]">
+            <span className="rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-bold text-primary">
               {filteredDeadlines.length}
             </span>
           </div>
-          <p className="text-[11px] text-[#687B78]">
+          <p className="text-[11px] text-text-secondary">
             Sorted by urgency
           </p>
         </div>
@@ -1051,37 +1363,41 @@ const AccountantDeadlines = () => {
         <div className="hidden overflow-x-auto lg:block">
           <table className="w-full min-w-[1100px]">
             <thead>
-              <tr className="border-b border-[#DDEAE6] bg-[#F5FCF9]">
-                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+              <tr className="border-b border-border bg-background-soft">
+                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Company
                 </th>
-                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Filing
                 </th>
-                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Client
                 </th>
-                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Due Date
                 </th>
-                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Status
                 </th>
-                <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   Action
                 </th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-[#DDEAE6]">
-              {filteredDeadlines.map((deadline) => {
+            <tbody className="divide-y divide-border">
+              {filteredDeadlines.map((deadline, index) => {
                 const urgency = getUrgencyStyles(deadline.urgency);
                 const statusStyles = getStatusStyles(deadline.status);
                 const StatusIcon = statusStyles.icon;
 
                 return (
-                  <tr
+                  <motion.tr
                     key={deadline.id}
+                    custom={index}
+                    variants={rowVariants}
+                    initial="hidden"
+                    animate={isTableInView ? "visible" : "hidden"}
                     onClick={() =>
                       navigate(`/accountant/filings/${deadline.id}`)
                     }
@@ -1089,8 +1405,8 @@ const AccountantDeadlines = () => {
                       group
                       cursor-pointer
                       transition-colors
-                      hover:bg-[#F5FCF9]
-                      ${deadline.daysLeft < 0 ? "bg-rose-50/30" : "bg-white"}
+                      hover:bg-background-soft
+                      ${deadline.daysLeft < 0 ? "bg-danger-light/30" : "bg-background"}
                     `}
                   >
                     {/* Company */}
@@ -1116,10 +1432,10 @@ const AccountantDeadlines = () => {
                           />
                         </div>
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-bold text-[#09263A] transition-colors group-hover:text-[#087F5B]">
+                          <p className="truncate text-sm font-bold text-heading transition-colors group-hover:text-primary">
                             {deadline.company}
                           </p>
-                          <p className="mt-0.5 font-mono text-[10px] text-[#687B78]">
+                          <p className="mt-0.5 font-mono text-[10px] text-text-secondary">
                             #{deadline.companyNumber}
                           </p>
                         </div>
@@ -1130,11 +1446,20 @@ const AccountantDeadlines = () => {
                     <td className="px-5 py-4">
                       <div>
                         <span
-                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${getFilingTypeStyles(deadline.filing)}`}
+                          className={`
+                            inline-flex
+                            items-center
+                            rounded-full
+                            px-2
+                            py-0.5
+                            text-[10px]
+                            font-bold
+                            ${getFilingTypeStyles(deadline.filing)}
+                          `}
                         >
                           {deadline.filing}
                         </span>
-                        <p className="mt-1 text-[10px] text-[#687B78]">
+                        <p className="mt-1 text-[10px] text-text-secondary">
                           {deadline.period} · {deadline.estimatedTime}
                         </p>
                       </div>
@@ -1145,10 +1470,19 @@ const AccountantDeadlines = () => {
                       <Link
                         to={`/accountant/clients/${deadline.clientId}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#09263A] transition-colors hover:text-[#087F5B]"
+                        className="
+                          inline-flex
+                          items-center
+                          gap-1.5
+                          text-xs
+                          font-semibold
+                          text-heading
+                          transition-colors
+                          hover:text-primary
+                        "
                       >
                         <Users
-                          className="h-3.5 w-3.5 text-[#687B78]"
+                          className="h-3.5 w-3.5 text-text-secondary"
                           strokeWidth={2.2}
                         />
                         <span className="truncate max-w-[140px]">
@@ -1160,7 +1494,7 @@ const AccountantDeadlines = () => {
                     {/* Due Date */}
                     <td className="px-5 py-4">
                       <div>
-                        <p className="text-xs font-bold text-[#09263A]">
+                        <p className="text-xs font-bold text-heading">
                           {deadline.dueDate}
                         </p>
                         <p
@@ -1191,7 +1525,7 @@ const AccountantDeadlines = () => {
                           <StatusIcon className="h-3 w-3" strokeWidth={2.4} />
                           {deadline.status}
                         </span>
-                        <span className="text-[10px] text-[#687B78]">
+                        <span className="text-[10px] text-text-secondary">
                           {deadline.assignee}
                         </span>
                       </div>
@@ -1203,36 +1537,54 @@ const AccountantDeadlines = () => {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="relative inline-flex items-center gap-1">
-                        <Link
-                          to={`/accountant/filings/new?company=${deadline.companyNumber}`}
-                          className="
-                            inline-flex
-                            items-center
-                            gap-1.5
-                            rounded-lg
-                            bg-[#087F5B]
-                            px-3.5
-                            py-2
-                            text-[11px]
-                            font-bold
-                            text-white
-                            shadow-sm
-                            transition-all
-                            duration-200
-                            hover:bg-[#005E45]
-                            hover:-translate-y-0.5
-                          "
+                        <motion.div
+                          whileHover={
+                            shouldReduceMotion
+                              ? undefined
+                              : { y: -1, transition: { duration: 0.2 } }
+                          }
+                          whileTap={
+                            shouldReduceMotion ? undefined : { scale: 0.98 }
+                          }
                         >
-                          <Play className="h-3 w-3" strokeWidth={2.6} />
-                          <span>File</span>
-                        </Link>
+                          <Link
+                            to={`/accountant/filings/new?company=${deadline.companyNumber}`}
+                            className="
+                              inline-flex
+                              items-center
+                              gap-1.5
+                              rounded-lg
+                              bg-primary
+                              px-3.5
+                              py-2
+                              text-[11px]
+                              font-bold
+                              text-text-white
+                              shadow-button
+                              transition-colors
+                              duration-200
+                              hover:bg-primary-hover
+                            "
+                          >
+                            <Play className="h-3 w-3" strokeWidth={2.6} />
+                            <span>File</span>
+                          </Link>
+                        </motion.div>
 
-                        <button
+                        <motion.button
                           type="button"
                           onClick={() =>
                             setOpenRowMenu(
                               openRowMenu === deadline.id ? null : deadline.id
                             )
+                          }
+                          whileHover={
+                            shouldReduceMotion
+                              ? undefined
+                              : { scale: 1.1, transition: { duration: 0.15 } }
+                          }
+                          whileTap={
+                            shouldReduceMotion ? undefined : { scale: 0.95 }
                           }
                           className="
                             flex
@@ -1241,40 +1593,73 @@ const AccountantDeadlines = () => {
                             items-center
                             justify-center
                             rounded-lg
-                            text-[#687B78]
+                            text-text-secondary
                             transition-colors
-                            hover:bg-[#E8F8F2]
-                            hover:text-[#087F5B]
+                            hover:bg-primary-light
+                            hover:text-primary
                           "
                           aria-label="More actions"
                         >
                           <MoreVertical className="h-3.5 w-3.5" />
-                        </button>
+                        </motion.button>
 
-                        {openRowMenu === deadline.id && (
-                          <div className="absolute right-0 top-full z-20 mt-1 w-48 overflow-hidden rounded-lg border border-[#DDEAE6] bg-white py-1 shadow-2xl">
-                            <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                              <Eye className="h-3.5 w-3.5" />
-                              <span>View details</span>
-                            </button>
-                            <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                              <Send className="h-3.5 w-3.5" />
-                              <span>Send reminder</span>
-                            </button>
-                            <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                              <UserCheck className="h-3.5 w-3.5" />
-                              <span>Reassign</span>
-                            </button>
-                            <div className="my-1 border-t border-[#DDEAE6]" />
-                            <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-rose-600 transition-colors hover:bg-rose-50">
-                              <Archive className="h-3.5 w-3.5" />
-                              <span>Dismiss</span>
-                            </button>
-                          </div>
-                        )}
+                        <AnimatePresence>
+                          {openRowMenu === deadline.id && (
+                            <motion.div
+                              initial={
+                                shouldReduceMotion
+                                  ? false
+                                  : { opacity: 0, y: -6, scale: 0.96 }
+                              }
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={
+                                shouldReduceMotion
+                                  ? { opacity: 0 }
+                                  : { opacity: 0, y: -4, scale: 0.97 }
+                              }
+                              transition={{
+                                duration: 0.2,
+                                ease: premiumEase,
+                              }}
+                              className="
+                                absolute
+                                right-0
+                                top-full
+                                z-20
+                                mt-1
+                                w-48
+                                overflow-hidden
+                                rounded-lg
+                                border
+                                border-border
+                                bg-background
+                                py-1
+                                shadow-card-hover
+                              "
+                            >
+                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                <Eye className="h-3.5 w-3.5" />
+                                <span>View details</span>
+                              </button>
+                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                <Send className="h-3.5 w-3.5" />
+                                <span>Send reminder</span>
+                              </button>
+                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                <UserCheck className="h-3.5 w-3.5" />
+                                <span>Reassign</span>
+                              </button>
+                              <div className="my-1 border-t border-border" />
+                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-danger transition-colors hover:bg-danger-light">
+                                <Archive className="h-3.5 w-3.5" />
+                                <span>Dismiss</span>
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 );
               })}
             </tbody>
@@ -1282,22 +1667,26 @@ const AccountantDeadlines = () => {
         </div>
 
         {/* Mobile Card List */}
-        <div className="divide-y divide-[#DDEAE6] lg:hidden">
-          {filteredDeadlines.map((deadline) => {
+        <div className="divide-y divide-border lg:hidden">
+          {filteredDeadlines.map((deadline, index) => {
             const urgency = getUrgencyStyles(deadline.urgency);
             const statusStyles = getStatusStyles(deadline.status);
             const StatusIcon = statusStyles.icon;
 
             return (
-              <div
+              <motion.div
                 key={deadline.id}
+                custom={index}
+                variants={rowVariants}
+                initial="hidden"
+                animate={isTableInView ? "visible" : "hidden"}
                 onClick={() => navigate(`/accountant/filings/${deadline.id}`)}
                 className={`
                   cursor-pointer
                   p-4
                   transition-colors
-                  hover:bg-[#F5FCF9]
-                  ${deadline.daysLeft < 0 ? "bg-rose-50/30" : "bg-white"}
+                  hover:bg-background-soft
+                  ${deadline.daysLeft < 0 ? "bg-danger-light/30" : "bg-background"}
                 `}
               >
                 <div className="flex items-start gap-3">
@@ -1324,10 +1713,10 @@ const AccountantDeadlines = () => {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-bold text-[#09263A]">
+                        <p className="truncate text-sm font-bold text-heading">
                           {deadline.company}
                         </p>
-                        <p className="mt-0.5 font-mono text-[10px] text-[#687B78]">
+                        <p className="mt-0.5 font-mono text-[10px] text-text-secondary">
                           #{deadline.companyNumber}
                         </p>
                       </div>
@@ -1345,28 +1734,37 @@ const AccountantDeadlines = () => {
                         {deadline.daysLeft < 0
                           ? "Overdue"
                           : deadline.daysLeft <= 7
-                          ? "Urgent"
-                          : "Upcoming"}
+                            ? "Urgent"
+                            : "Upcoming"}
                       </span>
                     </div>
 
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       <span
-                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${getFilingTypeStyles(deadline.filing)}`}
+                        className={`
+                          inline-flex
+                          items-center
+                          rounded-full
+                          px-2
+                          py-0.5
+                          text-[10px]
+                          font-bold
+                          ${getFilingTypeStyles(deadline.filing)}
+                        `}
                       >
                         {deadline.filing}
                       </span>
-                      <span className="text-[10px] text-[#687B78]">
+                      <span className="text-[10px] text-text-secondary">
                         {deadline.period}
                       </span>
                     </div>
 
-                    <div className="mt-3 grid grid-cols-2 gap-2 rounded-lg bg-[#F5FCF9] px-3 py-2">
+                    <div className="mt-3 grid grid-cols-2 gap-2 rounded-lg bg-background-soft px-3 py-2">
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                           Due
                         </p>
-                        <p className="mt-0.5 text-[11px] font-bold text-[#09263A]">
+                        <p className="mt-0.5 text-[11px] font-bold text-heading">
                           {deadline.dueDate}
                         </p>
                         <p
@@ -1376,7 +1774,7 @@ const AccountantDeadlines = () => {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                           Status
                         </p>
                         <span
@@ -1394,14 +1792,17 @@ const AccountantDeadlines = () => {
                             ${statusStyles.text}
                           `}
                         >
-                          <StatusIcon className="h-2.5 w-2.5" strokeWidth={2.4} />
+                          <StatusIcon
+                            className="h-2.5 w-2.5"
+                            strokeWidth={2.4}
+                          />
                           {deadline.status}
                         </span>
                       </div>
                     </div>
 
                     <div className="mt-3 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-1.5 text-[11px] text-[#687B78]">
+                      <div className="flex items-center gap-1.5 text-[11px] text-text-secondary">
                         <Users className="h-3 w-3" strokeWidth={2.2} />
                         <span className="truncate">{deadline.assignee}</span>
                       </div>
@@ -1414,14 +1815,15 @@ const AccountantDeadlines = () => {
                           items-center
                           gap-1
                           rounded-lg
-                          bg-[#087F5B]
+                          bg-primary
                           px-3
                           py-1.5
                           text-[10px]
                           font-bold
-                          text-white
-                          transition-all
-                          hover:bg-[#005E45]
+                          text-text-white
+                          shadow-button
+                          transition-colors
+                          hover:bg-primary-hover
                         "
                       >
                         <Play className="h-3 w-3" strokeWidth={2.6} />
@@ -1430,24 +1832,29 @@ const AccountantDeadlines = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
 
         {/* Empty state */}
         {filteredDeadlines.length === 0 && (
-          <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F8F2]">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: premiumEase }}
+            className="flex flex-col items-center justify-center px-5 py-16 text-center"
+          >
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light">
               <CalendarClock
-                className="h-7 w-7 text-[#087F5B]"
+                className="h-7 w-7 text-primary"
                 strokeWidth={2}
               />
             </div>
-            <p className="mt-4 text-sm font-bold text-[#09263A]">
+            <p className="mt-4 text-sm font-bold text-heading">
               No deadlines found
             </p>
-            <p className="mt-1 max-w-xs text-xs text-[#687B78]">
+            <p className="mt-1 max-w-xs text-xs text-text-secondary">
               {hasActiveFilters
                 ? "Try adjusting your search or filters."
                 : "You're all caught up. No upcoming deadlines."}
@@ -1463,63 +1870,71 @@ const AccountantDeadlines = () => {
                   gap-2
                   rounded-lg
                   border
-                  border-[#DDEAE6]
-                  bg-white
+                  border-border
+                  bg-background
                   px-4
                   py-2
                   text-xs
                   font-semibold
-                  text-[#09263A]
-                  transition-all
+                  text-heading
+                  transition-colors
                   duration-200
-                  hover:border-[#087F5B]
-                  hover:text-[#087F5B]
+                  hover:border-primary
+                  hover:text-primary
                 "
               >
                 <Filter className="h-3 w-3" strokeWidth={2.4} />
                 <span>Clear filters</span>
               </button>
             )}
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
 
       {/* ======================================================
           LEGEND
       ====================================================== */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <motion.div
+        variants={fadeUpVariants}
+        className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+      >
         {[
           {
             label: "Overdue",
             desc: "Past the deadline",
-            color: "bg-rose-500",
-            bg: "bg-rose-50",
-            border: "border-rose-200",
+            color: "bg-danger",
+            bg: "bg-danger-light",
+            border: "border-danger/20",
           },
           {
             label: "Urgent",
             desc: "Due within 7 days",
-            color: "bg-amber-500",
-            bg: "bg-amber-50",
-            border: "border-amber-200",
+            color: "bg-warning",
+            bg: "bg-warning-light",
+            border: "border-warning/20",
           },
           {
             label: "Upcoming",
             desc: "Due within 30 days",
-            color: "bg-blue-500",
-            bg: "bg-blue-50",
-            border: "border-blue-200",
+            color: "bg-primary",
+            bg: "bg-primary-light",
+            border: "border-primary/20",
           },
           {
             label: "Planned",
             desc: "More than 30 days",
-            color: "bg-emerald-500",
-            bg: "bg-emerald-50",
-            border: "border-emerald-200",
+            color: "bg-success",
+            bg: "bg-success-light",
+            border: "border-success/20",
           },
         ].map((item) => (
-          <div
+          <motion.div
             key={item.label}
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -2, transition: { duration: 0.2 } }
+            }
             className={`
               flex
               items-center
@@ -1530,74 +1945,143 @@ const AccountantDeadlines = () => {
               ${item.bg}
               px-4
               py-3
+              transition-[border-color,box-shadow]
+              duration-200
+              hover:shadow-card
             `}
           >
-            <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${item.color}`} />
+            <span
+              className={`h-2.5 w-2.5 shrink-0 rounded-full ${item.color}`}
+            />
             <div>
-              <p className="text-xs font-bold text-[#09263A]">{item.label}</p>
-              <p className="mt-0.5 text-[10px] text-[#687B78]">{item.desc}</p>
+              <p className="text-xs font-bold text-heading">{item.label}</p>
+              <p className="mt-0.5 text-[10px] text-text-secondary">
+                {item.desc}
+              </p>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* ======================================================
           BOTTOM CTA BANNER
       ====================================================== */}
-      <div className="relative overflow-hidden rounded-xl border border-[#DDEAE6] bg-gradient-to-r from-[#E8F8F2] via-[#F5FCF9] to-white p-6 sm:p-7">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#087F5B] opacity-[0.06] blur-3xl" />
+      <motion.div
+        variants={fadeUpVariants}
+        className="
+          relative
+          overflow-hidden
+          rounded-xl
+          border
+          border-border
+          bg-gradient-to-r
+          from-primary-light
+          via-background-soft
+          to-background
+          p-6
+          sm:p-7
+        "
+      >
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -right-16
+            -top-16
+            h-48
+            w-48
+            rounded-full
+            bg-primary
+            opacity-[0.06]
+            blur-3xl
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.1, 1], opacity: [0.06, 0.12, 0.06] }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
 
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#087F5B]">
-              <Bell className="h-5 w-5 text-white" strokeWidth={2.2} />
-            </div>
+            <motion.div
+              className="
+                flex
+                h-11
+                w-11
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-primary
+                shadow-button
+              "
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : { opacity: 0, scale: 0.6, rotate: -12 }
+              }
+              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.5,
+                ease: [0.34, 1.56, 0.64, 1],
+              }}
+            >
+              <Bell className="h-5 w-5 text-text-white" strokeWidth={2.2} />
+            </motion.div>
 
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#087F5B]">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
                 Never miss a deadline
               </p>
-              <h3 className="mt-1 text-base font-bold text-[#09263A]">
+              <h3 className="mt-1 text-base font-bold text-heading">
                 Enable automatic deadline reminders
               </h3>
-              <p className="mt-1 text-xs leading-5 text-[#687B78]">
+              <p className="mt-1 text-xs leading-5 text-text-secondary">
                 Get email and SMS alerts before every filing deadline —
                 customisable per client or per filing type.
               </p>
             </div>
           </div>
 
-          <Link
-            to="/accountant/settings"
-            className="
-              inline-flex
-              shrink-0
-              items-center
-              justify-center
-              gap-2
-              self-start
-              rounded-lg
-              bg-[#087F5B]
-              px-5
-              py-2.5
-              text-xs
-              font-bold
-              text-white
-              shadow-sm
-              transition-all
-              duration-200
-              hover:bg-[#005E45]
-              hover:-translate-y-0.5
-              hover:shadow-md
-              sm:self-auto
-            "
+          <motion.div
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+            className="shrink-0 self-start sm:self-auto"
           >
-            <Bell className="h-3.5 w-3.5" strokeWidth={2.6} />
-            <span>Set up reminders</span>
-          </Link>
+            <Link
+              to="/accountant/settings"
+              className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                rounded-lg
+                bg-primary
+                px-5
+                py-2.5
+                text-xs
+                font-bold
+                text-text-white
+                shadow-button
+                transition-colors
+                duration-200
+                hover:bg-primary-hover
+              "
+            >
+              <Bell className="h-3.5 w-3.5" strokeWidth={2.6} />
+              <span>Set up reminders</span>
+            </Link>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

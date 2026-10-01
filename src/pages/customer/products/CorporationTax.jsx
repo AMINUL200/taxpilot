@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import CorporationTaxHero from "../../../component/corporation-tax/CorporationTaxHero.jsx";
 import CorporationTaxTrust from "../../../component/corporation-tax/CorporationTaxTrust.jsx";
@@ -10,8 +10,22 @@ import CorporationTaxWhoIsItFor from "../../../component/corporation-tax/Corpora
 import CorporationTaxPricing from "../../../component/corporation-tax/CorporationTaxPricing.jsx";
 import CorporationTaxFAQ from "../../../component/corporation-tax/CorporationTaxFAQ.jsx";
 import CorporationTaxCTA from "../../../component/corporation-tax/CorporationTaxCTA.jsx";
+import TaxPilotLoader from "../../../component/common/PageLoader.jsx";
 
 const CorporationTax = () => {
+   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if(loading){
+    return <TaxPilotLoader/>
+  }
   return (
     <>
       <CorporationTaxHero />

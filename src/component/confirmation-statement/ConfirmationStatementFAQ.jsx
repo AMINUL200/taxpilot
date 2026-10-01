@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 
 const faqs = [
@@ -46,64 +47,175 @@ const faqs = [
 
 const ConfirmationStatementFAQ = () => {
   const [openIndex, setOpenIndex] = useState(0);
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
 
   const toggle = (index) => {
     setOpenIndex((prev) => (prev === index ? -1 : index));
   };
 
-  return (
-    <section className="w-full bg-[#F5FCF9]">
-      <div className="mx-auto max-w-3xl px-5 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-        <h2 className="text-center text-3xl font-bold leading-[1.1] tracking-[-0.02em] text-[#09263A] sm:text-4xl">
-          Frequently asked questions
-        </h2>
+  /* ============================================================
+     ANIMATION VARIANTS
+  ============================================================ */
 
-        <div className="mt-10 space-y-3">
+  /* Heading reveal */
+  const headingVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 22 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.7, ease: premiumEase },
+    },
+  };
+
+  /* Container: orchestrates the stagger */
+  const containerVariants = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.06,
+        delayChildren: shouldReduceMotion ? 0 : 0.2,
+      },
+    },
+  };
+
+  /* Each FAQ item slides up smoothly */
+  const itemVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 20, scale: 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.55, ease: premiumEase },
+    },
+  };
+
+  return (
+    <section className="w-full bg-background-soft">
+      <div className="mx-auto max-w-3xl px-5 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+        {/* ============================================================
+            HEADING
+        ============================================================ */}
+        <motion.h2
+          className="
+            text-center
+            text-3xl
+            font-bold
+            leading-[1.1]
+            tracking-[-0.02em]
+            text-heading
+            sm:text-4xl
+          "
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5, margin: "-50px" }}
+          variants={headingVariants}
+        >
+          Frequently asked questions
+        </motion.h2>
+
+        {/* ============================================================
+            FAQ LIST — staggered reveal
+        ============================================================ */}
+        <motion.div
+          className="mt-10 space-y-3"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{
+            once: true,
+            amount: 0.1,
+            margin: "0px 0px -60px 0px",
+          }}
+        >
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
-              <div
+              <motion.div
                 key={faq.question}
-                className={`rounded-xl border bg-white transition-colors duration-200 ${
-                  isOpen ? "border-[#087F5B]/30" : "border-[#DDEAE6]"
-                }`}
+                variants={itemVariants}
+                className={`
+                  rounded-xl
+                  border
+                  bg-background
+                  transition-colors
+                  duration-300
+                  ${
+                    isOpen
+                      ? "border-primary/30 shadow-card"
+                      : "border-border"
+                  }
+                `}
               >
+                {/* Question button */}
                 <button
                   type="button"
                   onClick={() => toggle(index)}
                   aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left sm:px-6 sm:py-5"
+                  className="
+                    group
+                    flex
+                    w-full
+                    items-center
+                    justify-between
+                    gap-4
+                    px-5
+                    py-4
+                    text-left
+                    sm:px-6
+                    sm:py-5
+                  "
                 >
                   <span
-                    className={`text-sm font-semibold sm:text-base ${
-                      isOpen ? "text-[#087F5B]" : "text-[#09263A]"
-                    }`}
+                    className={`
+                      text-sm
+                      font-semibold
+                      transition-colors
+                      duration-200
+                      sm:text-base
+                      ${isOpen ? "text-primary" : "text-heading"}
+                    `}
                   >
                     {faq.question}
                   </span>
+
                   <ChevronDown
-                    className={`h-5 w-5 shrink-0 text-[#087F5B] transition-transform duration-300 ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
+                    className={`
+                      h-5
+                      w-5
+                      shrink-0
+                      transition-all
+                      duration-300
+                      ${
+                        isOpen
+                          ? "rotate-180 text-primary"
+                          : "text-text-secondary"
+                      }
+                    `}
                   />
                 </button>
 
+                {/* Answer — smooth expand/collapse */}
                 <div
                   className="grid overflow-hidden transition-all duration-300 ease-in-out"
                   style={{
                     gridTemplateRows: isOpen ? "1fr" : "0fr",
+                    opacity: isOpen ? 1 : 0,
                   }}
                 >
                   <div className="overflow-hidden">
-                    <p className="px-5 pb-5 text-sm leading-6 text-[#687B78] sm:px-6 sm:pb-6">
+                    <p className="px-5 pb-5 text-sm leading-6 text-text-secondary sm:px-6 sm:pb-6">
                       {faq.answer}
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

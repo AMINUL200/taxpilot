@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import SelfAssessmentHero from "../../../component/self-assessment/SelfAssessmentHero.jsx";
 import SelfAssessmentTrust from "../../../component/self-assessment/SelfAssessmentTrust.jsx";
@@ -10,8 +10,22 @@ import SelfAssessmentWhoIsItFor from "../../../component/self-assessment/SelfAss
 import SelfAssessmentPricing from "../../../component/self-assessment/SelfAssessmentPricing.jsx";
 import SelfAssessmentFAQ from "../../../component/self-assessment/SelfAssessmentFAQ.jsx";
 import SelfAssessmentCTA from "../../../component/self-assessment/SelfAssessmentCTA.jsx";
+import TaxPilotLoader from "../../../component/common/PageLoader.jsx";
 
 const SelfAssessment = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <TaxPilotLoader />;
+  }
   return (
     <>
       <SelfAssessmentHero />

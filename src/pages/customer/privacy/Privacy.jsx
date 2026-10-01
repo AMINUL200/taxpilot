@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight, CheckCircle2, LockKeyhole, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
+import TaxPilotLoader from "../../../component/common/PageLoader";
 
 const Privacy = () => {
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
+
   const sections = [
     { id: "introduction", label: "Introduction" },
     { id: "information", label: "Information we collect" },
@@ -19,61 +24,248 @@ const Privacy = () => {
     { id: "contact", label: "Contact us" },
   ];
 
+  /* ============================================================
+     ANIMATION VARIANTS
+  ============================================================ */
+
+  const heroContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.1,
+        delayChildren: shouldReduceMotion ? 0 : 0.1,
+      },
+    },
+  };
+
+  const heroItemVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.7, ease: premiumEase },
+    },
+  };
+
+  const sectionVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.65, ease: premiumEase },
+    },
+  };
+
+  const tocContainerVariants = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.04,
+        delayChildren: shouldReduceMotion ? 0 : 0.2,
+      },
+    },
+  };
+
+  const tocItemVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, x: -8 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.4, ease: premiumEase },
+    },
+  };
+
+  const ctaVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: premiumEase },
+    },
+  };
+
+     const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if(loading){
+    return <TaxPilotLoader/>
+  }
+
   return (
-    <div className="min-h-screen bg-white text-[#09263A]">
+    <div className="min-h-screen bg-background text-heading">
 
       {/* =====================================================
           HERO
       ===================================================== */}
-      <section className="relative overflow-hidden bg-[#F5FCF9]">
-
+      <section className="relative overflow-hidden bg-background-soft">
         {/* Decorative circles */}
-        <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full border border-[#65D9BB]/15" />
-        <div className="pointer-events-none absolute -left-10 -top-10 h-48 w-48 rounded-full border border-[#65D9BB]/15" />
-        <div className="pointer-events-none absolute -bottom-32 -right-20 h-80 w-80 rounded-full border border-[#65D9BB]/15" />
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -left-24
+            -top-24
+            h-72
+            w-72
+            rounded-full
+            border
+            border-sky/15
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.06, 1], opacity: [0.6, 1, 0.6] }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -left-10
+            -top-10
+            h-48
+            w-48
+            rounded-full
+            border
+            border-sky/15
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.08, 1], opacity: [0.5, 1, 0.5] }
+          }
+          transition={{
+            duration: 9,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5,
+          }}
+        />
+        <div
+          className="
+            pointer-events-none
+            absolute
+            -bottom-32
+            -right-20
+            h-80
+            w-80
+            rounded-full
+            border
+            border-sky/15
+          "
+        />
 
-        <div className="relative mx-auto max-w-7xl px-5 py-20 sm:px-6 sm:py-24 lg:px-8">
+        <motion.div
+          className="relative mx-auto max-w-7xl px-5 py-20 sm:px-6 sm:py-24 lg:px-8"
+          variants={heroContainerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           <div className="mx-auto max-w-3xl text-center">
 
             {/* Label */}
-            <div className="mb-5 flex justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full bg-[#E5F7F0] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#087F5B]">
+            <motion.div
+              variants={heroItemVariants}
+              className="mb-5 flex justify-center"
+            >
+              <span
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-full
+                  bg-primary-light
+                  px-4
+                  py-2
+                  text-[10px]
+                  font-bold
+                  uppercase
+                  tracking-[0.18em]
+                  text-primary
+                "
+              >
                 <LockKeyhole className="h-3.5 w-3.5" />
                 Privacy
               </span>
-            </div>
+            </motion.div>
 
             {/* Heading */}
-            <h1 className="text-4xl font-bold tracking-tight text-[#09263A] sm:text-5xl lg:text-6xl">
+            <motion.h1
+              variants={heroItemVariants}
+              className="
+                text-4xl
+                font-bold
+                tracking-tight
+                text-heading
+                sm:text-5xl
+                lg:text-6xl
+              "
+            >
               Privacy{" "}
-              <span className="text-[#087F5B]">Policy</span>
-            </h1>
+              <span className="text-primary">Policy</span>
+            </motion.h1>
 
-            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#687B78] sm:text-base">
+            <motion.p
+              variants={heroItemVariants}
+              className="
+                mx-auto
+                mt-5
+                max-w-2xl
+                text-sm
+                leading-7
+                text-text-secondary
+                sm:text-base
+              "
+            >
               We respect your privacy and are committed to protecting the
               personal information you share with ComplyTax UK.
-            </p>
+            </motion.p>
 
-            {/* Updated */}
-            <div className="mt-7 inline-flex items-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-4 py-2.5 shadow-[0_4px_15px_rgba(0,62,62,0.04)]">
-              <span className="text-xs text-[#71827F]">
+            {/* Updated date */}
+            <motion.div
+              variants={heroItemVariants}
+              className="
+                mt-7
+                inline-flex
+                items-center
+                gap-2
+                rounded-lg
+                border
+                border-border
+                bg-background
+                px-4
+                py-2.5
+                shadow-card
+              "
+            >
+              <span className="text-xs text-text-secondary">
                 Last updated
               </span>
-
-              <span className="text-xs font-semibold text-[#09263A]">
+              <span className="text-xs font-semibold text-heading">
                 09 September 2026
               </span>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* =====================================================
           MAIN CONTENT
       ===================================================== */}
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-background py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-
           <div className="grid gap-12 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-16">
 
             {/* =================================================
@@ -82,46 +274,113 @@ const Privacy = () => {
             <aside className="hidden lg:block">
               <div className="sticky top-28">
 
-                <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.16em] text-[#087F5B]">
+                <p
+                  className="
+                    mb-4
+                    text-[10px]
+                    font-bold
+                    uppercase
+                    tracking-[0.16em]
+                    text-primary
+                  "
+                >
                   On this page
                 </p>
 
-                <nav className="border-l border-[#DDEAE6]">
+                <motion.nav
+                  className="border-l border-border"
+                  variants={tocContainerVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
                   {sections.map((section) => (
-                    <a
+                    <motion.a
                       key={section.id}
                       href={`#${section.id}`}
-                      className="block border-l-2 border-transparent px-4 py-2 text-xs leading-5 text-[#71827F] transition-all duration-200 hover:border-[#087F5B] hover:bg-[#F5FCF9] hover:text-[#087F5B]"
+                      variants={tocItemVariants}
+                      className="
+                        block
+                        border-l-2
+                        border-transparent
+                        px-4
+                        py-2
+                        text-xs
+                        leading-5
+                        text-text-secondary
+                        transition-all
+                        duration-200
+                        hover:border-primary
+                        hover:bg-background-soft
+                        hover:text-primary
+                      "
                     >
                       {section.label}
-                    </a>
+                    </motion.a>
                   ))}
-                </nav>
+                </motion.nav>
 
                 {/* Security card */}
-                <div className="mt-8 rounded-2xl border border-[#DDEAE6] bg-[#F5FCF9] p-5">
-
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#E5F7F0]">
-                    <ShieldCheck className="h-4.5 w-4.5 text-[#087F5B]" />
+                <motion.div
+                  className="
+                    mt-8
+                    rounded-2xl
+                    border
+                    border-border
+                    bg-background-soft
+                    p-5
+                  "
+                  initial={
+                    shouldReduceMotion ? false : { opacity: 0, y: 20 }
+                  }
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.6,
+                    ease: premiumEase,
+                    delay: 0.8,
+                  }}
+                >
+                  <div
+                    className="
+                      flex
+                      h-9
+                      w-9
+                      items-center
+                      justify-center
+                      rounded-lg
+                      bg-primary-light
+                    "
+                  >
+                    <ShieldCheck className="h-4 w-4 text-primary" />
                   </div>
 
-                  <h3 className="mt-4 text-sm font-bold text-[#09263A]">
+                  <h3 className="mt-4 text-sm font-bold text-heading">
                     Your privacy matters
                   </h3>
 
-                  <p className="mt-2 text-xs leading-5 text-[#71827F]">
+                  <p className="mt-2 text-xs leading-5 text-text-secondary">
                     We take reasonable steps to protect the information
                     entrusted to us.
                   </p>
 
                   <Link
                     to="/help"
-                    className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-[#087F5B] hover:text-[#005E45]"
+                    className="
+                      mt-4
+                      inline-flex
+                      items-center
+                      gap-1
+                      text-xs
+                      font-bold
+                      text-primary
+                      transition-colors
+                      duration-200
+                      hover:text-primary-hover
+                    "
                   >
                     Contact support
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
-                </div>
+                </motion.div>
               </div>
             </aside>
 
@@ -131,9 +390,32 @@ const Privacy = () => {
             <article className="max-w-3xl">
 
               {/* Mobile navigation */}
-              <div className="mb-10 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-5 lg:hidden">
-
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.15em] text-[#087F5B]">
+              <motion.div
+                className="
+                  mb-10
+                  rounded-xl
+                  border
+                  border-border
+                  bg-background-soft
+                  p-5
+                  lg:hidden
+                "
+                initial={
+                  shouldReduceMotion ? false : { opacity: 0, y: 16 }
+                }
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: premiumEase }}
+              >
+                <p
+                  className="
+                    mb-3
+                    text-[10px]
+                    font-bold
+                    uppercase
+                    tracking-[0.15em]
+                    text-primary
+                  "
+                >
                   On this page
                 </p>
 
@@ -142,71 +424,83 @@ const Privacy = () => {
                     <a
                       key={section.id}
                       href={`#${section.id}`}
-                      className="text-xs text-[#687B78] hover:text-[#087F5B]"
+                      className="
+                        text-xs
+                        text-text-secondary
+                        transition-colors
+                        duration-200
+                        hover:text-primary
+                      "
                     >
                       {section.label}
                     </a>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  1. INTRODUCTION
-              ================================================= */}
-              <div
+              {/* 1. INTRODUCTION */}
+              <motion.div
                 id="introduction"
-                className="scroll-mt-28 border-b border-[#EDF3F1] pb-10"
+                className="scroll-mt-28 border-b border-border/50 pb-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  01
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">01</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Introduction
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   This Privacy Policy explains how ComplyTax UK collects,
                   uses, stores and protects personal information when you use
                   our website, platform and services.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   We aim to be transparent about the information we collect and
                   how it is used.
                 </p>
 
-                <div className="mt-5 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-5">
-                  <p className="text-sm font-medium leading-6 text-[#4F6460]">
+                <div
+                  className="
+                    mt-5
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background-soft
+                    p-5
+                  "
+                >
+                  <p className="text-sm font-medium leading-6 text-text-secondary">
                     By using our services, you acknowledge that you have read
                     and understood this Privacy Policy.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  2. INFORMATION
-              ================================================= */}
-              <div
+              {/* 2. INFORMATION */}
+              <motion.div
                 id="information"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  02
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">02</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Information we collect
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Depending on how you use our services, we may collect
                   information that you provide directly to us and information
                   generated through your use of our platform.
                 </p>
 
                 <div className="mt-6 space-y-4">
-
                   {[
                     {
                       title: "Account information",
@@ -231,37 +525,42 @@ const Privacy = () => {
                   ].map((item) => (
                     <div
                       key={item.title}
-                      className="rounded-xl border border-[#DDEAE6] p-4"
+                      className="
+                        rounded-xl
+                        border
+                        border-border
+                        p-4
+                        transition-colors
+                        duration-200
+                        hover:border-primary/30
+                      "
                     >
-                      <h3 className="text-sm font-semibold text-[#09263A]">
+                      <h3 className="text-sm font-semibold text-heading">
                         {item.title}
                       </h3>
-
-                      <p className="mt-1.5 text-sm leading-6 text-[#687B78]">
+                      <p className="mt-1.5 text-sm leading-6 text-text-secondary">
                         {item.text}
                       </p>
                     </div>
                   ))}
-
                 </div>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  3. HOW WE USE
-              ================================================= */}
-              <div
+              {/* 3. HOW WE USE */}
+              <motion.div
                 id="how-we-use"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  03
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">03</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   How we use your information
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   We may use personal information for purposes including:
                 </p>
 
@@ -278,134 +577,135 @@ const Privacy = () => {
                   ].map((item) => (
                     <li
                       key={item}
-                      className="flex items-start gap-3 text-sm leading-6 text-[#687B78]"
+                      className="
+                        flex
+                        items-start
+                        gap-3
+                        text-sm
+                        leading-6
+                        text-text-secondary
+                      "
                     >
-                      <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-[#087F5B]" />
+                      <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
                       {item}
                     </li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  4. LEGAL BASIS
-              ================================================= */}
-              <div
+              {/* 4. LEGAL BASIS */}
+              <motion.div
                 id="legal-basis"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  04
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">04</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Legal basis for processing
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Where applicable, we process personal information on the basis
                   of one or more lawful grounds, including the performance of a
                   contract, compliance with legal obligations, legitimate
                   interests and consent.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Where processing relies on consent, you may withdraw your
                   consent where applicable.
                 </p>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  5. SHARING
-              ================================================= */}
-              <div
+              {/* 5. SHARING */}
+              <motion.div
                 id="sharing"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  05
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">05</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Sharing your information
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   We may share information with trusted service providers and
                   other parties where necessary to operate our services,
                   process payments, provide technical infrastructure, comply
                   with legal obligations or protect our rights.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   We aim to ensure that appropriate safeguards are in place when
                   information is shared with service providers.
                 </p>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  6. COOKIES
-              ================================================= */}
-              <div
+              {/* 6. COOKIES */}
+              <motion.div
                 id="cookies"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  06
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">06</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Cookies
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Our website may use cookies and similar technologies to
                   remember preferences, understand how visitors use our website
                   and improve the user experience.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Depending on your browser and applicable consent requirements,
                   you may be able to control or disable cookies through your
                   browser settings.
                 </p>
 
-                <div className="mt-5 rounded-xl bg-[#F5FCF9] p-5">
-                  <p className="text-sm font-semibold text-[#09263A]">
+                <div className="mt-5 rounded-xl bg-background-soft p-5">
+                  <p className="text-sm font-semibold text-heading">
                     Cookie preferences
                   </p>
-
-                  <p className="mt-2 text-sm leading-6 text-[#687B78]">
+                  <p className="mt-2 text-sm leading-6 text-text-secondary">
                     You can manage available cookie preferences through your
                     browser or any cookie-consent controls provided on our
                     website.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  7. SECURITY
-              ================================================= */}
-              <div
+              {/* 7. SECURITY */}
+              <motion.div
                 id="security"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  07
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">07</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Data security
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   We take reasonable technical and organisational measures
                   designed to protect personal information against
                   unauthorised access, loss, misuse, alteration or disclosure.
                 </p>
 
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
-
                   {[
                     "Access controls",
                     "Secure systems",
@@ -414,77 +714,94 @@ const Privacy = () => {
                   ].map((item) => (
                     <div
                       key={item}
-                      className="flex items-center gap-3 rounded-xl border border-[#DDEAE6] bg-[#F5FCF9] p-4"
+                      className="
+                        flex
+                        items-center
+                        gap-3
+                        rounded-xl
+                        border
+                        border-border
+                        bg-background-soft
+                        p-4
+                        transition-colors
+                        duration-200
+                        hover:border-primary/30
+                      "
                     >
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E5F7F0]">
-                        <ShieldCheck className="h-4 w-4 text-[#087F5B]" />
+                      <div
+                        className="
+                          flex
+                          h-8
+                          w-8
+                          items-center
+                          justify-center
+                          rounded-lg
+                          bg-primary-light
+                        "
+                      >
+                        <ShieldCheck className="h-4 w-4 text-primary" />
                       </div>
-
-                      <span className="text-sm font-medium text-[#4F6460]">
+                      <span className="text-sm font-medium text-text-secondary">
                         {item}
                       </span>
                     </div>
                   ))}
-
                 </div>
 
-                <p className="mt-5 text-sm leading-7 text-[#687B78]">
+                <p className="mt-5 text-sm leading-7 text-text-secondary">
                   No method of transmission or electronic storage can be
                   guaranteed to be completely secure, so we cannot guarantee
                   absolute security.
                 </p>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  8. RETENTION
-              ================================================= */}
-              <div
+              {/* 8. RETENTION */}
+              <motion.div
                 id="retention"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  08
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">08</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Data retention
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   We retain personal information for as long as reasonably
                   necessary to provide our services, maintain business and
                   financial records, meet legal obligations, resolve disputes
                   and enforce our agreements.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Retention periods may vary depending on the type of
                   information and the purpose for which it was collected.
                 </p>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  9. RIGHTS
-              ================================================= */}
-              <div
+              {/* 9. RIGHTS */}
+              <motion.div
                 id="rights"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  09
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">09</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Your privacy rights
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Depending on your circumstances and applicable law, you may
                   have rights relating to your personal information.
                 </p>
 
                 <div className="mt-6 space-y-3">
-
                   {[
                     "Request access to personal information we hold about you.",
                     "Ask us to correct inaccurate or incomplete information.",
@@ -495,67 +812,74 @@ const Privacy = () => {
                   ].map((item) => (
                     <div
                       key={item}
-                      className="flex items-start gap-3 rounded-xl border border-[#DDEAE6] p-4"
+                      className="
+                        flex
+                        items-start
+                        gap-3
+                        rounded-xl
+                        border
+                        border-border
+                        p-4
+                        transition-colors
+                        duration-200
+                        hover:border-primary/30
+                      "
                     >
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#087F5B]" />
-
-                      <span className="text-sm leading-6 text-[#687B78]">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <span className="text-sm leading-6 text-text-secondary">
                         {item}
                       </span>
                     </div>
                   ))}
-
                 </div>
 
-                <p className="mt-5 text-sm leading-7 text-[#687B78]">
+                <p className="mt-5 text-sm leading-7 text-text-secondary">
                   To exercise a privacy right, please contact us using the
                   details provided at the end of this policy.
                 </p>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  10. TRANSFERS
-              ================================================= */}
-              <div
+              {/* 10. TRANSFERS */}
+              <motion.div
                 id="transfers"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  10
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">10</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   International data transfers
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Some of our service providers or technology infrastructure may
                   process information outside the United Kingdom.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Where personal information is transferred internationally, we
                   will take appropriate steps to ensure that applicable legal
                   requirements and safeguards are considered.
                 </p>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  11. CHILDREN
-              ================================================= */}
-              <div
+              {/* 11. CHILDREN */}
+              <motion.div
                 id="children"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  11
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">11</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Children's privacy
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   Our services are intended for businesses, individuals and
                   other users who are legally able to use the relevant
                   services. We do not knowingly collect personal information
@@ -563,79 +887,117 @@ const Privacy = () => {
                   services.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   If you believe a child has provided personal information to us
                   inappropriately, please contact us so that we can review the
                   situation.
                 </p>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  12. CHANGES
-              ================================================= */}
-              <div
+              {/* 12. CHANGES */}
+              <motion.div
                 id="changes"
-                className="scroll-mt-28 border-b border-[#EDF3F1] py-10"
+                className="scroll-mt-28 border-b border-border/50 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  12
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">12</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Changes to this Privacy Policy
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   We may update this Privacy Policy from time to time to reflect
                   changes in our services, legal requirements, technology or
                   privacy practices.
                 </p>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   When appropriate, we will provide notice of material changes.
                   The latest version will always be made available on this page.
                 </p>
 
-                <div className="mt-5 rounded-xl bg-[#F5FCF9] p-5">
-                  <p className="text-xs font-bold uppercase tracking-wider text-[#087F5B]">
+                <div className="mt-5 rounded-xl bg-background-soft p-5">
+                  <p
+                    className="
+                      text-xs
+                      font-bold
+                      uppercase
+                      tracking-wider
+                      text-primary
+                    "
+                  >
                     Last updated
                   </p>
-
-                  <p className="mt-1 text-sm font-bold text-[#09263A]">
+                  <p className="mt-1 text-sm font-bold text-heading">
                     09 September 2026
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* =================================================
-                  13. CONTACT
-              ================================================= */}
-              <div
+              {/* 13. CONTACT */}
+              <motion.div
                 id="contact"
                 className="scroll-mt-28 py-10"
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
               >
-                <span className="text-xs font-bold text-[#087F5B]">
-                  13
-                </span>
-
-                <h2 className="mt-2 text-2xl font-bold text-[#09263A]">
+                <span className="text-xs font-bold text-primary">13</span>
+                <h2 className="mt-2 text-2xl font-bold text-heading">
                   Contact us
                 </h2>
 
-                <p className="mt-4 text-sm leading-7 text-[#687B78]">
+                <p className="mt-4 text-sm leading-7 text-text-secondary">
                   If you have questions about this Privacy Policy or how we
                   handle your personal information, please contact our support
                   team.
                 </p>
 
-                <Link
-                  to="/help"
-                  className="group mt-6 inline-flex items-center gap-2 rounded-xl bg-[#087F5B] px-5 py-3 text-sm font-bold text-white shadow-[0_8px_20px_rgba(8,127,91,0.15)] transition-all duration-200 hover:bg-[#005E45]"
+                <motion.div
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : { y: -2, transition: { duration: 0.2 } }
+                  }
+                  className="inline-block"
                 >
-                  Contact support
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </div>
+                  <Link
+                    to="/help"
+                    className="
+                      group
+                      mt-6
+                      inline-flex
+                      items-center
+                      gap-2
+                      rounded-xl
+                      bg-primary
+                      px-5
+                      py-3
+                      text-sm
+                      font-bold
+                      text-text-white
+                      shadow-button
+                      transition-colors
+                      duration-200
+                      hover:bg-primary-hover
+                    "
+                  >
+                    Contact support
+                    <ArrowRight
+                      className="
+                        h-4
+                        w-4
+                        transition-transform
+                        group-hover:translate-x-1
+                      "
+                    />
+                  </Link>
+                </motion.div>
+              </motion.div>
             </article>
           </div>
         </div>
@@ -644,37 +1006,144 @@ const Privacy = () => {
       {/* =====================================================
           FINAL CTA
       ===================================================== */}
-      <section className="relative overflow-hidden bg-[#004646] py-16 sm:py-20">
-
+      <motion.section
+        className="relative overflow-hidden bg-dark py-16 sm:py-20"
+        variants={ctaVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+      >
         {/* Decorative circles */}
-        <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full border border-[#65D9BB]/10" />
-        <div className="pointer-events-none absolute -bottom-24 -right-20 h-72 w-72 rounded-full border border-[#65D9BB]/10" />
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -left-20
+            -top-20
+            h-64
+            w-64
+            rounded-full
+            border
+            border-sky/10
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.08, 1], opacity: [0.6, 1, 0.6] }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -bottom-24
+            -right-20
+            h-72
+            w-72
+            rounded-full
+            border
+            border-sky/10
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.06, 1], opacity: [0.6, 1, 0.6] }
+          }
+          transition={{
+            duration: 9,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5,
+          }}
+        />
 
         <div className="relative mx-auto max-w-3xl px-5 text-center sm:px-6">
+          <motion.div
+            className="
+              mx-auto
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
+              rounded-full
+              bg-sky/10
+            "
+            initial={
+              shouldReduceMotion ? false : { opacity: 0, scale: 0.5 }
+            }
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{
+              duration: 0.55,
+              ease: [0.34, 1.56, 0.64, 1],
+              delay: 0.2,
+            }}
+          >
+            <LockKeyhole className="h-5 w-5 text-sky" />
+          </motion.div>
 
-          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#65D9BB]/10">
-            <LockKeyhole className="h-5 w-5 text-[#65D9BB]" />
-          </div>
-
-          <h2 className="mt-5 text-2xl font-bold text-white sm:text-3xl">
+          <h2 className="mt-5 text-2xl font-bold text-text-white sm:text-3xl">
             Have questions about your privacy?
           </h2>
 
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-white/60">
+          <p
+            className="
+              mx-auto
+              mt-3
+              max-w-xl
+              text-sm
+              leading-7
+              text-text-white/60
+            "
+          >
             If you have any questions about how we collect or use your
             information, our support team is here to help.
           </p>
 
-          <Link
-            to="/help"
-            className="group mt-7 inline-flex items-center gap-2 rounded-xl bg-[#65D9BB] px-6 py-3.5 text-sm font-bold text-[#004646] transition-all duration-200 hover:bg-[#7BE5C9]"
+          <motion.div
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -2, transition: { duration: 0.2 } }
+            }
+            className="inline-block"
           >
-            Visit Help Centre
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
-
+            <Link
+              to="/help"
+              className="
+                group
+                mt-7
+                inline-flex
+                items-center
+                gap-2
+                rounded-xl
+                bg-sky
+                px-6
+                py-3.5
+                text-sm
+                font-bold
+                text-dark
+                shadow-button
+                transition-colors
+                duration-200
+                hover:bg-sky-light
+              "
+            >
+              Visit Help Centre
+              <ArrowRight
+                className="
+                  h-4
+                  w-4
+                  transition-transform
+                  group-hover:translate-x-1
+                "
+              />
+            </Link>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 };

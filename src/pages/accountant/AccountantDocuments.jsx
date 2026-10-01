@@ -1,4 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useInView,
+} from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FolderOpen,
@@ -33,13 +39,15 @@ import {
   AlertCircle,
   Clock3,
   Link2,
-  User,
   Star,
   Info,
   X,
 } from "lucide-react";
 
 const AccountantDocuments = () => {
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
+
   /* ============================================================
      STATE
   ============================================================ */
@@ -56,6 +64,11 @@ const AccountantDocuments = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
+  const listRef = useRef(null);
+  const isListInView = useInView(listRef, { once: true, amount: 0.05 });
+  const gridRef = useRef(null);
+  const isGridInView = useInView(gridRef, { once: true, amount: 0.05 });
+
   /* ============================================================
      STATS
   ============================================================ */
@@ -67,8 +80,8 @@ const AccountantDocuments = () => {
       value: 248,
       change: "+12 this week",
       icon: FileText,
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
+      iconBg: "bg-primary-light",
+      iconColor: "text-primary",
     },
     {
       id: "recent",
@@ -76,8 +89,8 @@ const AccountantDocuments = () => {
       value: 18,
       change: "Last 7 days",
       icon: Clock3,
-      iconBg: "bg-emerald-100",
-      iconColor: "text-emerald-600",
+      iconBg: "bg-success-light",
+      iconColor: "text-success",
     },
     {
       id: "pending",
@@ -85,8 +98,8 @@ const AccountantDocuments = () => {
       value: 6,
       change: "Awaiting action",
       icon: AlertCircle,
-      iconBg: "bg-amber-100",
-      iconColor: "text-amber-600",
+      iconBg: "bg-warning-light",
+      iconColor: "text-warning",
     },
     {
       id: "shared",
@@ -94,8 +107,8 @@ const AccountantDocuments = () => {
       value: 42,
       change: "Active shares",
       icon: Link2,
-      iconBg: "bg-purple-100",
-      iconColor: "text-purple-600",
+      iconBg: "bg-secondary-light",
+      iconColor: "text-secondary",
     },
   ];
 
@@ -363,19 +376,35 @@ const AccountantDocuments = () => {
   const getFileIcon = (type) => {
     switch (type) {
       case "pdf":
-        return { icon: FileText, bg: "bg-rose-100", color: "text-rose-600" };
+        return {
+          icon: FileText,
+          bg: "bg-danger-light",
+          color: "text-danger",
+        };
       case "excel":
         return {
           icon: FileSpreadsheet,
-          bg: "bg-emerald-100",
-          color: "text-emerald-600",
+          bg: "bg-success-light",
+          color: "text-success",
         };
       case "image":
-        return { icon: FileImage, bg: "bg-purple-100", color: "text-purple-600" };
+        return {
+          icon: FileImage,
+          bg: "bg-secondary-light",
+          color: "text-secondary",
+        };
       case "archive":
-        return { icon: FileArchive, bg: "bg-amber-100", color: "text-amber-600" };
+        return {
+          icon: FileArchive,
+          bg: "bg-warning-light",
+          color: "text-warning",
+        };
       default:
-        return { icon: File, bg: "bg-blue-100", color: "text-blue-600" };
+        return {
+          icon: File,
+          bg: "bg-primary-light",
+          color: "text-primary",
+        };
     }
   };
 
@@ -383,29 +412,143 @@ const AccountantDocuments = () => {
     switch (status) {
       case "Approved":
         return {
-          bg: "bg-emerald-100",
-          text: "text-emerald-700",
+          bg: "bg-success-light",
+          text: "text-success",
           icon: CheckCircle2,
         };
       case "Reviewed":
         return {
-          bg: "bg-blue-100",
-          text: "text-blue-700",
+          bg: "bg-primary-light",
+          text: "text-primary",
           icon: Check,
         };
       case "Awaiting Review":
         return {
-          bg: "bg-amber-100",
-          text: "text-amber-700",
+          bg: "bg-warning-light",
+          text: "text-warning",
           icon: Clock3,
         };
       default:
         return {
-          bg: "bg-gray-100",
-          text: "text-gray-600",
+          bg: "bg-background-soft",
+          text: "text-text-secondary",
           icon: FileText,
         };
     }
+  };
+
+  /* ============================================================
+     ANIMATION VARIANTS
+  ============================================================ */
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.06,
+        delayChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
+
+  const fadeUpVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.55, ease: premiumEase },
+    },
+  };
+
+  const statCardVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 16, scale: 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.5, ease: premiumEase },
+    },
+  };
+
+  const rowVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -12 },
+    visible: (index) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.45,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.05,
+      },
+    }),
+  };
+
+  const gridCardVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 12, scale: 0.96 },
+    visible: (index) => ({
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.45,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.05,
+      },
+    }),
+  };
+
+  const dropdownVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: -8, scale: 0.96 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.22, ease: premiumEase },
+    },
+    exit: shouldReduceMotion
+      ? { opacity: 0 }
+      : {
+          opacity: 0,
+          y: -6,
+          scale: 0.97,
+          transition: { duration: 0.15 },
+        },
+  };
+
+  const menuItemVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -6 },
+    visible: (index) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        ease: premiumEase,
+        delay: shouldReduceMotion ? 0 : index * 0.04,
+      },
+    }),
+  };
+
+  const viewContentVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.35, ease: premiumEase },
+    },
+    exit: shouldReduceMotion
+      ? { opacity: 0 }
+      : {
+          opacity: 0,
+          y: -8,
+          transition: { duration: 0.2, ease: premiumEase },
+        },
   };
 
   /* ============================================================
@@ -413,42 +556,60 @@ const AccountantDocuments = () => {
   ============================================================ */
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* ======================================================
           PAGE HEADER
       ====================================================== */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <motion.div
+        variants={fadeUpVariants}
+        className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"
+      >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#09263A] sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-heading sm:text-3xl">
             Documents
           </h1>
-          <p className="mt-1 text-sm text-[#687B78]">
+          <p className="mt-1 text-sm text-text-secondary">
             Manage all client documents in one secure place
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <button
+          <motion.button
             type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
+            whileHover={
+              shouldReduceMotion || isRefreshing
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={
+              shouldReduceMotion || isRefreshing
+                ? undefined
+                : { scale: 0.98 }
+            }
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-[#09263A]
-              transition-all
+              text-heading
+              transition-colors
               duration-200
-              hover:border-[#087F5B]
-              hover:text-[#087F5B]
+              hover:border-primary
+              hover:text-primary
               disabled:cursor-not-allowed
               disabled:opacity-60
             "
@@ -460,59 +621,69 @@ const AccountantDocuments = () => {
             <span className="hidden sm:inline">
               {isRefreshing ? "Refreshing..." : "Refresh"}
             </span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-[#09263A]
-              transition-all
+              text-heading
+              transition-colors
               duration-200
-              hover:border-[#087F5B]
-              hover:text-[#087F5B]
+              hover:border-primary
+              hover:text-primary
             "
           >
             <FolderPlus className="h-4 w-4" strokeWidth={2.2} />
             <span className="hidden sm:inline">New Folder</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
             className="
               inline-flex
               items-center
               gap-2
               rounded-lg
-              bg-[#087F5B]
+              bg-primary
               px-4
               py-2.5
               text-sm
               font-semibold
-              text-white
-              shadow-sm
-              transition-all
+              text-text-white
+              shadow-button
+              transition-colors
               duration-200
-              hover:bg-[#005E45]
-              hover:-translate-y-0.5
-              hover:shadow-md
+              hover:bg-primary-hover
             "
           >
             <Upload className="h-4 w-4" strokeWidth={2.4} />
             <span>Upload</span>
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           STATS CARDS
@@ -521,33 +692,39 @@ const AccountantDocuments = () => {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div
+            <motion.div
               key={stat.id}
+              variants={statCardVariants}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -3, transition: { duration: 0.25 } }
+              }
               className="
                 group
                 relative
                 overflow-hidden
                 rounded-xl
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 p-5
-                shadow-[0_3px_14px_rgba(16,42,67,0.035)]
-                transition-all
+                shadow-card
+                transition-[border-color,box-shadow]
                 duration-300
-                hover:-translate-y-0.5
-                hover:shadow-[0_10px_25px_rgba(16,42,67,0.08)]
+                hover:border-primary/20
+                hover:shadow-card-hover
               "
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                     {stat.label}
                   </p>
-                  <p className="mt-2 text-2xl font-bold tracking-tight text-[#09263A] sm:text-3xl">
+                  <p className="mt-2 text-2xl font-bold tracking-tight text-heading sm:text-3xl">
                     {stat.value}
                   </p>
-                  <p className="mt-1.5 text-[10px] font-semibold text-[#687B78]">
+                  <p className="mt-1.5 text-[10px] font-semibold text-text-secondary">
                     {stat.change}
                   </p>
                 </div>
@@ -571,7 +748,7 @@ const AccountantDocuments = () => {
                   />
                 </div>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
@@ -579,11 +756,21 @@ const AccountantDocuments = () => {
       {/* ======================================================
           UPLOAD DROPZONE
       ====================================================== */}
-      <div
+      <motion.div
+        variants={fadeUpVariants}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`
+        animate={{
+          borderColor: isDragging
+            ? "var(--color-primary)"
+            : "var(--color-border)",
+          backgroundColor: isDragging
+            ? "var(--color-primary-light)"
+            : "var(--color-background)",
+        }}
+        transition={{ duration: 0.2 }}
+        className="
           flex
           flex-col
           items-center
@@ -594,18 +781,21 @@ const AccountantDocuments = () => {
           px-5
           py-6
           text-center
-          transition-all
-          duration-200
-          ${
-            isDragging
-              ? "border-[#087F5B] bg-[#E8F8F2]"
-              : "border-[#DDEAE6] bg-white hover:border-[#087F5B]/40"
-          }
-        `}
+        "
       >
         <div className="flex items-center gap-3">
-          <div
-            className={`
+          <motion.div
+            animate={{
+              backgroundColor: isDragging
+                ? "var(--color-primary)"
+                : "var(--color-primary-light)",
+              color: isDragging
+                ? "var(--color-text-white)"
+                : "var(--color-primary)",
+              scale: isDragging ? 1.08 : 1,
+            }}
+            transition={{ duration: 0.25, ease: premiumEase }}
+            className="
               flex
               h-10
               w-10
@@ -613,39 +803,36 @@ const AccountantDocuments = () => {
               items-center
               justify-center
               rounded-xl
-              transition-colors
-              ${
-                isDragging
-                  ? "bg-[#087F5B] text-white"
-                  : "bg-[#E8F8F2] text-[#087F5B]"
-              }
-            `}
+            "
           >
             <Upload className="h-5 w-5" strokeWidth={2.2} />
-          </div>
+          </motion.div>
           <div className="text-left">
-            <p className="text-sm font-bold text-[#09263A]">
+            <p className="text-sm font-bold text-heading">
               Drag and drop files here to upload
             </p>
-            <p className="mt-0.5 text-[11px] text-[#687B78]">
+            <p className="mt-0.5 text-[11px] text-text-secondary">
               or{" "}
-              <button className="font-semibold text-[#087F5B] underline-offset-2 hover:underline">
+              <button className="font-semibold text-primary underline-offset-2 hover:underline">
                 browse files
               </button>{" "}
               · PDF, Excel, CSV, Image, ZIP up to 25 MB
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
           FILTERS BAR
       ====================================================== */}
-      <div className="rounded-xl border border-[#DDEAE6] bg-white p-4 shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
+      <motion.div
+        variants={fadeUpVariants}
+        className="rounded-xl border border-border bg-background p-4 shadow-card"
+      >
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           {/* Search */}
           <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#687B78]" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
             <input
               type="text"
               value={search}
@@ -655,34 +842,40 @@ const AccountantDocuments = () => {
                 w-full
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-[#F5FCF9]
+                border-border
+                bg-background-soft
                 py-2.5
                 pl-10
                 pr-4
                 text-sm
-                text-[#09263A]
+                text-heading
                 outline-none
                 transition-all
                 duration-200
-                placeholder:text-[#687B78]
-                focus:border-[#087F5B]
-                focus:bg-white
+                placeholder:text-text-secondary
+                focus:border-primary
+                focus:bg-background
                 focus:ring-2
-                focus:ring-[#087F5B]/10
+                focus:ring-primary/10
               "
             />
           </div>
 
           {/* Type filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowTypeDropdown((prev) => !prev);
                 setShowClientDropdown(false);
                 setShowCategoryDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -691,17 +884,17 @@ const AccountantDocuments = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
@@ -712,61 +905,92 @@ const AccountantDocuments = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showTypeDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showTypeDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-48 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {typeOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setTypeFilter(option.value);
-                      setShowTypeDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        typeFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
-                      }
-                    `}
-                  >
-                    <span>{option.label}</span>
-                    {typeFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showTypeDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-48
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {typeOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      custom={index}
+                      variants={menuItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      onClick={() => {
+                        setTypeFilter(option.value);
+                        setShowTypeDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          typeFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span>{option.label}</span>
+                      {typeFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Category filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowCategoryDropdown((prev) => !prev);
                 setShowTypeDropdown(false);
                 setShowClientDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -775,17 +999,17 @@ const AccountantDocuments = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
@@ -796,61 +1020,92 @@ const AccountantDocuments = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showCategoryDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showCategoryDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {categoryOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setCategoryFilter(option.value);
-                      setShowCategoryDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        categoryFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
-                      }
-                    `}
-                  >
-                    <span>{option.label}</span>
-                    {categoryFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showCategoryDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-56
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {categoryOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      custom={index}
+                      variants={menuItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      onClick={() => {
+                        setCategoryFilter(option.value);
+                        setShowCategoryDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          categoryFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span>{option.label}</span>
+                      {categoryFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Client filter */}
           <div className="relative">
-            <button
+            <motion.button
               type="button"
               onClick={() => {
                 setShowClientDropdown((prev) => !prev);
                 setShowTypeDropdown(false);
                 setShowCategoryDropdown(false);
               }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
               className="
                 inline-flex
                 w-full
@@ -859,17 +1114,17 @@ const AccountantDocuments = () => {
                 gap-2
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
                 font-semibold
-                text-[#09263A]
-                transition-all
+                text-heading
+                transition-colors
                 duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
+                hover:border-primary
+                hover:text-primary
                 lg:w-auto
               "
             >
@@ -880,87 +1135,125 @@ const AccountantDocuments = () => {
                 className={`
                   h-4
                   w-4
-                  text-[#687B78]
+                  text-text-secondary
                   transition-transform
                   duration-200
                   ${showClientDropdown ? "rotate-180" : ""}
                 `}
               />
-            </button>
+            </motion.button>
 
-            {showClientDropdown && (
-              <div className="absolute right-0 top-full z-30 mt-2 w-64 overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-2xl">
-                {clientOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => {
-                      setClientFilter(option.value);
-                      setShowClientDropdown(false);
-                    }}
-                    className={`
-                      flex
-                      w-full
-                      items-center
-                      justify-between
-                      px-4
-                      py-2.5
-                      text-left
-                      text-sm
-                      transition-colors
-                      hover:bg-[#E8F8F2]
-                      ${
-                        clientFilter === option.value
-                          ? "bg-[#E8F8F2] font-semibold text-[#087F5B]"
-                          : "text-[#09263A]"
-                      }
-                    `}
-                  >
-                    <span className="truncate">{option.label}</span>
-                    {clientFilter === option.value && (
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-[#087F5B]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {showClientDropdown && (
+                <motion.div
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="
+                    absolute
+                    right-0
+                    top-full
+                    z-30
+                    mt-2
+                    w-64
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    shadow-card-hover
+                  "
+                >
+                  {clientOptions.map((option, index) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      custom={index}
+                      variants={menuItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      onClick={() => {
+                        setClientFilter(option.value);
+                        setShowClientDropdown(false);
+                      }}
+                      className={`
+                        flex
+                        w-full
+                        items-center
+                        justify-between
+                        px-4
+                        py-2.5
+                        text-left
+                        text-sm
+                        transition-colors
+                        hover:bg-primary-light
+                        ${
+                          clientFilter === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-heading"
+                        }
+                      `}
+                    >
+                      <span className="truncate">{option.label}</span>
+                      {clientFilter === option.value && (
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                      )}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Clear filters */}
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-lg
-                border
-                border-[#DDEAE6]
-                bg-white
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-[#687B78]
-                transition-all
-                duration-200
-                hover:border-[#087F5B]
-                hover:text-[#087F5B]
-              "
-            >
-              <X className="h-3.5 w-3.5" strokeWidth={2.4} />
-              <span>Clear</span>
-            </button>
-          )}
+          <AnimatePresence>
+            {hasActiveFilters && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                type="button"
+                onClick={clearFilters}
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -1, transition: { duration: 0.2 } }
+                }
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  px-4
+                  py-2.5
+                  text-sm
+                  font-semibold
+                  text-text-secondary
+                  transition-colors
+                  duration-200
+                  hover:border-primary
+                  hover:text-primary
+                "
+              >
+                <X className="h-3.5 w-3.5" strokeWidth={2.4} />
+                <span>Clear</span>
+              </motion.button>
+            )}
+          </AnimatePresence>
 
           {/* View toggle */}
-          <div className="hidden rounded-lg border border-[#DDEAE6] bg-white p-1 lg:flex">
-            <button
+          <div className="hidden rounded-lg border border-border bg-background p-1 lg:flex">
+            <motion.button
               type="button"
               onClick={() => setViewMode("list")}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
               className={`
                 inline-flex
                 items-center
@@ -970,20 +1263,22 @@ const AccountantDocuments = () => {
                 py-1.5
                 text-xs
                 font-bold
-                transition-all
+                transition-colors
+                duration-200
                 ${
                   viewMode === "list"
-                    ? "bg-[#087F5B] text-white"
-                    : "text-[#687B78] hover:bg-[#F5FCF9]"
+                    ? "bg-primary text-text-white shadow-button"
+                    : "text-text-secondary hover:bg-background-soft"
                 }
               `}
             >
               <List className="h-3.5 w-3.5" strokeWidth={2.4} />
               List
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               onClick={() => setViewMode("grid")}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
               className={`
                 inline-flex
                 items-center
@@ -993,560 +1288,981 @@ const AccountantDocuments = () => {
                 py-1.5
                 text-xs
                 font-bold
-                transition-all
+                transition-colors
+                duration-200
                 ${
                   viewMode === "grid"
-                    ? "bg-[#087F5B] text-white"
-                    : "text-[#687B78] hover:bg-[#F5FCF9]"
+                    ? "bg-primary text-text-white shadow-button"
+                    : "text-text-secondary hover:bg-background-soft"
                 }
               `}
             >
               <Grid3x3 className="h-3.5 w-3.5" strokeWidth={2.4} />
               Grid
-            </button>
+            </motion.button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ======================================================
-          DOCUMENTS - LIST VIEW
+          DOCUMENTS - VIEW SWITCH
       ====================================================== */}
-      {viewMode === "list" && (
-        <div className="overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-[0_3px_14px_rgba(16,42,67,0.035)]">
-          <div className="flex flex-col gap-2 border-b border-[#DDEAE6] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              <FolderOpen
-                className="h-4 w-4 text-[#087F5B]"
-                strokeWidth={2.2}
-              />
-              <h2 className="text-sm font-bold text-[#09263A]">
-                All Documents
-              </h2>
-              <span className="rounded-full bg-[#E8F8F2] px-2 py-0.5 text-[10px] font-bold text-[#087F5B]">
-                {filteredDocuments.length}
-              </span>
+      <AnimatePresence mode="wait">
+        {/* LIST VIEW */}
+        {viewMode === "list" && (
+          <motion.div
+            key="list"
+            ref={listRef}
+            variants={viewContentVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="
+              overflow-hidden
+              rounded-xl
+              border
+              border-border
+              bg-background
+              shadow-card
+            "
+          >
+            <div className="flex flex-col gap-2 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-2">
+                <FolderOpen
+                  className="h-4 w-4 text-primary"
+                  strokeWidth={2.2}
+                />
+                <h2 className="text-sm font-bold text-heading">
+                  All Documents
+                </h2>
+                <span className="rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-bold text-primary">
+                  {filteredDocuments.length}
+                </span>
+              </div>
+              <p className="text-[11px] text-text-secondary">
+                Sorted by upload date
+              </p>
             </div>
-            <p className="text-[11px] text-[#687B78]">
-              Sorted by upload date
-            </p>
-          </div>
 
-          {/* Desktop Table */}
-          <div className="hidden overflow-x-auto lg:block">
-            <table className="w-full min-w-[1000px]">
-              <thead>
-                <tr className="border-b border-[#DDEAE6] bg-[#F5FCF9]">
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Document
-                  </th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Category
-                  </th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Client
-                  </th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Uploaded
-                  </th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Status
-                  </th>
-                  <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
+            {/* Desktop Table */}
+            <div className="hidden overflow-x-auto lg:block">
+              <table className="w-full min-w-[1000px]">
+                <thead>
+                  <tr className="border-b border-border bg-background-soft">
+                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Document
+                    </th>
+                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Category
+                    </th>
+                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Client
+                    </th>
+                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Uploaded
+                    </th>
+                    <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Status
+                    </th>
+                    <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
 
-              <tbody className="divide-y divide-[#DDEAE6]">
-                {filteredDocuments.map((doc) => {
-                  const fileStyle = getFileIcon(doc.type);
-                  const FileIcon = fileStyle.icon;
-                  const statusStyles = getStatusStyles(doc.status);
-                  const StatusIcon = statusStyles.icon;
+                <tbody className="divide-y divide-border">
+                  {filteredDocuments.map((doc, index) => {
+                    const fileStyle = getFileIcon(doc.type);
+                    const FileIcon = fileStyle.icon;
+                    const statusStyles = getStatusStyles(doc.status);
+                    const StatusIcon = statusStyles.icon;
 
-                  return (
-                    <tr
-                      key={doc.id}
-                      className="group cursor-pointer transition-colors hover:bg-[#F5FCF9]"
-                    >
-                      {/* Document */}
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`
-                              flex
-                              h-10
-                              w-10
-                              shrink-0
+                    return (
+                      <motion.tr
+                        key={doc.id}
+                        custom={index}
+                        variants={rowVariants}
+                        initial="hidden"
+                        animate={isListInView ? "visible" : "hidden"}
+                        className="
+                          group
+                          cursor-pointer
+                          transition-colors
+                          hover:bg-background-soft
+                        "
+                      >
+                        {/* Document */}
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`
+                                flex
+                                h-10
+                                w-10
+                                shrink-0
+                                items-center
+                                justify-center
+                                rounded-lg
+                                ${fileStyle.bg}
+                              `}
+                            >
+                              <FileIcon
+                                className={`h-5 w-5 ${fileStyle.color}`}
+                                strokeWidth={2.2}
+                              />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-bold text-heading transition-colors group-hover:text-primary">
+                                {doc.name}
+                              </p>
+                              <p className="mt-0.5 text-[10px] text-text-secondary">
+                                {doc.size}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Category */}
+                        <td className="px-5 py-4">
+                          <span
+                            className="
+                              inline-flex
                               items-center
-                              justify-center
-                              rounded-lg
-                              ${fileStyle.bg}
-                            `}
+                              rounded-full
+                              bg-background-soft
+                              px-2.5
+                              py-1
+                              text-[10px]
+                              font-semibold
+                              text-text-secondary
+                            "
                           >
-                            <FileIcon
-                              className={`h-5 w-5 ${fileStyle.color}`}
+                            {doc.category}
+                          </span>
+                        </td>
+
+                        {/* Client */}
+                        <td className="px-5 py-4">
+                          <Link
+                            to={`/accountant/clients/${doc.clientId}`}
+                            className="
+                              inline-flex
+                              items-center
+                              gap-1.5
+                              text-xs
+                              font-semibold
+                              text-heading
+                              transition-colors
+                              hover:text-primary
+                            "
+                          >
+                            <Users
+                              className="h-3.5 w-3.5 text-text-secondary"
                               strokeWidth={2.2}
                             />
+                            <span className="truncate max-w-[140px]">
+                              {doc.client}
+                            </span>
+                          </Link>
+                        </td>
+
+                        {/* Uploaded */}
+                        <td className="px-5 py-4">
+                          <div>
+                            <p className="text-xs font-semibold text-heading">
+                              {doc.uploadedAt}
+                            </p>
+                            <p className="mt-0.5 text-[10px] text-text-secondary">
+                              by {doc.uploadedBy}
+                            </p>
                           </div>
+                        </td>
+
+                        {/* Status */}
+                        <td className="px-5 py-4">
+                          <span
+                            className={`
+                              inline-flex
+                              items-center
+                              gap-1.5
+                              rounded-full
+                              px-2.5
+                              py-1
+                              text-[10px]
+                              font-bold
+                              ${statusStyles.bg}
+                              ${statusStyles.text}
+                            `}
+                          >
+                            <StatusIcon
+                              className="h-3 w-3"
+                              strokeWidth={2.4}
+                            />
+                            {doc.status}
+                          </span>
+                        </td>
+
+                        {/* Actions */}
+                        <td
+                          className="relative px-5 py-4 text-right"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="relative inline-flex items-center gap-1">
+                            <motion.button
+                              whileHover={
+                                shouldReduceMotion
+                                  ? undefined
+                                  : {
+                                      scale: 1.1,
+                                      transition: { duration: 0.15 },
+                                    }
+                              }
+                              whileTap={
+                                shouldReduceMotion
+                                  ? undefined
+                                  : { scale: 0.95 }
+                              }
+                              className="
+                                flex
+                                h-8
+                                w-8
+                                items-center
+                                justify-center
+                                rounded-lg
+                                text-text-secondary
+                                transition-colors
+                                hover:bg-primary-light
+                                hover:text-primary
+                              "
+                            >
+                              <Eye className="h-3.5 w-3.5" strokeWidth={2.4} />
+                            </motion.button>
+                            <motion.button
+                              whileHover={
+                                shouldReduceMotion
+                                  ? undefined
+                                  : {
+                                      scale: 1.1,
+                                      transition: { duration: 0.15 },
+                                    }
+                              }
+                              whileTap={
+                                shouldReduceMotion
+                                  ? undefined
+                                  : { scale: 0.95 }
+                              }
+                              className="
+                                flex
+                                h-8
+                                w-8
+                                items-center
+                                justify-center
+                                rounded-lg
+                                text-text-secondary
+                                transition-colors
+                                hover:bg-primary-light
+                                hover:text-primary
+                              "
+                            >
+                              <Download
+                                className="h-3.5 w-3.5"
+                                strokeWidth={2.4}
+                              />
+                            </motion.button>
+                            <motion.button
+                              type="button"
+                              onClick={() =>
+                                setOpenRowMenu(
+                                  openRowMenu === doc.id ? null : doc.id
+                                )
+                              }
+                              whileHover={
+                                shouldReduceMotion
+                                  ? undefined
+                                  : {
+                                      scale: 1.1,
+                                      transition: { duration: 0.15 },
+                                    }
+                              }
+                              whileTap={
+                                shouldReduceMotion
+                                  ? undefined
+                                  : { scale: 0.95 }
+                              }
+                              className="
+                                flex
+                                h-8
+                                w-8
+                                items-center
+                                justify-center
+                                rounded-lg
+                                text-text-secondary
+                                transition-colors
+                                hover:bg-primary-light
+                                hover:text-primary
+                              "
+                              aria-label="More actions"
+                            >
+                              <MoreVertical className="h-3.5 w-3.5" />
+                            </motion.button>
+
+                            <AnimatePresence>
+                              {openRowMenu === doc.id && (
+                                <motion.div
+                                  initial={
+                                    shouldReduceMotion
+                                      ? false
+                                      : {
+                                          opacity: 0,
+                                          y: -6,
+                                          scale: 0.96,
+                                        }
+                                  }
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  exit={
+                                    shouldReduceMotion
+                                      ? { opacity: 0 }
+                                      : {
+                                          opacity: 0,
+                                          y: -4,
+                                          scale: 0.97,
+                                        }
+                                  }
+                                  transition={{
+                                    duration: 0.2,
+                                    ease: premiumEase,
+                                  }}
+                                  className="
+                                    absolute
+                                    right-0
+                                    top-full
+                                    z-20
+                                    mt-1
+                                    w-48
+                                    overflow-hidden
+                                    rounded-lg
+                                    border
+                                    border-border
+                                    bg-background
+                                    py-1
+                                    shadow-card-hover
+                                  "
+                                >
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Eye className="h-3.5 w-3.5" />
+                                    <span>Preview</span>
+                                  </button>
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Download className="h-3.5 w-3.5" />
+                                    <span>Download</span>
+                                  </button>
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Link2 className="h-3.5 w-3.5" />
+                                    <span>Copy share link</span>
+                                  </button>
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Send className="h-3.5 w-3.5" />
+                                    <span>Send to client</span>
+                                  </button>
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-heading transition-colors hover:bg-primary-light hover:text-primary">
+                                    <Edit3 className="h-3.5 w-3.5" />
+                                    <span>Rename</span>
+                                  </button>
+                                  <div className="my-1 border-t border-border" />
+                                  <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-danger transition-colors hover:bg-danger-light">
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    <span>Delete</span>
+                                  </button>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card List */}
+            <div className="divide-y divide-border lg:hidden">
+              {filteredDocuments.map((doc, index) => {
+                const fileStyle = getFileIcon(doc.type);
+                const FileIcon = fileStyle.icon;
+                const statusStyles = getStatusStyles(doc.status);
+                const StatusIcon = statusStyles.icon;
+
+                return (
+                  <motion.div
+                    key={doc.id}
+                    custom={index}
+                    variants={rowVariants}
+                    initial="hidden"
+                    animate={isListInView ? "visible" : "hidden"}
+                    className="
+                      cursor-pointer
+                      p-4
+                      transition-colors
+                      hover:bg-background-soft
+                    "
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`
+                          flex
+                          h-11
+                          w-11
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-lg
+                          ${fileStyle.bg}
+                        `}
+                      >
+                        <FileIcon
+                          className={`h-5 w-5 ${fileStyle.color}`}
+                          strokeWidth={2.2}
+                        />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-bold text-[#09263A] transition-colors group-hover:text-[#087F5B]">
+                            <p className="truncate text-sm font-bold text-heading">
                               {doc.name}
                             </p>
-                            <p className="mt-0.5 text-[10px] text-[#687B78]">
-                              {doc.size}
+                            <p className="mt-0.5 text-[10px] text-text-secondary">
+                              {doc.size} · {doc.category}
                             </p>
                           </div>
-                        </div>
-                      </td>
-
-                      {/* Category */}
-                      <td className="px-5 py-4">
-                        <span className="inline-flex items-center rounded-full bg-[#F5FCF9] px-2.5 py-1 text-[10px] font-semibold text-[#687B78]">
-                          {doc.category}
-                        </span>
-                      </td>
-
-                      {/* Client */}
-                      <td className="px-5 py-4">
-                        <Link
-                          to={`/accountant/clients/${doc.clientId}`}
-                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#09263A] transition-colors hover:text-[#087F5B]"
-                        >
-                          <Users
-                            className="h-3.5 w-3.5 text-[#687B78]"
-                            strokeWidth={2.2}
-                          />
-                          <span className="truncate max-w-[140px]">
-                            {doc.client}
-                          </span>
-                        </Link>
-                      </td>
-
-                      {/* Uploaded */}
-                      <td className="px-5 py-4">
-                        <div>
-                          <p className="text-xs font-semibold text-[#09263A]">
-                            {doc.uploadedAt}
-                          </p>
-                          <p className="mt-0.5 text-[10px] text-[#687B78]">
-                            by {doc.uploadedBy}
-                          </p>
-                        </div>
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-5 py-4">
-                        <span
-                          className={`
-                            inline-flex
-                            items-center
-                            gap-1.5
-                            rounded-full
-                            px-2.5
-                            py-1
-                            text-[10px]
-                            font-bold
-                            ${statusStyles.bg}
-                            ${statusStyles.text}
-                          `}
-                        >
-                          <StatusIcon className="h-3 w-3" strokeWidth={2.4} />
-                          {doc.status}
-                        </span>
-                      </td>
-
-                      {/* Actions */}
-                      <td
-                        className="relative px-5 py-4 text-right"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="relative inline-flex items-center gap-1">
-                          <button className="flex h-8 w-8 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                            <Eye className="h-3.5 w-3.5" strokeWidth={2.4} />
-                          </button>
-                          <button className="flex h-8 w-8 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                            <Download className="h-3.5 w-3.5" strokeWidth={2.4} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setOpenRowMenu(
-                                openRowMenu === doc.id ? null : doc.id
-                              )
-                            }
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]"
-                            aria-label="More actions"
+                          <span
+                            className={`
+                              shrink-0
+                              rounded-full
+                              px-2
+                              py-0.5
+                              text-[9px]
+                              font-bold
+                              ${statusStyles.bg}
+                              ${statusStyles.text}
+                            `}
                           >
-                            <MoreVertical className="h-3.5 w-3.5" />
-                          </button>
-
-                          {openRowMenu === doc.id && (
-                            <div className="absolute right-0 top-full z-20 mt-1 w-48 overflow-hidden rounded-lg border border-[#DDEAE6] bg-white py-1 shadow-2xl">
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Eye className="h-3.5 w-3.5" />
-                                <span>Preview</span>
-                              </button>
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Download className="h-3.5 w-3.5" />
-                                <span>Download</span>
-                              </button>
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Link2 className="h-3.5 w-3.5" />
-                                <span>Copy share link</span>
-                              </button>
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Send className="h-3.5 w-3.5" />
-                                <span>Send to client</span>
-                              </button>
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#09263A] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                                <Edit3 className="h-3.5 w-3.5" />
-                                <span>Rename</span>
-                              </button>
-                              <div className="my-1 border-t border-[#DDEAE6]" />
-                              <button className="flex w-full items-center gap-2 px-3 py-2 text-xs text-rose-600 transition-colors hover:bg-rose-50">
-                                <Trash2 className="h-3.5 w-3.5" />
-                                <span>Delete</span>
-                              </button>
-                            </div>
-                          )}
+                            {doc.status}
+                          </span>
                         </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
 
-          {/* Mobile Card List */}
-          <div className="divide-y divide-[#DDEAE6] lg:hidden">
-            {filteredDocuments.map((doc) => {
+                        <div className="mt-2 flex items-center gap-1.5 text-[11px] text-text-secondary">
+                          <Users className="h-3 w-3" strokeWidth={2.2} />
+                          <span className="truncate">{doc.client}</span>
+                        </div>
+
+                        <div className="mt-2 flex items-center justify-between gap-3">
+                          <span className="text-[10px] text-text-secondary">
+                            {doc.uploadedAt}
+                          </span>
+
+                          <div className="flex items-center gap-1">
+                            <button
+                              className="
+                                flex
+                                h-7
+                                w-7
+                                items-center
+                                justify-center
+                                rounded-lg
+                                text-text-secondary
+                                transition-colors
+                                hover:bg-primary-light
+                                hover:text-primary
+                              "
+                            >
+                              <Eye className="h-3.5 w-3.5" strokeWidth={2.4} />
+                            </button>
+                            <button
+                              className="
+                                flex
+                                h-7
+                                w-7
+                                items-center
+                                justify-center
+                                rounded-lg
+                                text-text-secondary
+                                transition-colors
+                                hover:bg-primary-light
+                                hover:text-primary
+                              "
+                            >
+                              <Download
+                                className="h-3.5 w-3.5"
+                                strokeWidth={2.4}
+                              />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Empty state */}
+            {filteredDocuments.length === 0 && (
+              <motion.div
+                initial={
+                  shouldReduceMotion ? false : { opacity: 0, y: 12 }
+                }
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: premiumEase }}
+                className="
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  px-5
+                  py-16
+                  text-center
+                "
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light">
+                  <FolderOpen
+                    className="h-7 w-7 text-primary"
+                    strokeWidth={2}
+                  />
+                </div>
+                <p className="mt-4 text-sm font-bold text-heading">
+                  No documents found
+                </p>
+                <p className="mt-1 max-w-xs text-xs text-text-secondary">
+                  {hasActiveFilters
+                    ? "Try adjusting your search or filters."
+                    : "Upload your first document to get started."}
+                </p>
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="
+                      mt-5
+                      inline-flex
+                      items-center
+                      gap-2
+                      rounded-lg
+                      border
+                      border-border
+                      bg-background
+                      px-4
+                      py-2
+                      text-xs
+                      font-semibold
+                      text-heading
+                      transition-colors
+                      duration-200
+                      hover:border-primary
+                      hover:text-primary
+                    "
+                  >
+                    <X className="h-3 w-3" strokeWidth={2.4} />
+                    <span>Clear filters</span>
+                  </button>
+                )}
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+
+        {/* GRID VIEW */}
+        {viewMode === "grid" && (
+          <motion.div
+            key="grid"
+            ref={gridRef}
+            variants={viewContentVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="
+              grid
+              grid-cols-1
+              gap-4
+              sm:grid-cols-2
+              lg:grid-cols-3
+              xl:grid-cols-4
+            "
+          >
+            {filteredDocuments.map((doc, index) => {
               const fileStyle = getFileIcon(doc.type);
               const FileIcon = fileStyle.icon;
               const statusStyles = getStatusStyles(doc.status);
               const StatusIcon = statusStyles.icon;
 
               return (
-                <div
+                <motion.div
                   key={doc.id}
-                  className="cursor-pointer p-4 transition-colors hover:bg-[#F5FCF9]"
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className={`
-                        flex
-                        h-11
-                        w-11
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-lg
-                        ${fileStyle.bg}
-                      `}
-                    >
-                      <FileIcon
-                        className={`h-5 w-5 ${fileStyle.color}`}
-                        strokeWidth={2.2}
-                      />
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-bold text-[#09263A]">
-                            {doc.name}
-                          </p>
-                          <p className="mt-0.5 text-[10px] text-[#687B78]">
-                            {doc.size} · {doc.category}
-                          </p>
-                        </div>
-                        <span
-                          className={`
-                            shrink-0
-                            rounded-full
-                            px-2
-                            py-0.5
-                            text-[9px]
-                            font-bold
-                            ${statusStyles.bg}
-                            ${statusStyles.text}
-                          `}
-                        >
-                          {doc.status}
-                        </span>
-                      </div>
-
-                      <div className="mt-2 flex items-center gap-1.5 text-[11px] text-[#687B78]">
-                        <Users className="h-3 w-3" strokeWidth={2.2} />
-                        <span className="truncate">{doc.client}</span>
-                      </div>
-
-                      <div className="mt-2 flex items-center justify-between gap-3">
-                        <span className="text-[10px] text-[#687B78]">
-                          {doc.uploadedAt}
-                        </span>
-
-                        <div className="flex items-center gap-1">
-                          <button className="flex h-7 w-7 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                            <Eye className="h-3.5 w-3.5" strokeWidth={2.4} />
-                          </button>
-                          <button className="flex h-7 w-7 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                            <Download
-                              className="h-3.5 w-3.5"
-                              strokeWidth={2.4}
-                            />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Empty state */}
-          {filteredDocuments.length === 0 && (
-            <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F8F2]">
-                <FolderOpen
-                  className="h-7 w-7 text-[#087F5B]"
-                  strokeWidth={2}
-                />
-              </div>
-              <p className="mt-4 text-sm font-bold text-[#09263A]">
-                No documents found
-              </p>
-              <p className="mt-1 max-w-xs text-xs text-[#687B78]">
-                {hasActiveFilters
-                  ? "Try adjusting your search or filters."
-                  : "Upload your first document to get started."}
-              </p>
-              {hasActiveFilters && (
-                <button
-                  type="button"
-                  onClick={clearFilters}
+                  custom={index}
+                  variants={gridCardVariants}
+                  initial="hidden"
+                  animate={isGridInView ? "visible" : "hidden"}
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : { y: -4, transition: { duration: 0.25 } }
+                  }
                   className="
-                    mt-5
-                    inline-flex
-                    items-center
-                    gap-2
-                    rounded-lg
+                    group
+                    relative
+                    flex
+                    flex-col
+                    overflow-hidden
+                    rounded-xl
                     border
-                    border-[#DDEAE6]
-                    bg-white
-                    px-4
-                    py-2
-                    text-xs
-                    font-semibold
-                    text-[#09263A]
-                    transition-all
+                    border-border
+                    bg-background
+                    transition-[border-color,box-shadow]
                     duration-200
-                    hover:border-[#087F5B]
-                    hover:text-[#087F5B]
+                    hover:border-primary/30
+                    hover:shadow-card-hover
                   "
                 >
-                  <X className="h-3 w-3" strokeWidth={2.4} />
-                  <span>Clear filters</span>
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+                  {/* File icon header */}
+                  <div
+                    className={`
+                      flex
+                      items-center
+                      justify-center
+                      py-8
+                      ${fileStyle.bg}
+                    `}
+                  >
+                    <FileIcon
+                      className={`h-10 w-10 ${fileStyle.color}`}
+                      strokeWidth={1.8}
+                    />
+                  </div>
 
-      {/* ======================================================
-          DOCUMENTS - GRID VIEW
-      ====================================================== */}
-      {viewMode === "grid" && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredDocuments.map((doc) => {
-            const fileStyle = getFileIcon(doc.type);
-            const FileIcon = fileStyle.icon;
-            const statusStyles = getStatusStyles(doc.status);
-            const StatusIcon = statusStyles.icon;
+                  {/* Body */}
+                  <div className="flex flex-1 flex-col p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="truncate text-sm font-bold text-heading transition-colors group-hover:text-primary">
+                        {doc.name}
+                      </p>
+                      <motion.button
+                        type="button"
+                        onClick={() =>
+                          setOpenRowMenu(
+                            openRowMenu === doc.id ? null : doc.id
+                          )
+                        }
+                        whileHover={
+                          shouldReduceMotion
+                            ? undefined
+                            : {
+                                scale: 1.1,
+                                transition: { duration: 0.15 },
+                              }
+                        }
+                        whileTap={
+                          shouldReduceMotion ? undefined : { scale: 0.95 }
+                        }
+                        className="
+                          flex
+                          h-6
+                          w-6
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-lg
+                          text-text-secondary
+                          transition-colors
+                          hover:bg-primary-light
+                          hover:text-primary
+                        "
+                      >
+                        <MoreVertical className="h-3.5 w-3.5" />
+                      </motion.button>
+                    </div>
 
-            return (
-              <div
-                key={doc.id}
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <span
+                        className="
+                          rounded-full
+                          bg-background-soft
+                          px-2
+                          py-0.5
+                          text-[9px]
+                          font-semibold
+                          text-text-secondary
+                        "
+                      >
+                        {doc.category}
+                      </span>
+                      <span
+                        className={`
+                          inline-flex
+                          items-center
+                          gap-1
+                          rounded-full
+                          px-2
+                          py-0.5
+                          text-[9px]
+                          font-bold
+                          ${statusStyles.bg}
+                          ${statusStyles.text}
+                        `}
+                      >
+                        <StatusIcon
+                          className="h-2.5 w-2.5"
+                          strokeWidth={2.4}
+                        />
+                        {doc.status}
+                      </span>
+                    </div>
+
+                    <div className="mt-3 flex items-center gap-1.5 text-[11px] text-text-secondary">
+                      <Users className="h-3 w-3" strokeWidth={2.2} />
+                      <span className="truncate">{doc.client}</span>
+                    </div>
+
+                    <div className="mt-auto flex items-center justify-between gap-2 pt-4">
+                      <div className="text-[10px] text-text-secondary">
+                        <p>{doc.uploadedAt}</p>
+                        <p className="mt-0.5">{doc.size}</p>
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <motion.button
+                          whileHover={
+                            shouldReduceMotion
+                              ? undefined
+                              : {
+                                  scale: 1.1,
+                                  transition: { duration: 0.15 },
+                                }
+                          }
+                          whileTap={
+                            shouldReduceMotion
+                              ? undefined
+                              : { scale: 0.95 }
+                          }
+                          className="
+                            flex
+                            h-7
+                            w-7
+                            items-center
+                            justify-center
+                            rounded-lg
+                            text-text-secondary
+                            transition-colors
+                            hover:bg-primary-light
+                            hover:text-primary
+                          "
+                        >
+                          <Eye className="h-3.5 w-3.5" strokeWidth={2.4} />
+                        </motion.button>
+                        <motion.button
+                          whileHover={
+                            shouldReduceMotion
+                              ? undefined
+                              : {
+                                  scale: 1.1,
+                                  transition: { duration: 0.15 },
+                                }
+                          }
+                          whileTap={
+                            shouldReduceMotion
+                              ? undefined
+                              : { scale: 0.95 }
+                          }
+                          className="
+                            flex
+                            h-7
+                            w-7
+                            items-center
+                            justify-center
+                            rounded-lg
+                            text-text-secondary
+                            transition-colors
+                            hover:bg-primary-light
+                            hover:text-primary
+                          "
+                        >
+                          <Download
+                            className="h-3.5 w-3.5"
+                            strokeWidth={2.4}
+                          />
+                        </motion.button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+
+            {/* Empty state for grid */}
+            {filteredDocuments.length === 0 && (
+              <motion.div
+                initial={
+                  shouldReduceMotion ? false : { opacity: 0, y: 12 }
+                }
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: premiumEase }}
                 className="
-                  group
-                  relative
+                  col-span-full
                   flex
                   flex-col
-                  overflow-hidden
+                  items-center
+                  justify-center
                   rounded-xl
                   border
-                  border-[#DDEAE6]
-                  bg-white
-                  transition-all
-                  duration-200
-                  hover:-translate-y-0.5
-                  hover:border-[#087F5B]/30
-                  hover:shadow-md
+                  border-border
+                  bg-background
+                  px-5
+                  py-16
+                  text-center
                 "
               >
-                {/* File icon header */}
-                <div
-                  className={`
-                    flex
-                    items-center
-                    justify-center
-                    py-8
-                    ${fileStyle.bg}
-                  `}
-                >
-                  <FileIcon
-                    className={`h-10 w-10 ${fileStyle.color}`}
-                    strokeWidth={1.8}
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light">
+                  <FolderOpen
+                    className="h-7 w-7 text-primary"
+                    strokeWidth={2}
                   />
                 </div>
-
-                {/* Body */}
-                <div className="flex flex-1 flex-col p-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="truncate text-sm font-bold text-[#09263A] group-hover:text-[#087F5B]">
-                      {doc.name}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setOpenRowMenu(openRowMenu === doc.id ? null : doc.id)
-                      }
-                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]"
-                    >
-                      <MoreVertical className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <span className="rounded-full bg-[#F5FCF9] px-2 py-0.5 text-[9px] font-semibold text-[#687B78]">
-                      {doc.category}
-                    </span>
-                    <span
-                      className={`
-                        inline-flex
-                        items-center
-                        gap-1
-                        rounded-full
-                        px-2
-                        py-0.5
-                        text-[9px]
-                        font-bold
-                        ${statusStyles.bg}
-                        ${statusStyles.text}
-                      `}
-                    >
-                      <StatusIcon className="h-2.5 w-2.5" strokeWidth={2.4} />
-                      {doc.status}
-                    </span>
-                  </div>
-
-                  <div className="mt-3 flex items-center gap-1.5 text-[11px] text-[#687B78]">
-                    <Users className="h-3 w-3" strokeWidth={2.2} />
-                    <span className="truncate">{doc.client}</span>
-                  </div>
-
-                  <div className="mt-auto flex items-center justify-between gap-2 pt-4">
-                    <div className="text-[10px] text-[#687B78]">
-                      <p>{doc.uploadedAt}</p>
-                      <p className="mt-0.5">{doc.size}</p>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <button className="flex h-7 w-7 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                        <Eye className="h-3.5 w-3.5" strokeWidth={2.4} />
-                      </button>
-                      <button className="flex h-7 w-7 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
-                        <Download className="h-3.5 w-3.5" strokeWidth={2.4} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Empty state for grid */}
-          {filteredDocuments.length === 0 && (
-            <div className="col-span-full flex flex-col items-center justify-center rounded-xl border border-[#DDEAE6] bg-white px-5 py-16 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#E8F8F2]">
-                <FolderOpen
-                  className="h-7 w-7 text-[#087F5B]"
-                  strokeWidth={2}
-                />
-              </div>
-              <p className="mt-4 text-sm font-bold text-[#09263A]">
-                No documents found
-              </p>
-              <p className="mt-1 max-w-xs text-xs text-[#687B78]">
-                {hasActiveFilters
-                  ? "Try adjusting your search or filters."
-                  : "Upload your first document to get started."}
-              </p>
-            </div>
-          )}
-        </div>
-      )}
+                <p className="mt-4 text-sm font-bold text-heading">
+                  No documents found
+                </p>
+                <p className="mt-1 max-w-xs text-xs text-text-secondary">
+                  {hasActiveFilters
+                    ? "Try adjusting your search or filters."
+                    : "Upload your first document to get started."}
+                </p>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ======================================================
           BOTTOM CTA BANNER
       ====================================================== */}
-      <div className="relative overflow-hidden rounded-xl border border-[#DDEAE6] bg-gradient-to-r from-[#E8F8F2] via-[#F5FCF9] to-white p-6 sm:p-7">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#087F5B] opacity-[0.06] blur-3xl" />
+      <motion.div
+        variants={fadeUpVariants}
+        className="
+          relative
+          overflow-hidden
+          rounded-xl
+          border
+          border-border
+          bg-gradient-to-r
+          from-primary-light
+          via-background-soft
+          to-background
+          p-6
+          sm:p-7
+        "
+      >
+        <motion.div
+          className="
+            pointer-events-none
+            absolute
+            -right-16
+            -top-16
+            h-48
+            w-48
+            rounded-full
+            bg-primary
+            opacity-[0.06]
+            blur-3xl
+          "
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : { scale: [1, 1.1, 1], opacity: [0.06, 0.12, 0.06] }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
 
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#087F5B]">
-              <FolderPlus className="h-5 w-5 text-white" strokeWidth={2.2} />
-            </div>
+            <motion.div
+              className="
+                flex
+                h-11
+                w-11
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-primary
+                shadow-button
+              "
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : { opacity: 0, scale: 0.6, rotate: -12 }
+              }
+              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.5,
+                ease: [0.34, 1.56, 0.64, 1],
+              }}
+            >
+              <FolderPlus
+                className="h-5 w-5 text-text-white"
+                strokeWidth={2.2}
+              />
+            </motion.div>
 
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#087F5B]">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-primary">
                 Request documents
               </p>
-              <h3 className="mt-1 text-base font-bold text-[#09263A]">
+              <h3 className="mt-1 text-base font-bold text-heading">
                 Automatically request files from clients
               </h3>
-              <p className="mt-1 text-xs leading-5 text-[#687B78]">
+              <p className="mt-1 text-xs leading-5 text-text-secondary">
                 Set up document request templates and let your clients upload
                 files directly to the right folders.
               </p>
             </div>
           </div>
 
-          <Link
-            to="/accountant/documents/requests"
-            className="
-              inline-flex
-              shrink-0
-              items-center
-              justify-center
-              gap-2
-              self-start
-              rounded-lg
-              bg-[#087F5B]
-              px-5
-              py-2.5
-              text-xs
-              font-bold
-              text-white
-              shadow-sm
-              transition-all
-              duration-200
-              hover:bg-[#005E45]
-              hover:-translate-y-0.5
-              hover:shadow-md
-              sm:self-auto
-            "
+          <motion.div
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+            className="shrink-0 self-start sm:self-auto"
           >
-            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
-            <span>Document requests</span>
-          </Link>
+            <Link
+              to="/accountant/documents/requests"
+              className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                rounded-lg
+                bg-primary
+                px-5
+                py-2.5
+                text-xs
+                font-bold
+                text-text-white
+                shadow-button
+                transition-colors
+                duration-200
+                hover:bg-primary-hover
+              "
+            >
+              <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.6} />
+              <span>Document requests</span>
+            </Link>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

@@ -4,10 +4,10 @@ import { motion } from "motion/react";
 
 const Footer = () => {
   const footerLinks = [
-    {
-      name: "Product",
-      url: "/products",
-    },
+    // {
+    //   name: "Product",
+    //   url: "/products",
+    // },
     {
       name: "Support",
       url: "/support",

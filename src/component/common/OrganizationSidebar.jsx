@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import {
   X,
   ChevronLeft,
@@ -7,7 +8,6 @@ import {
   LayoutDashboard,
   Building2,
   FileText,
-  FileCheck2,
   Percent,
   UserRound,
   CreditCard,
@@ -15,11 +15,7 @@ import {
   HelpCircle,
   LogOut,
 } from "lucide-react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const OrganizationSidebar = ({
   isOpen,
@@ -29,13 +25,14 @@ const OrganizationSidebar = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
 
   const [showUserMenu, setShowUserMenu] = useState(false);
 
-  // =========================================================
-  // MAIN NAVIGATION
-  // =========================================================
-
+  /* =========================================================
+     MAIN NAVIGATION
+  ========================================================= */
   const mainLinks = [
     {
       id: "overview",
@@ -43,7 +40,6 @@ const OrganizationSidebar = ({
       path: "/organization",
       icon: LayoutDashboard,
     },
-
     {
       id: "companies",
       label: "My Companies",
@@ -62,24 +58,15 @@ const OrganizationSidebar = ({
       path: "/organization/products/ct600",
       icon: FileText,
     },
-
     {
       id: "ct600-accounts",
       label: "CT600 & Accounts",
       path: "/organization/products/corporation-tax",
       icon: FileText,
     },
-
-    // {
-    //   id: "confirmation-statement",
-    //   label: "Confirmation Statement",
-    //   path: "/organization/products/confirmation-statement",
-    //   icon: FileCheck2,
-    // },
-
     {
       id: "payroll",
-      label: "⁠Payroll",
+      label: "Payroll",
       path: "/organization/products/payroll",
       icon: Percent,
     },
@@ -89,7 +76,6 @@ const OrganizationSidebar = ({
       path: "/organization/products/mtd-vat",
       icon: Percent,
     },
-
     {
       id: "self-assessment",
       label: "Self Assessment",
@@ -98,10 +84,9 @@ const OrganizationSidebar = ({
     },
   ];
 
-  // =========================================================
-  // BOTTOM NAVIGATION
-  // =========================================================
-
+  /* =========================================================
+     BOTTOM NAVIGATION
+  ========================================================= */
   const bottomLinks = [
     {
       id: "billing",
@@ -109,14 +94,12 @@ const OrganizationSidebar = ({
       path: "/organization/billing",
       icon: CreditCard,
     },
-
     {
       id: "settings",
       label: "Settings",
       path: "/organization/settings",
       icon: Settings,
     },
-
     {
       id: "help",
       label: "Help Centre",
@@ -125,101 +108,90 @@ const OrganizationSidebar = ({
     },
   ];
 
-  // =========================================================
-  // CLOSE SIDEBAR ON MOBILE ROUTE CHANGE
-  // =========================================================
-
+  /* =========================================================
+     CLOSE SIDEBAR ON MOBILE ROUTE CHANGE
+  ========================================================= */
   useEffect(() => {
     if (isOpen && window.innerWidth < 1024) {
       onClose?.();
     }
   }, [location.pathname]);
 
-  // =========================================================
-  // ACTIVE PATH
-  // =========================================================
-
+  /* =========================================================
+     ACTIVE PATH
+  ========================================================= */
   const isActivePath = (path) => {
     if (path === "/organization") {
       return location.pathname === "/organization";
     }
-
     return (
       location.pathname === path ||
       location.pathname.startsWith(`${path}/`)
     );
   };
 
-  // =========================================================
-  // NAVIGATION
-  // =========================================================
-
+  /* =========================================================
+     NAVIGATION
+  ========================================================= */
   const handleNavClick = (path) => {
     navigate(path);
-
     if (window.innerWidth < 1024) {
       onClose?.();
     }
   };
 
-  // =========================================================
-  // LOGOUT
-  // =========================================================
-
+  /* =========================================================
+     LOGOUT
+  ========================================================= */
   const handleLogout = () => {
     setShowUserMenu(false);
-
-    // Clear authentication data here
-    // localStorage.removeItem("token");
-    // localStorage.removeItem("user");
-
     navigate("/login");
-
     if (window.innerWidth < 1024) {
       onClose?.();
     }
   };
 
-  // =========================================================
-  // CLOSE USER MENU WHEN CLICKING OUTSIDE
-  // =========================================================
-
+  /* =========================================================
+     CLOSE USER MENU WHEN CLICKING OUTSIDE
+  ========================================================= */
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        !event.target.closest(".organization-user-menu")
-      ) {
+      if (!event.target.closest(".organization-user-menu")) {
         setShowUserMenu(false);
       }
     };
-
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside
-    );
-
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  // =========================================================
-  // NAV ITEM COMPONENT
-  // =========================================================
-
-  const renderNavItem = (link) => {
+  /* =========================================================
+     NAV ITEM COMPONENT
+  ========================================================= */
+  const renderNavItem = (link, index = 0) => {
     const Icon = link.icon;
     const isActive = isActivePath(link.path);
 
     return (
-      <button
+      <motion.button
         key={link.id}
         type="button"
         onClick={() => handleNavClick(link.path)}
         title={isCollapsed ? link.label : undefined}
+        initial={shouldReduceMotion ? false : { opacity: 0, x: -8 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{
+          duration: 0.4,
+          ease: premiumEase,
+          delay: shouldReduceMotion ? 0 : index * 0.03,
+        }}
+        whileHover={
+          shouldReduceMotion
+            ? undefined
+            : { x: 2, transition: { duration: 0.2 } }
+        }
+        whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
         className={`
           group
           relative
@@ -233,24 +205,20 @@ const OrganizationSidebar = ({
           text-left
           text-[15px]
           font-medium
-          transition-all
+          transition-colors
           duration-200
-          ${
-            isCollapsed
-              ? "lg:justify-center"
-              : ""
-          }
+          ${isCollapsed ? "lg:justify-center" : ""}
           ${
             isActive
-              ? "bg-[#E8F8F2] text-[#087F5B]"
-              : "text-[#344A67] hover:bg-[#F5FCF9] hover:text-[#087F5B]"
+              ? "bg-primary text-text-white shadow-button"
+              : "text-dark-muted hover:bg-dark-soft hover:text-text-white"
           }
         `}
       >
-
-        {/* Active indicator */}
-        {isActive && !isCollapsed && (
-          <span
+        {/* Active indicator bar */}
+        {isActive && (
+          <motion.span
+            layoutId="org-active-indicator"
             className="
               absolute
               left-0
@@ -259,8 +227,12 @@ const OrganizationSidebar = ({
               w-1
               -translate-y-1/2
               rounded-r-full
-              bg-[#087F5B]
+              bg-sky
             "
+            transition={{
+              duration: 0.35,
+              ease: premiumEase,
+            }}
           />
         )}
 
@@ -274,8 +246,8 @@ const OrganizationSidebar = ({
             duration-200
             ${
               isActive
-                ? "text-[#087F5B]"
-                : "text-[#71827F] group-hover:text-[#087F5B]"
+                ? "text-text-white"
+                : "text-dark-muted group-hover:text-text-white"
             }
           `}
           strokeWidth={2}
@@ -287,53 +259,46 @@ const OrganizationSidebar = ({
             min-w-0
             flex-1
             truncate
-            ${
-              isCollapsed
-                ? "lg:hidden"
-                : ""
-            }
+            ${isCollapsed ? "lg:hidden" : ""}
           `}
         >
           {link.label}
         </span>
-
-      </button>
+      </motion.button>
     );
   };
 
-  // =========================================================
-  // RENDER
-  // =========================================================
-
+  /* =========================================================
+     RENDER
+  ========================================================= */
   return (
     <>
       {/* =====================================================
           MOBILE OVERLAY
       ====================================================== */}
-
-      <div
-        className={`
-          fixed
-          inset-0
-          z-40
-          bg-black/40
-          backdrop-blur-[2px]
-          transition-opacity
-          duration-300
-          lg:hidden
-          ${
-            isOpen
-              ? "pointer-events-auto opacity-100"
-              : "pointer-events-none opacity-0"
-          }
-        `}
-        onClick={onClose}
-      />
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="
+              fixed
+              inset-0
+              z-40
+              bg-dark/60
+              backdrop-blur-sm
+              lg:hidden
+            "
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={onClose}
+          />
+        )}
+      </AnimatePresence>
 
       {/* =====================================================
           SIDEBAR
       ====================================================== */}
-
       <aside
         className={`
           fixed
@@ -344,32 +309,20 @@ const OrganizationSidebar = ({
           h-screen
           flex-col
           border-r
-          border-[#E4E9E7]
-          bg-white
+          border-dark-soft
+          bg-dark
           transition-all
           duration-300
           ease-in-out
 
-          ${
-            isCollapsed
-              ? "lg:w-[76px]"
-              : "lg:w-[264px]"
-          }
-
-          ${
-            isOpen
-              ? "translate-x-0"
-              : "-translate-x-full lg:translate-x-0"
-          }
-
+          ${isCollapsed ? "lg:w-[76px]" : "lg:w-[264px]"}
+          ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
           w-[280px]
         `}
       >
-
         {/* ===================================================
             LOGO HEADER
         ==================================================== */}
-
         <div
           className={`
             flex
@@ -377,31 +330,24 @@ const OrganizationSidebar = ({
             shrink-0
             items-center
             border-b
-            border-[#E8ECEB]
+            border-dark-soft
             px-5
-
-            ${
-              isCollapsed
-                ? "lg:justify-center"
-                : "justify-between"
-            }
+            ${isCollapsed ? "lg:justify-center" : "justify-between"}
           `}
         >
-
-          {/* Logo */}
           <Link
             to="/organization"
-            className="
-              flex
-              items-center
-              gap-2.5
-              overflow-hidden
-            "
+            className="flex items-center gap-2.5 overflow-hidden"
           >
-
-            {/* TaxPilot Logo */}
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center">
-
+            {/* Logo mark */}
+            <motion.div
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { scale: 1.06, transition: { duration: 0.2 } }
+              }
+              className="flex h-9 w-9 shrink-0 items-center justify-center"
+            >
               <svg
                 width="38"
                 height="38"
@@ -409,25 +355,23 @@ const OrganizationSidebar = ({
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-
                 <path
                   d="M26.5 7C34.5 6.2 41.4 9.1 43 15.5C44.5 21.6 40.4 27.1 33.2 29.2C29.3 30.3 25.6 29.7 22.8 27.7C23.2 19.4 24.1 12.3 26.5 7Z"
-                  fill="#087F5B"
+                  fill="currentColor"
+                  className="text-primary"
                 />
-
                 <path
                   d="M20.5 16.5C15.2 13.2 9.4 14 6.2 18.5C3.1 22.9 4.9 28.6 10 31.4C13.3 33.2 17.1 33.2 20.4 31.5C19.1 25.9 19.2 21 20.5 16.5Z"
-                  fill="#5ACBA8"
+                  fill="currentColor"
+                  className="text-sky"
                 />
-
                 <path
                   d="M21.2 25.8C14.7 25.6 9.7 29 9.2 34C8.7 39.4 13.8 43.2 19.5 42.8C25.1 42.5 29.1 38.5 28.5 33.7C27.9 29.6 25.3 27 21.2 25.8Z"
-                  fill="#8CDEC3"
+                  fill="currentColor"
+                  className="text-sky-light"
                 />
-
               </svg>
-
-            </div>
+            </motion.div>
 
             {/* Brand */}
             <div
@@ -435,25 +379,23 @@ const OrganizationSidebar = ({
                 leading-none
                 transition-opacity
                 duration-200
-                ${
-                  isCollapsed
-                    ? "lg:hidden"
-                    : ""
-                }
+                ${isCollapsed ? "lg:hidden" : ""}
               `}
             >
-
-              <div className="whitespace-nowrap text-[25px] font-bold tracking-tight text-[#09263A]">
+              <div
+                className="
+                  whitespace-nowrap
+                  text-[25px]
+                  font-bold
+                  tracking-tight
+                  text-text-white
+                "
+              >
                 TaxPilot
-                <span className="text-[#087F5B]">
-                  {" "}UK
-                </span>
+                <span className="text-sky"> UK</span>
               </div>
-
             </div>
-
           </Link>
-
 
           {/* Mobile close */}
           <button
@@ -467,82 +409,62 @@ const OrganizationSidebar = ({
               items-center
               justify-center
               rounded-lg
-              text-[#71827F]
-              transition
-              hover:bg-[#F5FCF9]
-              hover:text-[#087F5B]
+              text-dark-muted
+              transition-colors
+              hover:bg-dark-soft
+              hover:text-text-white
               lg:hidden
             "
             aria-label="Close sidebar"
           >
             <X className="h-5 w-5" />
           </button>
-
         </div>
-
 
         {/* ===================================================
             NAVIGATION
         ==================================================== */}
-
         <nav className="flex-1 overflow-y-auto px-3 py-5">
-
           {/* Main navigation */}
-
           <div className="space-y-1">
-
-            {mainLinks.map((link) =>
-              renderNavItem(link)
-            )}
-
+            {mainLinks.map((link, index) => renderNavItem(link, index))}
           </div>
-
 
           {/* Divider */}
-
-          <div className="my-5 border-t border-[#E5EAE8]" />
-
+          <div className="my-5 border-t border-dark-soft" />
 
           {/* Bottom navigation */}
-
           <div className="space-y-1">
-
-            {bottomLinks.map((link) =>
-              renderNavItem(link)
+            {bottomLinks.map((link, index) =>
+              renderNavItem(link, mainLinks.length + index)
             )}
-
           </div>
-
         </nav>
-
 
         {/* ===================================================
             USER PROFILE
         ==================================================== */}
-
         <div
           className="
             organization-user-menu
             relative
             shrink-0
             border-t
-            border-[#E5EAE8]
+            border-dark-soft
             p-3
           "
         >
-
           {/* User button */}
-
-          <button
+          <motion.button
             type="button"
-            onClick={() =>
-              setShowUserMenu((prev) => !prev)
+            onClick={() => setShowUserMenu((prev) => !prev)}
+            title={isCollapsed ? "Account" : undefined}
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { transition: { duration: 0.2 } }
             }
-            title={
-              isCollapsed
-                ? "Account"
-                : undefined
-            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
             className={`
               group
               flex
@@ -552,18 +474,12 @@ const OrganizationSidebar = ({
               rounded-xl
               p-2
               text-left
-              transition
-              hover:bg-[#F5FCF9]
-              ${
-                isCollapsed
-                  ? "lg:justify-center"
-                  : ""
-              }
+              transition-colors
+              hover:bg-dark-soft
+              ${isCollapsed ? "lg:justify-center" : ""}
             `}
           >
-
             {/* Avatar */}
-
             <div
               className="
                 flex
@@ -573,160 +489,155 @@ const OrganizationSidebar = ({
                 items-center
                 justify-center
                 rounded-full
-                bg-[#0AAF7D]
+                bg-primary
                 text-sm
                 font-bold
-                text-white
+                text-text-white
+                shadow-button
               "
             >
               A
             </div>
 
-
-            {/* User information */}
-
+            {/* User info */}
             <div
               className={`
                 min-w-0
                 flex-1
-                ${
-                  isCollapsed
-                    ? "lg:hidden"
-                    : ""
-                }
+                ${isCollapsed ? "lg:hidden" : ""}
               `}
             >
-
-              <p className="truncate text-sm font-semibold text-[#09263A]">
+              <p className="truncate text-sm font-semibold text-text-white">
                 Alex Johnson
               </p>
-
-              <p className="mt-0.5 truncate text-xs text-[#71827F]">
+              <p className="mt-0.5 truncate text-xs text-dark-muted">
                 SKIL FOUR LIMITED
               </p>
-
             </div>
 
-
             {/* Arrow */}
-
             {!isCollapsed && (
               <ChevronDown
                 className={`
                   h-4
                   w-4
                   shrink-0
-                  text-[#71827F]
+                  text-dark-muted
                   transition-transform
                   duration-200
-                  ${
-                    showUserMenu
-                      ? "rotate-180"
-                      : ""
-                  }
+                  ${showUserMenu ? "rotate-180" : ""}
                 `}
               />
             )}
-
-          </button>
-
+          </motion.button>
 
           {/* =================================================
               USER DROPDOWN
           ================================================== */}
-
-          {showUserMenu && !isCollapsed && (
-            <div
-              className="
-                absolute
-                bottom-[76px]
-                left-3
-                right-3
-                overflow-hidden
-                rounded-xl
-                border
-                border-[#E0E8E5]
-                bg-white
-                shadow-[0_10px_30px_rgba(9,38,58,0.12)]
-              "
-            >
-
-              {/* Account */}
-
-              <button
-                type="button"
-                onClick={() => {
-                  setShowUserMenu(false);
-                  navigate("/organization/settings");
-                }}
+          <AnimatePresence>
+            {showUserMenu && !isCollapsed && (
+              <motion.div
+                initial={
+                  shouldReduceMotion
+                    ? false
+                    : { opacity: 0, y: 8, scale: 0.97 }
+                }
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={
+                  shouldReduceMotion
+                    ? { opacity: 0 }
+                    : {
+                        opacity: 0,
+                        y: 6,
+                        scale: 0.98,
+                        transition: { duration: 0.15 },
+                      }
+                }
+                transition={{ duration: 0.22, ease: premiumEase }}
                 className="
-                  flex
-                  w-full
-                  items-center
-                  gap-3
-                  px-4
-                  py-3
-                  text-left
-                  text-sm
-                  text-[#344A67]
-                  transition
-                  hover:bg-[#F5FCF9]
-                  hover:text-[#087F5B]
+                  absolute
+                  bottom-[76px]
+                  left-3
+                  right-3
+                  overflow-hidden
+                  rounded-xl
+                  border
+                  border-dark-soft
+                  bg-dark
+                  shadow-card-hover
                 "
               >
+                {/* Account */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    navigate("/organization/settings");
+                  }}
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    gap-3
+                    px-4
+                    py-3
+                    text-left
+                    text-sm
+                    text-dark-muted
+                    transition-colors
+                    hover:bg-dark-soft
+                    hover:text-text-white
+                  "
+                >
+                  <Settings className="h-4 w-4" />
+                  Account Settings
+                </button>
 
-                <Settings className="h-4 w-4" />
-
-                Account Settings
-
-              </button>
-
-
-              {/* Logout */}
-
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="
-                  flex
-                  w-full
-                  items-center
-                  gap-3
-                  border-t
-                  border-[#E8ECEB]
-                  px-4
-                  py-3
-                  text-left
-                  text-sm
-                  text-[#C53030]
-                  transition
-                  hover:bg-[#FFF5F5]
-                "
-              >
-
-                <LogOut className="h-4 w-4" />
-
-                Log out
-
-              </button>
-
-            </div>
-          )}
-
+                {/* Logout */}
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    gap-3
+                    border-t
+                    border-dark-soft
+                    px-4
+                    py-3
+                    text-left
+                    text-sm
+                    text-danger
+                    transition-colors
+                    hover:bg-danger-light
+                  "
+                >
+                  <LogOut className="h-4 w-4" />
+                  Log out
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-
 
         {/* ===================================================
             COLLAPSE BUTTON
         ==================================================== */}
-
-        <button
+        <motion.button
           type="button"
           onClick={onToggleCollapse}
+          whileHover={
+            shouldReduceMotion
+              ? undefined
+              : { scale: 1.1, transition: { duration: 0.2 } }
+          }
+          whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
           className="
             absolute
             -right-3
             top-[88px]
+            z-[60]
             hidden
             h-6
             w-6
@@ -734,31 +645,26 @@ const OrganizationSidebar = ({
             justify-center
             rounded-full
             border
-            border-[#DDE5E2]
-            bg-white
-            text-[#71827F]
-            shadow-sm
-            transition-all
-            duration-200
-            hover:border-[#087F5B]
-            hover:text-[#087F5B]
+            border-dark-soft
+            bg-dark
+            text-dark-muted
+            shadow-card
+            transition-colors
+            hover:border-primary
+            hover:bg-primary
+            hover:text-text-white
             lg:flex
           "
           aria-label={
-            isCollapsed
-              ? "Expand sidebar"
-              : "Collapse sidebar"
+            isCollapsed ? "Expand sidebar" : "Collapse sidebar"
           }
         >
-
           {isCollapsed ? (
             <ChevronRight className="h-3.5 w-3.5" />
           ) : (
             <ChevronLeft className="h-3.5 w-3.5" />
           )}
-
-        </button>
-
+        </motion.button>
       </aside>
     </>
   );

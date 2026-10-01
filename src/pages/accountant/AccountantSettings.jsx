@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { Link } from "react-router-dom";
 import {
   User,
@@ -49,6 +50,9 @@ import {
 } from "lucide-react";
 
 const AccountantSettings = () => {
+  const shouldReduceMotion = useReducedMotion();
+  const premiumEase = [0.22, 1, 0.36, 1];
+
   /* ============================================================
      STATE
   ============================================================ */
@@ -80,16 +84,14 @@ const AccountantSettings = () => {
   ============================================================ */
 
   const [formData, setFormData] = useState({
-    // Profile
     firstName: "Alice",
     lastName: "Johnson",
     email: "alice@taxpilot.co.uk",
     phone: "+44 20 7946 0958",
     jobTitle: "Senior Accountant",
     bio: "Senior accountant with 10+ years of experience in UK tax compliance.",
-    avatarColor: "bg-[#087F5B]",
+    avatarColor: "bg-primary",
 
-    // Practice
     practiceName: "TaxPilot Accountants Ltd",
     practiceSize: "6-20",
     practiceType: "Accountancy Firm",
@@ -97,7 +99,6 @@ const AccountantSettings = () => {
     vatNumber: "GB123456789",
     companyNumber: "12345678",
 
-    // Notifications
     emailDeadlines: true,
     emailFilings: true,
     emailClientUpdates: true,
@@ -105,12 +106,10 @@ const AccountantSettings = () => {
     smsUrgent: true,
     pushNotifications: true,
 
-    // Security
     twoFactorAuth: true,
     sessionTimeout: "30",
     ipWhitelist: false,
 
-    // Preferences
     timezone: "Europe/London",
     dateFormat: "DD/MM/YYYY",
     currency: "GBP",
@@ -147,6 +146,58 @@ const AccountantSettings = () => {
   };
 
   /* ============================================================
+     ANIMATION VARIANTS
+  ============================================================ */
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.06,
+        delayChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
+
+  const fadeUpVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.55, ease: premiumEase },
+    },
+  };
+
+  const cardVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 16, scale: 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.5, ease: premiumEase },
+    },
+  };
+
+  const tabContentVariants = {
+    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.35, ease: premiumEase },
+    },
+    exit: shouldReduceMotion
+      ? { opacity: 0 }
+      : {
+          opacity: 0,
+          y: -8,
+          transition: { duration: 0.2, ease: premiumEase },
+        },
+  };
+
+  /* ============================================================
      REUSABLE COMPONENTS
   ============================================================ */
 
@@ -159,14 +210,14 @@ const AccountantSettings = () => {
     hint,
     icon: Icon,
   }) => (
-    <div>
-      <label className="mb-1.5 block text-xs font-semibold text-[#09263A]">
-        {label} {required && <span className="text-rose-500">*</span>}
+    <motion.div variants={fadeUpVariants}>
+      <label className="mb-1.5 block text-xs font-semibold text-heading">
+        {label} {required && <span className="text-danger">*</span>}
       </label>
       <div className="relative">
         {Icon && (
           <Icon
-            className="pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#687B78]"
+            className="pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-secondary"
             strokeWidth={2.2}
           />
         )}
@@ -179,32 +230,32 @@ const AccountantSettings = () => {
             w-full
             rounded-lg
             border
-            border-[#DDEAE6]
-            bg-white
+            border-border
+            bg-background
             py-2.5
             pr-4
             ${Icon ? "pl-10" : "pl-4"}
             text-sm
-            text-[#09263A]
+            text-heading
             outline-none
             transition-all
             duration-200
-            placeholder:text-[#687B78]
-            focus:border-[#087F5B]
+            placeholder:text-text-secondary
+            focus:border-primary
             focus:ring-2
-            focus:ring-[#087F5B]/10
+            focus:ring-primary/10
           `}
         />
       </div>
       {hint && (
-        <p className="mt-1.5 text-[11px] text-[#687B78]">{hint}</p>
+        <p className="mt-1.5 text-[11px] text-text-secondary">{hint}</p>
       )}
-    </div>
+    </motion.div>
   );
 
   const SelectField = ({ label, field, options, hint }) => (
-    <div>
-      <label className="mb-1.5 block text-xs font-semibold text-[#09263A]">
+    <motion.div variants={fadeUpVariants}>
+      <label className="mb-1.5 block text-xs font-semibold text-heading">
         {label}
       </label>
       <div className="relative">
@@ -217,20 +268,20 @@ const AccountantSettings = () => {
             appearance-none
             rounded-lg
             border
-            border-[#DDEAE6]
-            bg-white
+            border-border
+            bg-background
             px-4
             py-2.5
             pr-10
             text-sm
             font-medium
-            text-[#09263A]
+            text-heading
             outline-none
             transition-all
             duration-200
-            focus:border-[#087F5B]
+            focus:border-primary
             focus:ring-2
-            focus:ring-[#087F5B]/10
+            focus:ring-primary/10
           "
         >
           {options.map((opt) => (
@@ -240,72 +291,87 @@ const AccountantSettings = () => {
           ))}
         </select>
         <ChevronRight
-          className="pointer-events-none absolute right-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 rotate-90 text-[#687B78]"
+          className="pointer-events-none absolute right-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 rotate-90 text-text-secondary"
           strokeWidth={2.4}
         />
       </div>
       {hint && (
-        <p className="mt-1.5 text-[11px] text-[#687B78]">{hint}</p>
+        <p className="mt-1.5 text-[11px] text-text-secondary">{hint}</p>
       )}
-    </div>
+    </motion.div>
   );
 
   const Toggle = ({ label, description, field }) => (
     <div className="flex items-start justify-between gap-4 py-3">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-[#09263A]">{label}</p>
+        <p className="text-sm font-semibold text-heading">{label}</p>
         {description && (
-          <p className="mt-0.5 text-xs leading-5 text-[#687B78]">
+          <p className="mt-0.5 text-xs leading-5 text-text-secondary">
             {description}
           </p>
         )}
       </div>
-      <button
+      <motion.button
         type="button"
         onClick={() => handleToggle(field)}
+        whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
+        animate={{
+          backgroundColor: formData[field]
+            ? "var(--color-primary)"
+            : "var(--color-border)",
+        }}
+        transition={{ duration: 0.2, ease: premiumEase }}
         className={`
           relative
           h-6
           w-11
           shrink-0
           rounded-full
-          transition-colors
-          duration-200
-          ${formData[field] ? "bg-[#087F5B]" : "bg-[#DDEAE6]"}
         `}
         aria-label={`Toggle ${label}`}
       >
-        <span
-          className={`
+        <motion.span
+          className="
             absolute
             top-0.5
             h-5
             w-5
             rounded-full
-            bg-white
-            shadow-sm
-            transition-transform
-            duration-200
-            ${formData[field] ? "translate-x-[22px]" : "translate-x-0.5"}
-          `}
+            bg-background
+            shadow-card
+          "
+          animate={{
+            x: formData[field] ? 22 : 2,
+          }}
+          transition={{ duration: 0.25, ease: premiumEase }}
         />
-      </button>
+      </motion.button>
     </div>
   );
 
   const SectionCard = ({ title, description, icon: Icon, children }) => (
-    <div className="overflow-hidden rounded-xl border border-[#DDEAE6] bg-white">
+    <motion.div
+      variants={cardVariants}
+      className="
+        overflow-hidden
+        rounded-xl
+        border
+        border-border
+        bg-background
+        shadow-card
+      "
+    >
       {title && (
-        <div className="flex items-start gap-3 border-b border-[#DDEAE6] px-5 py-4">
+        <div className="flex items-start gap-3 border-b border-border px-5 py-4">
           {Icon && (
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#E8F8F2]">
-              <Icon className="h-4 w-4 text-[#087F5B]" strokeWidth={2.2} />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-light">
+              <Icon className="h-4 w-4 text-primary" strokeWidth={2.2} />
             </div>
           )}
           <div className="min-w-0">
-            <h3 className="text-sm font-bold text-[#09263A]">{title}</h3>
+            <h3 className="text-sm font-bold text-heading">{title}</h3>
             {description && (
-              <p className="mt-0.5 text-[11px] text-[#687B78]">
+              <p className="mt-0.5 text-[11px] text-text-secondary">
                 {description}
               </p>
             )}
@@ -313,7 +379,7 @@ const AccountantSettings = () => {
         </div>
       )}
       <div className="p-5 sm:p-6">{children}</div>
-    </div>
+    </motion.div>
   );
 
   /* ============================================================
@@ -321,11 +387,30 @@ const AccountantSettings = () => {
   ============================================================ */
 
   const renderProfileTab = () => (
-    <div className="space-y-5">
-      {/* Avatar + Basic Info */}
+    <motion.div
+      key="profile"
+      variants={tabContentVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="space-y-5"
+    >
       <SectionCard title="Profile photo" icon={User}>
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-          <div className="relative">
+          <motion.div
+            initial={
+              shouldReduceMotion
+                ? false
+                : { opacity: 0, scale: 0.6, rotate: -12 }
+            }
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{
+              duration: 0.55,
+              ease: [0.34, 1.56, 0.64, 1],
+              delay: 0.15,
+            }}
+            className="relative"
+          >
             <div
               className={`
                 flex
@@ -336,15 +421,22 @@ const AccountantSettings = () => {
                 rounded-full
                 text-2xl
                 font-bold
-                text-white
+                text-text-white
+                shadow-button
                 ${formData.avatarColor}
               `}
             >
               {formData.firstName[0]}
               {formData.lastName[0]}
             </div>
-            <button
+            <motion.button
               type="button"
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { scale: 1.1, transition: { duration: 0.15 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
               className="
                 absolute
                 -bottom-1
@@ -356,41 +448,86 @@ const AccountantSettings = () => {
                 justify-center
                 rounded-full
                 border-2
-                border-white
-                bg-[#087F5B]
-                text-white
-                shadow-md
-                transition-all
-                hover:bg-[#005E45]
+                border-background
+                bg-primary
+                text-text-white
+                shadow-button
+                transition-colors
+                hover:bg-primary-hover
               "
               aria-label="Change avatar"
             >
               <Upload className="h-3.5 w-3.5" strokeWidth={2.6} />
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
 
           <div className="flex-1">
-            <p className="text-sm font-semibold text-[#09263A]">
+            <p className="text-sm font-semibold text-heading">
               Profile picture
             </p>
-            <p className="mt-0.5 text-xs text-[#687B78]">
+            <p className="mt-0.5 text-xs text-text-secondary">
               Upload a JPG or PNG, max 2 MB. Recommended 200x200px.
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <button className="inline-flex items-center gap-2 rounded-lg bg-[#087F5B] px-3.5 py-2 text-xs font-bold text-white transition-all hover:bg-[#005E45]">
+              <motion.button
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -1, transition: { duration: 0.2 } }
+                }
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-lg
+                  bg-primary
+                  px-3.5
+                  py-2
+                  text-xs
+                  font-bold
+                  text-text-white
+                  shadow-button
+                  transition-colors
+                  hover:bg-primary-hover
+                "
+              >
                 <Upload className="h-3.5 w-3.5" strokeWidth={2.6} />
                 Upload new
-              </button>
-              <button className="inline-flex items-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-3.5 py-2 text-xs font-semibold text-[#09263A] transition-all hover:border-rose-300 hover:text-rose-600">
+              </motion.button>
+              <motion.button
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -1, transition: { duration: 0.2 } }
+                }
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  px-3.5
+                  py-2
+                  text-xs
+                  font-semibold
+                  text-heading
+                  transition-colors
+                  hover:border-danger/30
+                  hover:text-danger
+                "
+              >
                 <Trash2 className="h-3.5 w-3.5" strokeWidth={2.4} />
                 Remove
-              </button>
+              </motion.button>
             </div>
           </div>
         </div>
       </SectionCard>
 
-      {/* Personal Information */}
       <SectionCard
         title="Personal information"
         description="Your personal details and contact information"
@@ -441,8 +578,8 @@ const AccountantSettings = () => {
           />
         </div>
 
-        <div className="mt-5">
-          <label className="mb-1.5 block text-xs font-semibold text-[#09263A]">
+        <motion.div variants={fadeUpVariants} className="mt-5">
+          <label className="mb-1.5 block text-xs font-semibold text-heading">
             Bio
           </label>
           <textarea
@@ -454,28 +591,35 @@ const AccountantSettings = () => {
               resize-none
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
-              text-[#09263A]
+              text-heading
               outline-none
               transition-all
               duration-200
-              placeholder:text-[#687B78]
-              focus:border-[#087F5B]
+              placeholder:text-text-secondary
+              focus:border-primary
               focus:ring-2
-              focus:ring-[#087F5B]/10
+              focus:ring-primary/10
             "
           />
-        </div>
+        </motion.div>
       </SectionCard>
-    </div>
+    </motion.div>
   );
 
   const renderPracticeTab = () => (
-    <div className="space-y-5">
+    <motion.div
+      key="practice"
+      variants={tabContentVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="space-y-5"
+    >
       <SectionCard
         title="Practice details"
         description="Information about your accountancy practice"
@@ -530,8 +674,8 @@ const AccountantSettings = () => {
           />
         </div>
 
-        <div className="mt-5">
-          <label className="mb-1.5 block text-xs font-semibold text-[#09263A]">
+        <motion.div variants={fadeUpVariants} className="mt-5">
+          <label className="mb-1.5 block text-xs font-semibold text-heading">
             Registered address
           </label>
           <textarea
@@ -543,22 +687,22 @@ const AccountantSettings = () => {
               resize-none
               rounded-lg
               border
-              border-[#DDEAE6]
-              bg-white
+              border-border
+              bg-background
               px-4
               py-2.5
               text-sm
-              text-[#09263A]
+              text-heading
               outline-none
               transition-all
               duration-200
-              placeholder:text-[#687B78]
-              focus:border-[#087F5B]
+              placeholder:text-text-secondary
+              focus:border-primary
               focus:ring-2
-              focus:ring-[#087F5B]/10
+              focus:ring-primary/10
             "
           />
-        </div>
+        </motion.div>
       </SectionCard>
 
       <SectionCard
@@ -587,17 +731,24 @@ const AccountantSettings = () => {
           />
         </div>
       </SectionCard>
-    </div>
+    </motion.div>
   );
 
   const renderNotificationsTab = () => (
-    <div className="space-y-5">
+    <motion.div
+      key="notifications"
+      variants={tabContentVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="space-y-5"
+    >
       <SectionCard
         title="Email notifications"
         description="Choose which emails you want to receive"
         icon={Mail}
       >
-        <div className="divide-y divide-[#DDEAE6]">
+        <div className="divide-y divide-border">
           <Toggle
             label="Deadline reminders"
             description="Get notified before client filing deadlines"
@@ -626,7 +777,7 @@ const AccountantSettings = () => {
         description="Urgent alerts delivered instantly"
         icon={Bell}
       >
-        <div className="divide-y divide-[#DDEAE6]">
+        <div className="divide-y divide-border">
           <Toggle
             label="SMS for urgent deadlines"
             description="Text alerts for overdue or high-priority filings"
@@ -639,7 +790,7 @@ const AccountantSettings = () => {
           />
         </div>
       </SectionCard>
-    </div>
+    </motion.div>
   );
 
   const renderTeamTab = () => {
@@ -650,7 +801,7 @@ const AccountantSettings = () => {
         email: "alice@taxpilot.co.uk",
         role: "Owner",
         initials: "AJ",
-        color: "bg-[#087F5B]",
+        color: "bg-primary",
         status: "Active",
       },
       {
@@ -659,7 +810,7 @@ const AccountantSettings = () => {
         email: "john@taxpilot.co.uk",
         role: "Accountant",
         initials: "JS",
-        color: "bg-blue-500",
+        color: "bg-sky",
         status: "Active",
       },
       {
@@ -668,7 +819,7 @@ const AccountantSettings = () => {
         email: "sarah@taxpilot.co.uk",
         role: "Accountant",
         initials: "SM",
-        color: "bg-purple-500",
+        color: "bg-secondary",
         status: "Active",
       },
       {
@@ -677,23 +828,56 @@ const AccountantSettings = () => {
         email: "david@taxpilot.co.uk",
         role: "Junior Accountant",
         initials: "DC",
-        color: "bg-amber-500",
+        color: "bg-warning",
         status: "Pending",
       },
     ];
 
     return (
-      <div className="space-y-5">
+      <motion.div
+        key="team"
+        variants={tabContentVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className="space-y-5"
+      >
         <SectionCard
           title="Team members"
           description={`${teamMembers.length} of 10 seats used`}
           icon={Users}
         >
           <div className="space-y-3">
-            {teamMembers.map((member) => (
-              <div
+            {teamMembers.map((member, index) => (
+              <motion.div
                 key={member.id}
-                className="flex items-center justify-between gap-4 rounded-lg border border-[#DDEAE6] bg-white p-3.5 transition-colors hover:bg-[#F5FCF9]"
+                initial={
+                  shouldReduceMotion ? false : { opacity: 0, x: -8 }
+                }
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  delay: shouldReduceMotion ? 0 : index * 0.06,
+                  duration: 0.45,
+                  ease: premiumEase,
+                }}
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -2, transition: { duration: 0.2 } }
+                }
+                className="
+                  flex
+                  items-center
+                  justify-between
+                  gap-4
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  p-3.5
+                  transition-colors
+                  hover:bg-background-soft
+                "
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <div
@@ -707,7 +891,8 @@ const AccountantSettings = () => {
                       rounded-full
                       text-xs
                       font-bold
-                      text-white
+                      text-text-white
+                      shadow-button
                       ${member.color}
                     `}
                   >
@@ -715,7 +900,7 @@ const AccountantSettings = () => {
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate text-sm font-bold text-[#09263A]">
+                      <p className="truncate text-sm font-bold text-heading">
                         {member.name}
                       </p>
                       <span
@@ -727,41 +912,120 @@ const AccountantSettings = () => {
                           font-bold
                           ${
                             member.status === "Active"
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-amber-100 text-amber-700"
+                              ? "bg-success-light text-success"
+                              : "bg-warning-light text-warning"
                           }
                         `}
                       >
                         {member.status}
                       </span>
                     </div>
-                    <p className="mt-0.5 truncate text-[11px] text-[#687B78]">
+                    <p className="mt-0.5 truncate text-[11px] text-text-secondary">
                       {member.email}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2">
-                  <span className="rounded-lg bg-[#F5FCF9] px-2.5 py-1 text-[10px] font-bold text-[#687B78]">
+                  <span
+                    className="
+                      rounded-lg
+                      bg-background-soft
+                      px-2.5
+                      py-1
+                      text-[10px]
+                      font-bold
+                      text-text-secondary
+                    "
+                  >
                     {member.role}
                   </span>
-                  <button className="flex h-8 w-8 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
+                  <motion.button
+                    whileHover={
+                      shouldReduceMotion
+                        ? undefined
+                        : { scale: 1.1, transition: { duration: 0.15 } }
+                    }
+                    whileTap={
+                      shouldReduceMotion ? undefined : { scale: 0.95 }
+                    }
+                    className="
+                      flex
+                      h-8
+                      w-8
+                      items-center
+                      justify-center
+                      rounded-lg
+                      text-text-secondary
+                      transition-colors
+                      hover:bg-primary-light
+                      hover:text-primary
+                    "
+                  >
                     <MoreVertical className="h-3.5 w-3.5" strokeWidth={2.4} />
-                  </button>
+                  </motion.button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
 
-          <div className="mt-5 flex flex-col gap-2 border-t border-[#DDEAE6] pt-5 sm:flex-row">
-            <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#087F5B] px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-[#005E45]">
+          <div className="mt-5 flex flex-col gap-2 border-t border-border pt-5 sm:flex-row">
+            <motion.button
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+              className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                rounded-lg
+                bg-primary
+                px-4
+                py-2.5
+                text-xs
+                font-bold
+                text-text-white
+                shadow-button
+                transition-colors
+                hover:bg-primary-hover
+              "
+            >
               <Plus className="h-3.5 w-3.5" strokeWidth={2.6} />
               Invite team member
-            </button>
-            <button className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-4 py-2.5 text-xs font-semibold text-[#09263A] transition-all hover:border-[#087F5B] hover:text-[#087F5B]">
+            </motion.button>
+            <motion.button
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: -1, transition: { duration: 0.2 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+              className="
+                inline-flex
+                items-center
+                justify-center
+                gap-2
+                rounded-lg
+                border
+                border-border
+                bg-background
+                px-4
+                py-2.5
+                text-xs
+                font-semibold
+                text-heading
+                transition-colors
+                hover:border-primary
+                hover:text-primary
+              "
+            >
               <UserCog className="h-3.5 w-3.5" strokeWidth={2.4} />
               Manage permissions
-            </button>
+            </motion.button>
           </div>
         </SectionCard>
 
@@ -775,31 +1039,52 @@ const AccountantSettings = () => {
               {
                 role: "Owner",
                 desc: "Full access to all settings, billing and data",
-                color: "bg-purple-100 text-purple-700",
+                color: "bg-secondary-light text-secondary",
                 count: 1,
               },
               {
                 role: "Admin",
                 desc: "Manage clients, filings and team members",
-                color: "bg-blue-100 text-blue-700",
+                color: "bg-primary-light text-primary",
                 count: 0,
               },
               {
                 role: "Accountant",
                 desc: "Manage assigned clients and filings",
-                color: "bg-emerald-100 text-emerald-700",
+                color: "bg-success-light text-success",
                 count: 2,
               },
               {
                 role: "Junior Accountant",
                 desc: "View and edit assigned tasks only",
-                color: "bg-amber-100 text-amber-700",
+                color: "bg-warning-light text-warning",
                 count: 1,
               },
-            ].map((r) => (
-              <div
+            ].map((r, index) => (
+              <motion.div
                 key={r.role}
-                className="flex items-start justify-between gap-4 rounded-lg border border-[#DDEAE6] bg-white p-3.5"
+                initial={
+                  shouldReduceMotion ? false : { opacity: 0, x: -8 }
+                }
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  delay: shouldReduceMotion ? 0 : index * 0.06,
+                  duration: 0.45,
+                  ease: premiumEase,
+                }}
+                className="
+                  flex
+                  items-start
+                  justify-between
+                  gap-4
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  p-3.5
+                  transition-colors
+                  hover:bg-background-soft
+                "
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -808,69 +1093,191 @@ const AccountantSettings = () => {
                     >
                       {r.role}
                     </span>
-                    <span className="text-[11px] text-[#687B78]">
+                    <span className="text-[11px] text-text-secondary">
                       {r.count} {r.count === 1 ? "member" : "members"}
                     </span>
                   </div>
-                  <p className="mt-1.5 text-xs text-[#687B78]">{r.desc}</p>
+                  <p className="mt-1.5 text-xs text-text-secondary">
+                    {r.desc}
+                  </p>
                 </div>
-                <button className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]">
+                <motion.button
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : { scale: 1.1, transition: { duration: 0.15 } }
+                  }
+                  whileTap={
+                    shouldReduceMotion ? undefined : { scale: 0.95 }
+                  }
+                  className="
+                    flex
+                    h-8
+                    w-8
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-lg
+                    text-text-secondary
+                    transition-colors
+                    hover:bg-primary-light
+                    hover:text-primary
+                  "
+                >
                   <Edit3 className="h-3.5 w-3.5" strokeWidth={2.4} />
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             ))}
           </div>
         </SectionCard>
-      </div>
+      </motion.div>
     );
   };
 
   const renderBillingTab = () => (
-    <div className="space-y-5">
+    <motion.div
+      key="billing"
+      variants={tabContentVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="space-y-5"
+    >
       <SectionCard
         title="Current plan"
         description="Your practice subscription"
         icon={Crown}
       >
-        <div className="rounded-xl border border-[#DDEAE6] bg-gradient-to-br from-[#E8F8F2] via-white to-[#E8F8F2] p-5">
+        <div
+          className="
+            rounded-xl
+            border
+            border-primary/20
+            bg-gradient-to-br
+            from-primary-light
+            via-background
+            to-primary-light
+            p-5
+          "
+        >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#087F5B]">
-                <Crown className="h-6 w-6 text-white" strokeWidth={2} />
-              </div>
+              <motion.div
+                initial={
+                  shouldReduceMotion
+                    ? false
+                    : { opacity: 0, scale: 0.6, rotate: -12 }
+                }
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{
+                  duration: 0.5,
+                  ease: [0.34, 1.56, 0.64, 1],
+                }}
+                className="
+                  flex
+                  h-12
+                  w-12
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-primary
+                  shadow-button
+                "
+              >
+                <Crown className="h-6 w-6 text-text-white" strokeWidth={2} />
+              </motion.div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-lg font-bold text-[#09263A]">
+                  <h3 className="text-lg font-bold text-heading">
                     Practice Pro
                   </h3>
-                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-700">
+                  <span
+                    className="
+                      rounded-full
+                      bg-success-light
+                      px-2
+                      py-0.5
+                      text-[9px]
+                      font-bold
+                      uppercase
+                      tracking-wider
+                      text-success
+                    "
+                  >
                     Active
                   </span>
                 </div>
                 <p className="mt-1">
-                  <span className="text-2xl font-bold text-[#09263A]">
+                  <span className="text-2xl font-bold text-heading">
                     £149
                   </span>
-                  <span className="text-xs text-[#687B78]">/month</span>
+                  <span className="text-xs text-text-secondary">/month</span>
                 </p>
-                <p className="mt-1 text-[11px] text-[#687B78]">
+                <p className="mt-1 text-[11px] text-text-secondary">
                   Next billing: 15 October 2026
                 </p>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <button className="inline-flex items-center gap-2 rounded-lg bg-[#087F5B] px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-[#005E45]">
+              <motion.button
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -1, transition: { duration: 0.2 } }
+                }
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-lg
+                  bg-primary
+                  px-4
+                  py-2.5
+                  text-xs
+                  font-bold
+                  text-text-white
+                  shadow-button
+                  transition-colors
+                  hover:bg-primary-hover
+                "
+              >
                 <Zap className="h-3.5 w-3.5" strokeWidth={2.6} />
                 Upgrade plan
-              </button>
-              <button className="inline-flex items-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-4 py-2.5 text-xs font-semibold text-[#09263A] transition-all hover:border-[#087F5B] hover:text-[#087F5B]">
+              </motion.button>
+              <motion.button
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -1, transition: { duration: 0.2 } }
+                }
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-lg
+                  border
+                  border-border
+                  bg-background
+                  px-4
+                  py-2.5
+                  text-xs
+                  font-semibold
+                  text-heading
+                  transition-colors
+                  hover:border-primary
+                  hover:text-primary
+                "
+              >
                 Manage
-              </button>
+              </motion.button>
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-3 border-t border-[#DDEAE6] pt-5 sm:grid-cols-4">
+          <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border pt-5 sm:grid-cols-4">
             {[
               { label: "Clients", used: 42, limit: "Unlimited" },
               { label: "Companies", used: 68, limit: "Unlimited" },
@@ -878,13 +1285,15 @@ const AccountantSettings = () => {
               { label: "Filings/mo", used: 48, limit: "Unlimited" },
             ].map((stat) => (
               <div key={stat.label}>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#687B78]">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
                   {stat.label}
                 </p>
-                <p className="mt-1 text-sm font-bold text-[#09263A]">
+                <p className="mt-1 text-sm font-bold text-heading">
                   {stat.used}
                 </p>
-                <p className="text-[10px] text-[#687B78]">of {stat.limit}</p>
+                <p className="text-[10px] text-text-secondary">
+                  of {stat.limit}
+                </p>
               </div>
             ))}
           </div>
@@ -892,26 +1301,74 @@ const AccountantSettings = () => {
       </SectionCard>
 
       <SectionCard title="Payment method" icon={CreditCard}>
-        <div className="flex items-center justify-between gap-4 rounded-lg border border-[#DDEAE6] bg-white p-4">
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            gap-4
+            rounded-lg
+            border
+            border-border
+            bg-background
+            p-4
+          "
+        >
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-16 items-center justify-center rounded-lg border border-[#DDEAE6] bg-white">
-              <span className="font-bold text-sm tracking-wider text-[#1A1F71]">
+            <div
+              className="
+                flex
+                h-12
+                w-16
+                items-center
+                justify-center
+                rounded-lg
+                border
+                border-border
+                bg-background
+              "
+            >
+              <span className="font-bold text-sm tracking-wider text-heading">
                 VISA
               </span>
             </div>
             <div>
-              <p className="text-sm font-bold text-[#09263A]">
+              <p className="text-sm font-bold text-heading">
                 •••• •••• •••• 4242
               </p>
-              <p className="mt-0.5 text-[11px] text-[#687B78]">
+              <p className="mt-0.5 text-[11px] text-text-secondary">
                 Expires 12/2027
               </p>
             </div>
           </div>
-          <button className="inline-flex items-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-3.5 py-2 text-xs font-semibold text-[#09263A] transition-all hover:border-[#087F5B] hover:text-[#087F5B]">
+          <motion.button
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+            className="
+              inline-flex
+              items-center
+              gap-2
+              rounded-lg
+              border
+              border-border
+              bg-background
+              px-3.5
+              py-2
+              text-xs
+              font-semibold
+              text-heading
+              transition-colors
+              hover:border-primary
+              hover:text-primary
+            "
+          >
             <Edit3 className="h-3.5 w-3.5" strokeWidth={2.4} />
             Edit
-          </button>
+          </motion.button>
         </div>
       </SectionCard>
 
@@ -939,19 +1396,26 @@ const AccountantSettings = () => {
           />
         </div>
       </SectionCard>
-    </div>
+    </motion.div>
   );
 
   const renderSecurityTab = () => (
-    <div className="space-y-5">
+    <motion.div
+      key="security"
+      variants={tabContentVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="space-y-5"
+    >
       <SectionCard
         title="Change password"
         description="Update your account password"
         icon={Lock}
       >
         <div className="space-y-4">
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-[#09263A]">
+          <motion.div variants={fadeUpVariants}>
+            <label className="mb-1.5 block text-xs font-semibold text-heading">
               Current password
             </label>
             <div className="relative">
@@ -962,38 +1426,54 @@ const AccountantSettings = () => {
                   w-full
                   rounded-lg
                   border
-                  border-[#DDEAE6]
-                  bg-white
+                  border-border
+                  bg-background
                   px-4
                   py-2.5
                   pr-10
                   text-sm
-                  text-[#09263A]
+                  text-heading
                   outline-none
                   transition-all
                   duration-200
-                  placeholder:text-[#687B78]
-                  focus:border-[#087F5B]
+                  placeholder:text-text-secondary
+                  focus:border-primary
                   focus:ring-2
-                  focus:ring-[#087F5B]/10
+                  focus:ring-primary/10
                 "
               />
-              <button
+              <motion.button
                 type="button"
                 onClick={() => setShowCurrentPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#687B78] transition-colors hover:text-[#087F5B]"
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { scale: 1.1, transition: { duration: 0.15 } }
+                }
+                whileTap={
+                  shouldReduceMotion ? undefined : { scale: 0.95 }
+                }
+                className="
+                  absolute
+                  right-3
+                  top-1/2
+                  -translate-y-1/2
+                  text-text-secondary
+                  transition-colors
+                  hover:text-primary
+                "
               >
                 {showCurrentPassword ? (
                   <EyeOff className="h-4 w-4" strokeWidth={2.2} />
                 ) : (
                   <Eye className="h-4 w-4" strokeWidth={2.2} />
                 )}
-              </button>
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
 
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-[#09263A]">
+          <motion.div variants={fadeUpVariants}>
+            <label className="mb-1.5 block text-xs font-semibold text-heading">
               New password
             </label>
             <div className="relative">
@@ -1004,41 +1484,57 @@ const AccountantSettings = () => {
                   w-full
                   rounded-lg
                   border
-                  border-[#DDEAE6]
-                  bg-white
+                  border-border
+                  bg-background
                   px-4
                   py-2.5
                   pr-10
                   text-sm
-                  text-[#09263A]
+                  text-heading
                   outline-none
                   transition-all
                   duration-200
-                  placeholder:text-[#687B78]
-                  focus:border-[#087F5B]
+                  placeholder:text-text-secondary
+                  focus:border-primary
                   focus:ring-2
-                  focus:ring-[#087F5B]/10
+                  focus:ring-primary/10
                 "
               />
-              <button
+              <motion.button
                 type="button"
                 onClick={() => setShowNewPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#687B78] transition-colors hover:text-[#087F5B]"
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { scale: 1.1, transition: { duration: 0.15 } }
+                }
+                whileTap={
+                  shouldReduceMotion ? undefined : { scale: 0.95 }
+                }
+                className="
+                  absolute
+                  right-3
+                  top-1/2
+                  -translate-y-1/2
+                  text-text-secondary
+                  transition-colors
+                  hover:text-primary
+                "
               >
                 {showNewPassword ? (
                   <EyeOff className="h-4 w-4" strokeWidth={2.2} />
                 ) : (
                   <Eye className="h-4 w-4" strokeWidth={2.2} />
                 )}
-              </button>
+              </motion.button>
             </div>
-            <p className="mt-1.5 text-[11px] text-[#687B78]">
+            <p className="mt-1.5 text-[11px] text-text-secondary">
               Minimum 8 characters with a mix of letters, numbers and symbols.
             </p>
-          </div>
+          </motion.div>
 
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-[#09263A]">
+          <motion.div variants={fadeUpVariants}>
+            <label className="mb-1.5 block text-xs font-semibold text-heading">
               Confirm new password
             </label>
             <input
@@ -1048,27 +1544,50 @@ const AccountantSettings = () => {
                 w-full
                 rounded-lg
                 border
-                border-[#DDEAE6]
-                bg-white
+                border-border
+                bg-background
                 px-4
                 py-2.5
                 text-sm
-                text-[#09263A]
+                text-heading
                 outline-none
                 transition-all
                 duration-200
-                placeholder:text-[#687B78]
-                focus:border-[#087F5B]
+                placeholder:text-text-secondary
+                focus:border-primary
                 focus:ring-2
-                focus:ring-[#087F5B]/10
+                focus:ring-primary/10
               "
             />
-          </div>
+          </motion.div>
 
-          <button className="inline-flex items-center gap-2 rounded-lg bg-[#087F5B] px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-[#005E45]">
+          <motion.button
+            variants={fadeUpVariants}
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+            className="
+              inline-flex
+              items-center
+              gap-2
+              rounded-lg
+              bg-primary
+              px-4
+              py-2.5
+              text-xs
+              font-bold
+              text-text-white
+              shadow-button
+              transition-colors
+              hover:bg-primary-hover
+            "
+          >
             <Lock className="h-3.5 w-3.5" strokeWidth={2.4} />
             Update password
-          </button>
+          </motion.button>
         </div>
       </SectionCard>
 
@@ -1077,29 +1596,61 @@ const AccountantSettings = () => {
         description="Add an extra layer of security to your account"
         icon={Shield}
       >
-        <div className="rounded-lg border border-[#DDEAE6] bg-[#F5FCF9] p-4">
+        <div
+          className="
+            rounded-lg
+            border
+            border-border
+            bg-background-soft
+            p-4
+          "
+        >
           <div className="flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#E8F8F2]">
-              <Shield className="h-5 w-5 text-[#087F5B]" strokeWidth={2.2} />
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-light">
+              <Shield className="h-5 w-5 text-primary" strokeWidth={2.2} />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-bold text-[#09263A]">
+                  <p className="text-sm font-bold text-heading">
                     Authenticator app
                   </p>
-                  <p className="mt-0.5 text-xs text-[#687B78]">
+                  <p className="mt-0.5 text-xs text-text-secondary">
                     Use an app like Google Authenticator or Authy
                   </p>
                 </div>
                 <Toggle field="twoFactorAuth" />
               </div>
-              {formData.twoFactorAuth && (
-                <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-700">
-                  <Check className="h-3 w-3" strokeWidth={3} />
-                  Enabled
-                </div>
-              )}
+              <AnimatePresence>
+                {formData.twoFactorAuth && (
+                  <motion.div
+                    initial={
+                      shouldReduceMotion
+                        ? false
+                        : { opacity: 0, scale: 0.9 }
+                    }
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.25, ease: premiumEase }}
+                    className="
+                      mt-3
+                      inline-flex
+                      items-center
+                      gap-1.5
+                      rounded-full
+                      bg-success-light
+                      px-2.5
+                      py-1
+                      text-[10px]
+                      font-bold
+                      text-success
+                    "
+                  >
+                    <Check className="h-3 w-3" strokeWidth={3} />
+                    Enabled
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -1124,29 +1675,54 @@ const AccountantSettings = () => {
         description="Irreversible and destructive actions"
         icon={AlertCircle}
       >
-        <div className="rounded-xl border border-rose-200 bg-rose-50 p-4">
+        <div className="rounded-xl border border-danger/20 bg-danger-light p-4">
           <div className="flex items-start gap-3">
             <AlertCircle
-              className="mt-0.5 h-4 w-4 shrink-0 text-rose-600"
+              className="mt-0.5 h-4 w-4 shrink-0 text-danger"
               strokeWidth={2.2}
             />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-[#09263A]">
+              <p className="text-sm font-bold text-heading">
                 Delete account
               </p>
-              <p className="mt-1 text-xs leading-5 text-[#687B78]">
+              <p className="mt-1 text-xs leading-5 text-text-secondary">
                 This will permanently delete your account, all client data,
                 filings and team memberships. This action cannot be undone.
               </p>
-              <button className="mt-4 inline-flex items-center gap-2 rounded-lg border border-rose-300 bg-white px-4 py-2 text-xs font-bold text-rose-600 transition-all hover:bg-rose-600 hover:text-white">
+              <motion.button
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -1, transition: { duration: 0.2 } }
+                }
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                className="
+                  mt-4
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-lg
+                  border
+                  border-danger/30
+                  bg-background
+                  px-4
+                  py-2
+                  text-xs
+                  font-bold
+                  text-danger
+                  transition-colors
+                  hover:bg-danger
+                  hover:text-text-white
+                "
+              >
                 <Trash2 className="h-3.5 w-3.5" strokeWidth={2.4} />
                 Delete account
-              </button>
+              </motion.button>
             </div>
           </div>
         </div>
       </SectionCard>
-    </div>
+    </motion.div>
   );
 
   const renderIntegrationsTab = () => {
@@ -1155,58 +1731,94 @@ const AccountantSettings = () => {
         name: "Xero",
         description: "Sync accounting data, invoices and bank transactions",
         connected: true,
-        color: "bg-[#13B5EA]",
+        color: "bg-sky",
         initial: "X",
       },
       {
         name: "QuickBooks",
         description: "Import transactions and reconcile accounts",
         connected: false,
-        color: "bg-[#2CA01C]",
+        color: "bg-success",
         initial: "Q",
       },
       {
         name: "Companies House",
         description: "Auto-sync company details and filing history",
         connected: true,
-        color: "bg-[#00539F]",
+        color: "bg-primary",
         initial: "CH",
       },
       {
         name: "HMRC MTD",
         description: "Submit VAT returns and CT600 directly to HMRC",
         connected: true,
-        color: "bg-[#087F5B]",
+        color: "bg-primary",
         initial: "H",
       },
       {
         name: "Stripe",
         description: "Accept payments from clients directly",
         connected: false,
-        color: "bg-[#635BFF]",
+        color: "bg-secondary",
         initial: "S",
       },
       {
         name: "Slack",
         description: "Get filing reminders in your team channels",
         connected: false,
-        color: "bg-[#4A154B]",
+        color: "bg-secondary",
         initial: "SL",
       },
     ];
 
     return (
-      <div className="space-y-5">
+      <motion.div
+        key="integrations"
+        variants={tabContentVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className="space-y-5"
+      >
         <SectionCard
           title="Connected apps"
           description="Integrate TaxPilot with your favourite tools"
           icon={Zap}
         >
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {integrations.map((integration) => (
-              <div
+            {integrations.map((integration, index) => (
+              <motion.div
                 key={integration.name}
-                className="flex flex-col gap-3 rounded-xl border border-[#DDEAE6] bg-white p-4 transition-all hover:border-[#087F5B]/30 hover:shadow-sm"
+                initial={
+                  shouldReduceMotion
+                    ? false
+                    : { opacity: 0, y: 12, scale: 0.96 }
+                }
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{
+                  delay: shouldReduceMotion ? 0 : index * 0.06,
+                  duration: 0.5,
+                  ease: premiumEase,
+                }}
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : { y: -3, transition: { duration: 0.25 } }
+                }
+                className="
+                  flex
+                  flex-col
+                  gap-3
+                  rounded-xl
+                  border
+                  border-border
+                  bg-background
+                  p-4
+                  transition-[border-color,box-shadow]
+                  duration-200
+                  hover:border-primary/30
+                  hover:shadow-card
+                "
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
@@ -1221,23 +1833,36 @@ const AccountantSettings = () => {
                         rounded-lg
                         text-xs
                         font-bold
-                        text-white
+                        text-text-white
+                        shadow-button
                         ${integration.color}
                       `}
                     >
                       {integration.initial}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-[#09263A]">
+                      <p className="text-sm font-bold text-heading">
                         {integration.name}
                       </p>
                       {integration.connected ? (
-                        <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                        <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-bold text-success">
+                          <motion.span
+                            className="h-1.5 w-1.5 rounded-full bg-success"
+                            animate={
+                              shouldReduceMotion
+                                ? undefined
+                                : { scale: [1, 1.2, 1] }
+                            }
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                          />
                           Connected
                         </span>
                       ) : (
-                        <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-bold text-[#687B78]">
+                        <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-bold text-text-secondary">
                           Not connected
                         </span>
                       )}
@@ -1245,17 +1870,35 @@ const AccountantSettings = () => {
                   </div>
                 </div>
 
-                <p className="text-[11px] leading-5 text-[#687B78]">
+                <p className="text-[11px] leading-5 text-text-secondary">
                   {integration.description}
                 </p>
 
-                <button
+                <motion.button
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : { y: -1, transition: { duration: 0.2 } }
+                  }
+                  whileTap={
+                    shouldReduceMotion ? undefined : { scale: 0.98 }
+                  }
                   className={`
-                    mt-auto inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all
+                    mt-auto
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-lg
+                    px-3.5
+                    py-2
+                    text-xs
+                    font-bold
+                    transition-colors
                     ${
                       integration.connected
-                        ? "border border-[#DDEAE6] bg-white text-[#09263A] hover:border-rose-300 hover:text-rose-600"
-                        : "bg-[#087F5B] text-white hover:bg-[#005E45]"
+                        ? "border border-border bg-background text-heading hover:border-danger/30 hover:text-danger"
+                        : "bg-primary text-text-white shadow-button hover:bg-primary-hover"
                     }
                   `}
                 >
@@ -1267,73 +1910,197 @@ const AccountantSettings = () => {
                       Connect
                     </>
                   )}
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             ))}
           </div>
         </SectionCard>
-      </div>
+      </motion.div>
     );
   };
 
   const renderApiTab = () => (
-    <div className="space-y-5">
-      <div className="rounded-xl border border-[#C9EDE1] bg-[#E8F8F2] p-4">
+    <motion.div
+      key="api"
+      variants={tabContentVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="space-y-5"
+    >
+      <motion.div
+        variants={fadeUpVariants}
+        className="
+          rounded-xl
+          border
+          border-primary/20
+          bg-primary-light
+          p-4
+        "
+      >
         <div className="flex items-start gap-3">
-          <Key className="mt-0.5 h-4 w-4 shrink-0 text-[#087F5B]" strokeWidth={2.2} />
+          <Key
+            className="mt-0.5 h-4 w-4 shrink-0 text-primary"
+            strokeWidth={2.2}
+          />
           <div>
-            <p className="text-xs font-bold text-[#09263A]">API access</p>
-            <p className="mt-1 text-[11px] leading-5 text-[#687B78]">
+            <p className="text-xs font-bold text-heading">API access</p>
+            <p className="mt-1 text-[11px] leading-5 text-text-secondary">
               Use these keys to integrate TaxPilot UK with your own tools and
               services. Keep them secure and never share them publicly.
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <SectionCard title="Live API key" icon={Key}>
-        <div className="rounded-lg border border-[#DDEAE6] bg-[#F5FCF9] p-4">
+        <div
+          className="
+            rounded-lg
+            border
+            border-border
+            bg-background-soft
+            p-4
+          "
+        >
           <div className="flex items-center gap-2">
-            <code className="min-w-0 flex-1 truncate rounded-lg bg-white px-3 py-2 font-mono text-xs text-[#09263A]">
+            <code
+              className="
+                min-w-0
+                flex-1
+                truncate
+                rounded-lg
+                bg-background
+                px-3
+                py-2
+                font-mono
+                text-xs
+                text-heading
+              "
+            >
               {showApiKey
                 ? "tp_live_abc123def456ghi789jkl012"
                 : "tp_live_••••••••••••••••••••••••"}
             </code>
-            <button
+            <motion.button
               type="button"
               onClick={() => setShowApiKey((prev) => !prev)}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]"
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { scale: 1.1, transition: { duration: 0.15 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
+              className="
+                flex
+                h-9
+                w-9
+                shrink-0
+                items-center
+                justify-center
+                rounded-lg
+                text-text-secondary
+                transition-colors
+                hover:bg-primary-light
+                hover:text-primary
+              "
             >
               {showApiKey ? (
                 <EyeOff className="h-4 w-4" strokeWidth={2.2} />
               ) : (
                 <Eye className="h-4 w-4" strokeWidth={2.2} />
               )}
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               onClick={() =>
                 handleCopy("tp_live_abc123def456ghi789jkl012")
               }
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#687B78] transition-colors hover:bg-[#E8F8F2] hover:text-[#087F5B]"
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : { scale: 1.1, transition: { duration: 0.15 } }
+              }
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
+              className="
+                flex
+                h-9
+                w-9
+                shrink-0
+                items-center
+                justify-center
+                rounded-lg
+                text-text-secondary
+                transition-colors
+                hover:bg-primary-light
+                hover:text-primary
+              "
             >
               <Copy className="h-4 w-4" strokeWidth={2.2} />
-            </button>
+            </motion.button>
           </div>
-          <p className="mt-3 text-[11px] text-[#687B78]">
+          <p className="mt-3 text-[11px] text-text-secondary">
             Created 15 Aug 2026 · Last used 2 hours ago
           </p>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <button className="inline-flex items-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-4 py-2.5 text-xs font-semibold text-[#09263A] transition-all hover:border-[#087F5B] hover:text-[#087F5B]">
+          <motion.button
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+            className="
+              inline-flex
+              items-center
+              gap-2
+              rounded-lg
+              border
+              border-border
+              bg-background
+              px-4
+              py-2.5
+              text-xs
+              font-semibold
+              text-heading
+              transition-colors
+              hover:border-primary
+              hover:text-primary
+            "
+          >
             <RefreshCw className="h-3.5 w-3.5" strokeWidth={2.4} />
             Regenerate key
-          </button>
-          <button className="inline-flex items-center gap-2 rounded-lg border border-[#DDEAE6] bg-white px-4 py-2.5 text-xs font-semibold text-[#09263A] transition-all hover:border-[#087F5B] hover:text-[#087F5B]">
+          </motion.button>
+          <motion.button
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+            className="
+              inline-flex
+              items-center
+              gap-2
+              rounded-lg
+              border
+              border-border
+              bg-background
+              px-4
+              py-2.5
+              text-xs
+              font-semibold
+              text-heading
+              transition-colors
+              hover:border-primary
+              hover:text-primary
+            "
+          >
             <Download className="h-3.5 w-3.5" strokeWidth={2.4} />
             Download docs
-          </button>
+          </motion.button>
         </div>
       </SectionCard>
 
@@ -1342,24 +2109,70 @@ const AccountantSettings = () => {
         description="Get notified when events happen in TaxPilot"
         icon={Webhook}
       >
-        <div className="rounded-lg border border-dashed border-[#DDEAE6] bg-[#F5FCF9] px-5 py-8 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F8F2] text-[#087F5B]">
+        <div
+          className="
+            rounded-lg
+            border-2
+            border-dashed
+            border-border
+            bg-background-soft
+            px-5
+            py-8
+            text-center
+          "
+        >
+          <div
+            className="
+              mx-auto
+              flex
+              h-12
+              w-12
+              items-center
+              justify-center
+              rounded-2xl
+              bg-primary-light
+              text-primary
+            "
+          >
             <Webhook className="h-5 w-5" strokeWidth={2.2} />
           </div>
-          <p className="mt-3 text-sm font-bold text-[#09263A]">
+          <p className="mt-3 text-sm font-bold text-heading">
             No webhooks configured
           </p>
-          <p className="mt-1 text-xs text-[#687B78]">
+          <p className="mt-1 text-xs text-text-secondary">
             Receive HTTP POST requests when filings are submitted, clients
             added or deadlines approach.
           </p>
-          <button className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#087F5B] px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-[#005E45]">
+          <motion.button
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : { y: -1, transition: { duration: 0.2 } }
+            }
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+            className="
+              mt-4
+              inline-flex
+              items-center
+              gap-2
+              rounded-lg
+              bg-primary
+              px-4
+              py-2.5
+              text-xs
+              font-bold
+              text-text-white
+              shadow-button
+              transition-colors
+              hover:bg-primary-hover
+            "
+          >
             <Plus className="h-3.5 w-3.5" strokeWidth={2.6} />
             Add webhook
-          </button>
+          </motion.button>
         </div>
       </SectionCard>
-    </div>
+    </motion.div>
   );
 
   const renderTabContent = () => {
@@ -1390,50 +2203,74 @@ const AccountantSettings = () => {
   ============================================================ */
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* ======================================================
           PAGE HEADER
       ====================================================== */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <motion.div
+        variants={fadeUpVariants}
+        className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+      >
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#09263A] sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-heading sm:text-3xl">
             Settings
           </h1>
-          <p className="mt-1 text-sm text-[#687B78]">
+          <p className="mt-1 text-sm text-text-secondary">
             Manage your account, practice and preferences
           </p>
         </div>
 
         {/* Save button - desktop */}
-        <button
+        <motion.button
           type="button"
           onClick={handleSave}
           disabled={isSaving}
+          whileHover={
+            shouldReduceMotion || isSaving
+              ? undefined
+              : { y: -1, transition: { duration: 0.2 } }
+          }
+          whileTap={
+            shouldReduceMotion || isSaving ? undefined : { scale: 0.98 }
+          }
           className="
             hidden
             items-center
             justify-center
             gap-2
             rounded-lg
-            bg-[#087F5B]
+            bg-primary
             px-5
             py-2.5
             text-sm
             font-semibold
-            text-white
-            shadow-sm
-            transition-all
+            text-text-white
+            shadow-button
+            transition-colors
             duration-200
-            hover:bg-[#005E45]
-            hover:-translate-y-0.5
-            hover:shadow-md
+            hover:bg-primary-hover
             disabled:opacity-60
             sm:inline-flex
           "
         >
           {isSaving ? (
             <>
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              <span
+                className="
+                  h-3.5
+                  w-3.5
+                  animate-spin
+                  rounded-full
+                  border-2
+                  border-text-white/30
+                  border-t-text-white
+                "
+              />
               <span>Saving...</span>
             </>
           ) : (
@@ -1442,16 +2279,45 @@ const AccountantSettings = () => {
               <span>Save changes</span>
             </>
           )}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {/* Success message */}
-      {savedMessage && (
-        <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-semibold text-emerald-700">
-          <CheckCircle2 className="h-4 w-4" strokeWidth={2.4} />
-          <span>{savedMessage}</span>
-        </div>
-      )}
+      <AnimatePresence>
+        {savedMessage && (
+          <motion.div
+            initial={
+              shouldReduceMotion
+                ? false
+                : { opacity: 0, y: -8, scale: 0.98 }
+            }
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={
+              shouldReduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, y: -6, scale: 0.98 }
+            }
+            transition={{ duration: 0.28, ease: premiumEase }}
+            className="
+              flex
+              items-center
+              gap-2
+              rounded-lg
+              border
+              border-success/20
+              bg-success-light
+              px-4
+              py-3
+              text-xs
+              font-semibold
+              text-success
+            "
+          >
+            <CheckCircle2 className="h-4 w-4" strokeWidth={2.4} />
+            <span>{savedMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ======================================================
           LAYOUT
@@ -1468,10 +2334,13 @@ const AccountantSettings = () => {
               const isActive = activeTab === tab.id;
 
               return (
-                <button
+                <motion.button
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
+                  whileTap={
+                    shouldReduceMotion ? undefined : { scale: 0.97 }
+                  }
                   className={`
                     flex
                     shrink-0
@@ -1483,33 +2352,53 @@ const AccountantSettings = () => {
                     py-2
                     text-xs
                     font-semibold
-                    transition-all
+                    transition-colors
                     ${
                       isActive
-                        ? "border-[#087F5B] bg-[#087F5B] text-white"
-                        : "border-[#DDEAE6] bg-white text-[#09263A] hover:border-[#087F5B] hover:text-[#087F5B]"
+                        ? "border-primary bg-primary text-text-white shadow-button"
+                        : "border-border bg-background text-heading hover:border-primary hover:text-primary"
                     }
                   `}
                 >
                   <Icon className="h-3.5 w-3.5" strokeWidth={2.2} />
                   <span>{tab.label}</span>
-                </button>
+                </motion.button>
               );
             })}
           </div>
 
           {/* Desktop: vertical list */}
-          <div className="hidden overflow-hidden rounded-xl border border-[#DDEAE6] bg-white shadow-[0_3px_14px_rgba(16,42,67,0.035)] lg:block">
+          <motion.div
+            variants={cardVariants}
+            className="
+              hidden
+              overflow-hidden
+              rounded-xl
+              border
+              border-border
+              bg-background
+              shadow-card
+              lg:block
+            "
+          >
             <div className="p-2">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
 
                 return (
-                  <button
+                  <motion.button
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
+                    whileHover={
+                      shouldReduceMotion
+                        ? undefined
+                        : { x: 2, transition: { duration: 0.2 } }
+                    }
+                    whileTap={
+                      shouldReduceMotion ? undefined : { scale: 0.98 }
+                    }
                     className={`
                       group
                       flex
@@ -1522,12 +2411,12 @@ const AccountantSettings = () => {
                       text-left
                       text-sm
                       font-medium
-                      transition-all
+                      transition-colors
                       duration-200
                       ${
                         isActive
-                          ? "bg-[#087F5B] text-white shadow-sm"
-                          : "text-[#09263A] hover:bg-[#E8F8F2] hover:text-[#087F5B]"
+                          ? "bg-primary text-text-white shadow-button"
+                          : "text-heading hover:bg-primary-light hover:text-primary"
                       }
                     `}
                   >
@@ -1536,8 +2425,8 @@ const AccountantSettings = () => {
                         h-4 w-4 shrink-0
                         ${
                           isActive
-                            ? "text-white"
-                            : "text-[#687B78] group-hover:text-[#087F5B]"
+                            ? "text-text-white"
+                            : "text-text-secondary group-hover:text-primary"
                         }
                       `}
                       strokeWidth={2.2}
@@ -1548,31 +2437,36 @@ const AccountantSettings = () => {
                         ml-auto h-3.5 w-3.5 shrink-0 transition-all
                         ${
                           isActive
-                            ? "text-white"
-                            : "text-[#687B78] opacity-0 group-hover:opacity-100 group-hover:text-[#087F5B]"
+                            ? "text-text-white"
+                            : "text-text-secondary opacity-0 group-hover:opacity-100 group-hover:text-primary"
                         }
                       `}
                       strokeWidth={2.4}
                     />
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
-          </div>
+          </motion.div>
         </aside>
 
         {/* ==================================================
             TAB CONTENT
         ================================================== */}
-        <div>{renderTabContent()}</div>
+        <div>
+          <AnimatePresence mode="wait">{renderTabContent()}</AnimatePresence>
+        </div>
       </div>
 
       {/* Mobile save button */}
       <div className="flex sm:hidden">
-        <button
+        <motion.button
           type="button"
           onClick={handleSave}
           disabled={isSaving}
+          whileTap={
+            shouldReduceMotion || isSaving ? undefined : { scale: 0.98 }
+          }
           className="
             flex
             w-full
@@ -1580,22 +2474,32 @@ const AccountantSettings = () => {
             justify-center
             gap-2
             rounded-lg
-            bg-[#087F5B]
+            bg-primary
             px-5
             py-3
             text-sm
             font-semibold
-            text-white
-            shadow-sm
-            transition-all
+            text-text-white
+            shadow-button
+            transition-colors
             duration-200
-            hover:bg-[#005E45]
+            hover:bg-primary-hover
             disabled:opacity-60
           "
         >
           {isSaving ? (
             <>
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              <span
+                className="
+                  h-3.5
+                  w-3.5
+                  animate-spin
+                  rounded-full
+                  border-2
+                  border-text-white/30
+                  border-t-text-white
+                "
+              />
               <span>Saving...</span>
             </>
           ) : (
@@ -1604,9 +2508,9 @@ const AccountantSettings = () => {
               <span>Save changes</span>
             </>
           )}
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

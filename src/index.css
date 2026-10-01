@@ -652,10 +652,6 @@ a {
     
 }
 
-.text-primary:hover {
-    color: var(--txt-white);
-    ;
-}
 
 .text-accent {
     color: var(--accent);
