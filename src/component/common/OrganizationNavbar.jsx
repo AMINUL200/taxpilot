@@ -12,6 +12,7 @@ import {
   FileCheck2,
   Percent,
 } from "lucide-react";
+import useAuthStore from "../../stores/authStore";
 
 const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
   const navigate = useNavigate();
@@ -47,6 +48,59 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
   ]);
 
   const dropdownRefs = useRef({});
+
+  /* =========================================================
+     REAL AUTH STORE — USER DATA
+  ========================================================= */
+
+  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
+  const userType = useAuthStore((s) => s.userType);
+
+  /* =========================================================
+     DERIVED USER INFO
+  ========================================================= */
+
+  const getInitials = () => {
+    const first = user?.first_name || user?.firstName || "";
+    const last = user?.last_name || user?.lastName || "";
+
+    if (first && last) return (first[0] + last[0]).toUpperCase();
+    if (first) return first.slice(0, 2).toUpperCase();
+    if (user?.name) {
+      const parts = user.name.trim().split(" ");
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+    if (user?.email) return user.email.slice(0, 2).toUpperCase();
+    return "U";
+  };
+
+  const getDisplayName = () => {
+    if (user?.first_name && user?.last_name) {
+      return `${user.first_name} ${user.last_name}`;
+    }
+    if (user?.firstName && user?.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    if (user?.name) return user.name;
+    if (user?.email) return user.email.split("@")[0];
+    return "User";
+  };
+
+  const getRoleLabel = () => {
+    if (userType === "organization_owner") return "Administrator";
+    if (userType === "organization_user") return "Team Member";
+    if (user?.roles?.[0]?.name) return user.roles[0].name;
+    return "Administrator";
+  };
+
+  const userInitials = getInitials();
+  const userDisplayName = getDisplayName();
+  const userEmail = user?.email || "";
+  const userRole = getRoleLabel();
 
   // =========================================================
   // NAVIGATION LINKS
@@ -84,17 +138,6 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
       icon: Percent,
     },
   ];
-
-  // =========================================================
-  // DUMMY DATA
-  // =========================================================
-
-  const user = {
-    firstName: "John",
-    lastName: "Smith",
-    email: "john@abctrading.co.uk",
-    initials: "JS",
-  };
 
   // =========================================================
   // SCROLL EFFECT
@@ -137,14 +180,24 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
     setOpenDropdown((prev) => (prev === id ? null : id));
   };
 
-  const handleLogout = () => {
-    console.log("Logging out...");
-    navigate("/");
+  /* =========================================================
+     LOGOUT — calls the real store logout
+  ========================================================= */
+  const handleLogout = async () => {
+    setOpenDropdown(null);
+
+    try {
+      await logout();
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Even if the API fails, the store is cleared — still redirect
+      navigate("/login", { replace: true });
+    }
   };
 
   const isActivePath = (path) => {
     if (!path) return false;
-    // Exact match for the products root
     return location.pathname === path;
   };
 
@@ -439,16 +492,18 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                 hover:bg-primary-light
               "
             >
+              {/* Avatar — real initials */}
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white">
-                {user.initials}
+                {userInitials}
               </div>
 
+              {/* Name + Role — real data */}
               <div className="hidden text-left lg:block">
-                <p className="text-xs font-bold leading-tight text-heading">
-                  {user.firstName} {user.lastName}
+                <p className="max-w-[140px] truncate text-xs font-bold leading-tight text-heading">
+                  {userDisplayName}
                 </p>
-                <p className="text-[10px] leading-tight text-text-muted">
-                  Administrator
+                <p className="max-w-[140px] truncate text-[10px] leading-tight text-text-muted">
+                  {userRole}
                 </p>
               </div>
 
@@ -484,19 +539,19 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
                   shadow-xl
                 "
               >
-                {/* User info */}
+                {/* User info — real name + email */}
                 <div className="border-b border-border-light px-4 py-4">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
-                      {user.initials}
+                      {userInitials}
                     </div>
 
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-bold text-heading">
-                        {user.firstName} {user.lastName}
+                        {userDisplayName}
                       </p>
                       <p className="truncate text-[11px] text-text-muted">
-                        {user.email}
+                        {userEmail}
                       </p>
                     </div>
                   </div>
@@ -583,7 +638,7 @@ const OrganizationNavbar = ({ onMenuClick, onToggleCollapse, isCollapsed }) => {
       </div>
 
       {/* =================================================
-          MOBILE NAVIGATION LINKS (below header on small screens)
+          MOBILE NAVIGATION LINKS
       ================================================== */}
 
       <div className="border-t border-border-light bg-white md:hidden">

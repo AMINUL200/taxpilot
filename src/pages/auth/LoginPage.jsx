@@ -1,30 +1,60 @@
 import React, { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { useNavigate } from "react-router-dom";
-import { Mail, Lock, LogIn, ArrowLeft } from "lucide-react";
+import {
+  LogIn,
+  ArrowLeft,
+} from "lucide-react";
+
 import CustomInput from "../../component/form/CustomInput";
+import useAuthStore from "../../stores/authStore";
 
 const LoginPage = () => {
+  // ============================================================
+  // FORM STATE
+  // ============================================================
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
   const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+
+  // ============================================================
+  // ZUSTAND AUTH
+  // ============================================================
+
+  const login = useAuthStore((state) => state.login);
+  const isLoading = useAuthStore((state) => state.loading);
+  const storeError = useAuthStore((state) => state.error);
+
+  // ============================================================
+  // ROUTER
+  // ============================================================
 
   const navigate = useNavigate();
+
+  // ============================================================
+  // MOTION
+  // ============================================================
+
   const shouldReduceMotion = useReducedMotion();
+
   const premiumEase = [0.22, 1, 0.36, 1];
 
-  /* ============================================================
-     ANIMATION VARIANTS
-  ============================================================ */
+  // ============================================================
+  // ANIMATION VARIANTS
+  // ============================================================
 
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: {
+      opacity: 0,
+    },
+
     visible: {
       opacity: 1,
+
       transition: {
         staggerChildren: shouldReduceMotion ? 0 : 0.08,
         delayChildren: shouldReduceMotion ? 0 : 0.1,
@@ -33,34 +63,66 @@ const LoginPage = () => {
   };
 
   const itemVariants = {
-    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
+    hidden: shouldReduceMotion
+      ? {
+          opacity: 0,
+        }
+      : {
+          opacity: 0,
+          y: 20,
+        },
+
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: premiumEase },
+
+      transition: {
+        duration: 0.6,
+        ease: premiumEase,
+      },
     },
   };
 
   const cardVariants = {
     hidden: shouldReduceMotion
-      ? { opacity: 0 }
-      : { opacity: 0, y: 32, scale: 0.97 },
+      ? {
+          opacity: 0,
+        }
+      : {
+          opacity: 0,
+          y: 32,
+          scale: 0.97,
+        },
+
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.75, ease: premiumEase, delay: 0.15 },
+
+      transition: {
+        duration: 0.75,
+        ease: premiumEase,
+        delay: 0.15,
+      },
     },
   };
 
   const logoVariants = {
     hidden: shouldReduceMotion
-      ? { opacity: 0 }
-      : { opacity: 0, scale: 0.6, rotate: -12 },
+      ? {
+          opacity: 0,
+        }
+      : {
+          opacity: 0,
+          scale: 0.6,
+          rotate: -12,
+        },
+
     visible: {
       opacity: 1,
       scale: 1,
       rotate: 0,
+
       transition: {
         duration: 0.55,
         ease: [0.34, 1.56, 0.64, 1],
@@ -69,9 +131,9 @@ const LoginPage = () => {
     },
   };
 
-  /* ============================================================
-     HANDLERS
-  ============================================================ */
+  // ============================================================
+  // HANDLE INPUT CHANGE
+  // ============================================================
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,27 +143,40 @@ const LoginPage = () => {
       [name]: value,
     }));
 
+    // Clear field error
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
         [name]: "",
       }));
     }
+
+    // Clear API error from Zustand when user starts typing
+    if (storeError) {
+      useAuthStore.getState().clearError();
+    }
   };
+
+  // ============================================================
+  // VALIDATION
+  // ============================================================
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.email) {
+    // Email
+    if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email is invalid";
     }
 
+    // Password
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+      newErrors.password =
+        "Password must be at least 6 characters";
     }
 
     setErrors(newErrors);
@@ -109,18 +184,93 @@ const LoginPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ============================================================
+  // LOGIN
+  // ============================================================
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      setIsLoading(true);
-
-      setTimeout(() => {
-        console.log("Login data:", formData);
-        setIsLoading(false);
-      }, 1500);
+    // Validate form
+    if (!validateForm()) {
+      return;
     }
+
+    // Clear previous API error
+    useAuthStore.getState().clearError();
+
+    // Call Zustand login
+    const result = await login({
+      email: formData.email.trim(),
+      password: formData.password,
+    });
+
+    // Login failed
+    if (!result.success) {
+      return;
+    }
+
+    // ============================================================
+    // SUPER ADMIN / WEBSITE OWNER
+    // ============================================================
+
+    if (result.userType === "super_admin") {
+      navigate("/admin", {
+        replace: true,
+      });
+
+      return;
+    }
+
+    // ============================================================
+    // ACCOUNTANT
+    // ============================================================
+    // This is already prepared for your future accountant role.
+
+    if (result.userType === "accountant") {
+      navigate("/accountant", {
+        replace: true,
+      });
+
+      return;
+    }
+
+    // ============================================================
+    // ORGANISATION OWNER
+    // ============================================================
+
+    if (result.userType === "organization_owner") {
+      navigate("/organization", {
+        replace: true,
+      });
+
+      return;
+    }
+
+    // ============================================================
+    // ORGANISATION USER / EMPLOYEE
+    // ============================================================
+
+    if (result.userType === "organization_user") {
+      navigate("/organization", {
+        replace: true,
+      });
+
+      return;
+    }
+
+    // ============================================================
+    // UNKNOWN USER
+    // ============================================================
+
+    navigate("/", {
+      replace: true,
+    });
   };
+
+  // ============================================================
+  // RENDER
+  // ============================================================
 
   return (
     <div
@@ -140,10 +290,13 @@ const LoginPage = () => {
         lg:px-8
       "
     >
-      {/* ============================================================
+      {/* ========================================================
           BACKGROUND DECORATION
-      ============================================================ */}
+      ======================================================== */}
+
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Top Right Glow */}
+
         <motion.div
           className="
             absolute
@@ -158,10 +311,20 @@ const LoginPage = () => {
           animate={
             shouldReduceMotion
               ? undefined
-              : { scale: [1, 1.1, 1], opacity: [0.6, 1, 0.6] }
+              : {
+                  scale: [1, 1.1, 1],
+                  opacity: [0.6, 1, 0.6],
+                }
           }
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
         />
+
+        {/* Bottom Left Glow */}
+
         <motion.div
           className="
             absolute
@@ -176,7 +339,10 @@ const LoginPage = () => {
           animate={
             shouldReduceMotion
               ? undefined
-              : { scale: [1, 1.12, 1], opacity: [0.5, 1, 0.5] }
+              : {
+                  scale: [1, 1.12, 1],
+                  opacity: [0.5, 1, 0.5],
+                }
           }
           transition={{
             duration: 9,
@@ -187,17 +353,23 @@ const LoginPage = () => {
         />
       </div>
 
+      {/* ========================================================
+          LOGIN CONTAINER
+      ======================================================== */}
+
       <motion.div
         className="max-w-md w-full relative z-10"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        {/* ============================================================
+        {/* ======================================================
             BACK BUTTON
-        ============================================================ */}
+        ====================================================== */}
+
         <motion.button
           variants={itemVariants}
+          type="button"
           onClick={() => navigate("/")}
           className="
             group
@@ -218,12 +390,16 @@ const LoginPage = () => {
               group-hover:-translate-x-1
             "
           />
-          <span className="font-medium">Back to Home</span>
+
+          <span className="font-medium">
+            Back to Home
+          </span>
         </motion.button>
 
-        {/* ============================================================
+        {/* ======================================================
             LOGIN CARD
-        ============================================================ */}
+        ====================================================== */}
+
         <motion.div
           variants={cardVariants}
           className="
@@ -236,10 +412,13 @@ const LoginPage = () => {
             border-border-light
           "
         >
-          {/* ============================================================
+          {/* ====================================================
               LOGO AND TITLE
-          ============================================================ */}
+          ==================================================== */}
+
           <div className="text-center mb-8">
+            {/* Logo */}
+
             <motion.div
               variants={logoVariants}
               className="flex justify-center mb-4"
@@ -268,14 +447,25 @@ const LoginPage = () => {
                     stroke="white"
                     strokeWidth="3"
                   />
-                  <path d="M16 24L24 14L32 24L24 34L16 24Z" fill="white" />
+
+                  <path
+                    d="M16 24L24 14L32 24L24 34L16 24Z"
+                    fill="white"
+                  />
                 </svg>
               </div>
             </motion.div>
 
+            {/* Heading */}
+
             <motion.h2
               variants={itemVariants}
-              className="text-3xl font-bold text-heading mb-2"
+              className="
+                text-3xl
+                font-bold
+                text-heading
+                mb-2
+              "
             >
               Welcome Back
             </motion.h2>
@@ -284,15 +474,45 @@ const LoginPage = () => {
               variants={itemVariants}
               className="text-text-secondary"
             >
-              Sign in to continue to MySite
+              Sign in to continue to TaxPilot
             </motion.p>
           </div>
 
-          {/* ============================================================
+          {/* ====================================================
+              API ERROR
+          ==================================================== */}
+
+          {storeError && (
+            <motion.div
+              variants={itemVariants}
+              className="
+                mb-5
+                rounded-lg
+                border
+                border-danger/20
+                bg-danger/5
+                px-4
+                py-3
+                text-sm
+                text-danger
+              "
+            >
+              {storeError}
+            </motion.div>
+          )}
+
+          {/* ====================================================
               LOGIN FORM
-          ============================================================ */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
+          ==================================================== */}
+
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-6"
+          >
+            {/* ==================================================
+                EMAIL
+            ================================================== */}
+
             <motion.div variants={itemVariants}>
               <CustomInput
                 label="Email Address"
@@ -302,6 +522,7 @@ const LoginPage = () => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder=""
+                disabled={isLoading}
                 className={
                   errors.email
                     ? "border-danger focus:ring-danger/20 focus:border-danger"
@@ -311,13 +532,17 @@ const LoginPage = () => {
 
               {errors.email && (
                 <p className="mt-2 text-sm text-danger flex items-center">
-                  <span className="inline-block w-1 h-1 bg-danger rounded-full mr-2"></span>
+                  <span className="inline-block w-1 h-1 bg-danger rounded-full mr-2" />
+
                   {errors.email}
                 </p>
               )}
             </motion.div>
 
-            {/* Password Field */}
+            {/* ==================================================
+                PASSWORD
+            ================================================== */}
+
             <motion.div variants={itemVariants}>
               <CustomInput
                 label="Password"
@@ -327,6 +552,7 @@ const LoginPage = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder=""
+                disabled={isLoading}
                 className={
                   errors.password
                     ? "border-danger focus:ring-danger/20 focus:border-danger"
@@ -336,13 +562,17 @@ const LoginPage = () => {
 
               {errors.password && (
                 <p className="mt-2 text-sm text-danger flex items-center">
-                  <span className="inline-block w-1 h-1 bg-danger rounded-full mr-2"></span>
+                  <span className="inline-block w-1 h-1 bg-danger rounded-full mr-2" />
+
                   {errors.password}
                 </p>
               )}
             </motion.div>
 
-            {/* Remember Me & Forgot Password */}
+            {/* ==================================================
+                REMEMBER ME + FORGOT PASSWORD
+            ================================================== */}
+
             <motion.div
               variants={itemVariants}
               className="flex items-center justify-between"
@@ -352,6 +582,7 @@ const LoginPage = () => {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
+                  disabled={isLoading}
                   className="
                     h-4
                     w-4
@@ -363,6 +594,7 @@ const LoginPage = () => {
                     accent-primary
                   "
                 />
+
                 <label
                   htmlFor="remember-me"
                   className="
@@ -392,7 +624,10 @@ const LoginPage = () => {
               </div>
             </motion.div>
 
-            {/* Submit Button */}
+            {/* ==================================================
+                SUBMIT BUTTON
+            ================================================== */}
+
             <motion.div variants={itemVariants}>
               <motion.button
                 type="submit"
@@ -400,12 +635,19 @@ const LoginPage = () => {
                 whileHover={
                   shouldReduceMotion || isLoading
                     ? undefined
-                    : { y: -2, transition: { duration: 0.2 } }
+                    : {
+                        y: -2,
+                        transition: {
+                          duration: 0.2,
+                        },
+                      }
                 }
                 whileTap={
                   shouldReduceMotion || isLoading
                     ? undefined
-                    : { scale: 0.98 }
+                    : {
+                        scale: 0.98,
+                      }
                 }
                 className="
                   group
@@ -440,30 +682,47 @@ const LoginPage = () => {
               >
                 {isLoading ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Signing in...</span>
+                    <div
+                      className="
+                        animate-spin
+                        rounded-full
+                        h-5
+                        w-5
+                        border-b-2
+                        border-white
+                      "
+                    />
+
+                    <span>
+                      Signing in...
+                    </span>
                   </>
                 ) : (
                   <>
                     <LogIn className="w-5 h-5" />
-                    <span>Sign In</span>
+
+                    <span>
+                      Sign In
+                    </span>
                   </>
                 )}
               </motion.button>
             </motion.div>
           </form>
 
-          {/* ============================================================
+          {/* ====================================================
               DIVIDER
-          ============================================================ */}
+          ==================================================== */}
+
           <motion.div
             variants={itemVariants}
             className="mt-6"
           >
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border-light"></div>
+                <div className="w-full border-t border-border-light" />
               </div>
+
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-background text-text-light">
                   Or continue with
@@ -472,15 +731,17 @@ const LoginPage = () => {
             </div>
           </motion.div>
 
-          {/* ============================================================
-              SIGN UP LINK
-          ============================================================ */}
+          {/* ====================================================
+              SIGN UP
+          ==================================================== */}
+
           <motion.div
             variants={itemVariants}
             className="mt-6 text-center"
           >
             <p className="text-sm text-text-secondary">
               Don't have an account?{" "}
+
               <a
                 href="/register"
                 className="

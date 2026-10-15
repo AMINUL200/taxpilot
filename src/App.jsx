@@ -42,7 +42,6 @@ import OrganizationVAT from "./pages/organization/OrganizationVAT";
 import OrganizationVATReturn from "./pages/organization/OrganizationVATReturn";
 import AccountantLayout from "./layout/AccountantLayout";
 
-
 import AccountantDashboard from "./pages/accountant/AccountantDashboard";
 import AccountantClients from "./pages/accountant/AccountantClients";
 import AccountantClientsDetails from "./pages/accountant/AccountantClientsDetails";
@@ -57,123 +56,239 @@ import AccountantDocuments from "./pages/accountant/AccountantDocuments";
 import AccountantTeam from "./pages/accountant/AccountantTeam";
 import AccountantBilling from "./pages/accountant/AccountantBilling";
 import AccountantTeamDetails from "./pages/accountant/AccountantTeamDetails";
+import AuthGate from "./component/common/AuthGate";
+import SessionExpiredNotice from "./component/common/SessionExpiredNotice";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import UnauthorizedPage from "./pages/auth/UnauthorizedPage";
+import PublicRoute from "./routes/PublicRoute";
+import OrganizationAccountPage from "./pages/organization/OrganizationAccountPage";
+import OrganizationCorporationTaxPage from "./pages/organization/OrganizationCorporationTaxPage";
+import ManageFormDefinitions from "./pages/admin/form/ManageFormDefinitions";
+import ManageFormFields from "./pages/admin/form/ManageFormFields";
+import ManageFormSections from "./pages/admin/form/ManageFormSections";
+import ManageFormVersions from "./pages/admin/form/ManageFormVersions";
+import ManageFilingProcessType from "./pages/admin/filling_process/ManageFillingProcessType";
+import OrgManageFillingType from "./pages/organization/filling/OrgManageFillingType";
+import OrgManageFillingSubject from "./pages/organization/filling/OrgManageFillingSubject";
+import ManageFaqPage from "./pages/admin/website/faqs/ManageFaqPage";
+import ManageLegalPage from "./pages/admin/website/legal_page/ManageLegalPage";
+import ManageTermsPage from "./pages/admin/website/legal_page/ManageTermsPage";
+import ManagePrivacyPage from "./pages/admin/website/legal_page/ManagePrivacyPage";
+import ManageFeatureFirstSection from "./pages/admin/features/ManageFeatureFirstSection";
+import ManageFeatureSecondSection from "./pages/admin/features/ManageFeatureSecondSection";
 
 const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/verify-email" element={<VerifyEmailPage />} />
+      <AuthGate>
+        <SessionExpiredNotice />
 
-        <Route element={<AppLayout />}>
-          <Route index path="/" element={<LandingPage />} />
-          <Route path="/help" element={<HelpPage />} />
-          <Route path="/blog/:id" element={<BlogDetails />} />
-          <Route path="/pricing" element={<PricingPage />} />
+        <Routes>
+          {/* ============================================
+            PUBLIC ROUTES (redirect if authed)
+        ============================================ */}
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
 
-          <Route path="/corporation-tax" element={<CorporationTax />} />
-          <Route path="/annual-accounts" element={<AnnualAccounts />} />
-          <Route path="/mtd-vat" element={<MtdVat />} />
-          <Route path="/self-assessment" element={<SelfAssessment />} />
+            <Route element={<AppLayout />}>
+              <Route index path="/" element={<LandingPage />} />
+              <Route path="/help" element={<HelpPage />} />
+              <Route path="/blog/:id" element={<BlogDetails />} />
+              <Route path="/pricing" element={<PricingPage />} />
+
+              <Route path="/corporation-tax" element={<CorporationTax />} />
+              <Route path="/annual-accounts" element={<AnnualAccounts />} />
+              <Route path="/mtd-vat" element={<MtdVat />} />
+              <Route path="/self-assessment" element={<SelfAssessment />} />
+              <Route
+                path="/confirmation-statement"
+                element={<ConfirmationStatement />}
+              />
+
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/cookies" element={<Cookies />} />
+              <Route path="/accessibility" element={<Accessibility />} />
+            </Route>
+          </Route>
+
+          {/* Organization Routes */}
           <Route
-            path="/confirmation-statement"
-            element={<ConfirmationStatement />}
-          />
+            element={
+              <ProtectedRoute
+                allowedUserTypes={["organization_owner", "organization_user"]}
+              />
+            }
+          >
+            <Route path="/organization" element={<OrganizationLayout />}>
+              <Route index element={<OrganizationDashboard />} />
+              <Route
+                path="organization-setup"
+                element={<OrganizationSetup />}
+              />
+              <Route path="companies" element={<OrganizationMyCompanies />} />
+              <Route
+                path="companies/:id"
+                element={<OrganizationMyCompaniesDetails />}
+              />
+              <Route path="settings" element={<OrganizationSetting />} />
+              <Route path="deadlines" element={<OrganizationDeadline />} />
+              <Route path="billing" element={<OrganizationBilling />} />
 
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/cookies" element={<Cookies />} />
-          <Route path="/accessibility" element={<Accessibility />} />
-        </Route>
+              <Route
+                path="products/corporation-tax"
+                element={<OrganizationCorporationTax />}
+              />
 
-        {/* Organization Routes */}
-        <Route path="/organization" element={<OrganizationLayout />}>
-          <Route index element={<OrganizationDashboard />} />
-          <Route path="organization-setup" element={<OrganizationSetup />} />
-          <Route path="companies" element={<OrganizationMyCompanies />} />
-          <Route
-            path="companies/:id"
-            element={<OrganizationMyCompaniesDetails />}
-          />
-          <Route path="settings" element={<OrganizationSetting />} />
-          <Route path="deadlines" element={<OrganizationDeadline />} />
-          <Route path="billing" element={<OrganizationBilling />} />
+              <Route
+                path="/organization/products/corporation-tax/ct600/:companyNumber"
+                element={<OrganizationCorporationTaxCT600Page />}
+              />
 
-          <Route
-            path="products/corporation-tax"
-            element={<OrganizationCorporationTax />}
-          />
+              <Route
+                path="products/accounts"
+                element={<OrganizationAccountPage />}
+              />
+              <Route
+                path="products/ct600"
+                element={<OrganizationCorporationTaxPage />}
+              />
 
-          <Route
-            path="/organization/products/corporation-tax/ct600/:companyNumber"
-            element={<OrganizationCorporationTaxCT600Page />}
-          />
-
-          {/* <Route
+              {/* <Route
             path="/organization/products/corporation-tax/ct600/:companyNumber/sent"
             element={<CorporationTaxCT600SentPage />}
           /> */}
 
-          {/* <Route
+              {/* <Route
             path="/organization/products/corporation-tax/ct600/:companyNumber/hmrc-request"
             element={<CorporationTaxHMRCRequestPage />}
           /> */}
 
-          {/* <Route
+              {/* <Route
             path="/organization/products/corporation-tax/company/:companyNumber/years"
             element={<CorporationTaxYearsPage />}
           /> */}
 
-          <Route
-            path="products/self-assessment"
-            element={<OrganizationSelfAssessment />}
-          />
-          <Route
-            path="products/confirmation-statement"
-            element={<OrganizationConfirmationStatements />}
-          />
-          <Route path="products/mtd-vat" element={<OrganizationVAT />} />
-          <Route
-            path="products/mtd-vat-return/:companyNumber/start"
-            element={<OrganizationVATReturn />}
-          />
-        </Route>
+              <Route
+                path="products/self-assessment"
+                element={<OrganizationSelfAssessment />}
+              />
+              <Route
+                path="products/confirmation-statement"
+                element={<OrganizationConfirmationStatements />}
+              />
+              <Route path="products/mtd-vat" element={<OrganizationVAT />} />
+              <Route
+                path="products/mtd-vat-return/:companyNumber/start"
+                element={<OrganizationVATReturn />}
+              />
 
-        {/* Accountant portal */}
-        <Route path="/accountant" element={<AccountantLayout />}>
-          <Route index element={<AccountantDashboard />} />
-          <Route path="clients" element={<AccountantClients />} />
-          <Route path="clients/:id" element={<AccountantClientsDetails />} />
-          <Route path="companies" element={<AccountantCompanies />} />
-          <Route path="companies/:Id" element={<AccountantCompaniesDetails />} />
-          <Route path="filings" element={<AccountantFilings />} />
-          <Route path="filings/:Id" element={<AccountantFilingsDetails />} />
-          <Route path="deadlines" element={<AccountantDeadlines />} />
-          <Route path="tasks" element={<AccountantTasks />} />
-          <Route path="documents" element={<AccountantDocuments />} />
-          <Route path="team" element={<AccountantTeam />} />
-          <Route path="team/:Id" element={<AccountantTeamDetails />} />
+              {/* Filling process route----- */}
+              <Route
+                path="filing-process/filing-types"
+                element={<OrgManageFillingType />}
+              />
+              <Route
+                path="filing-process/filing-subjects"
+                element={<OrgManageFillingSubject />}
+              />
+            </Route>
+          </Route>
 
-          <Route path="billing" element={<AccountantBilling />} />
-          <Route path="settings" element={<AccountantSettings />} />
-        </Route>
+          {/* Accountant portal */}
+          {/* <Route element={<ProtectedRoute allowedUserTypes={["accountant"]} />}> */}
+          <Route path="/accountant" element={<AccountantLayout />}>
+            <Route index element={<AccountantDashboard />} />
+            <Route path="clients" element={<AccountantClients />} />
+            <Route path="clients/:id" element={<AccountantClientsDetails />} />
+            <Route path="companies" element={<AccountantCompanies />} />
+            <Route
+              path="companies/:Id"
+              element={<AccountantCompaniesDetails />}
+            />
+            <Route path="filings" element={<AccountantFilings />} />
+            <Route path="filings/:Id" element={<AccountantFilingsDetails />} />
+            <Route path="deadlines" element={<AccountantDeadlines />} />
+            <Route path="tasks" element={<AccountantTasks />} />
+            <Route path="documents" element={<AccountantDocuments />} />
+            <Route path="team" element={<AccountantTeam />} />
+            <Route path="team/:Id" element={<AccountantTeamDetails />} />
 
-        {/* Admin Layout */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="organizations" element={<AdminManageOrganization />} />
+            <Route path="billing" element={<AccountantBilling />} />
+            <Route path="settings" element={<AccountantSettings />} />
+          </Route>
+          {/* </Route> */}
+
+          {/* Admin Layout */}
           <Route
-            path="organizations/:id"
-            element={<AdminOrganizationDetailsPage />}
-          />
-          <Route path="users" element={<AdminUsersPage />} />
-          <Route path="users/:id" element={<AdminUserDetails />} />
-          {/* Additional admin routes can be added here */}
-          <Route path="site-settings" element={<SiteSettings />} />
-          <Route path="profile" element={<AdminProfile />} />
-        </Route>
-      </Routes>
+            element={<ProtectedRoute allowedUserTypes={["super_admin"]} />}
+          >
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route
+                path="organizations"
+                element={<AdminManageOrganization />}
+              />
+              <Route
+                path="organizations/:id"
+                element={<AdminOrganizationDetailsPage />}
+              />
+              <Route path="users" element={<AdminUsersPage />} />
+              <Route path="users/:id" element={<AdminUserDetails />} />
+              {/* Additional admin routes can be added here */}
+              <Route path="site-settings" element={<SiteSettings />} />
+              <Route path="profile" element={<AdminProfile />} />
+
+              {/* Start Form Management Routes */}
+              <Route
+                path="website/forms/filling-type"
+                element={<ManageFilingProcessType />}
+              />
+              <Route
+                path="website/forms/definitions"
+                element={<ManageFormDefinitions />}
+              />
+              <Route
+                path="website/forms/fields"
+                element={<ManageFormFields />}
+              />
+              <Route
+                path="website/forms/sections"
+                element={<ManageFormSections />}
+              />
+              <Route
+                path="website/forms/versions"
+                element={<ManageFormVersions />}
+              />
+
+              {/* End Form Management Routes */}
+
+              {/* Website Route Start */}
+              <Route path="website/faqs" element={<ManageFaqPage />} />
+              <Route path="website/legal-page" element={<ManageLegalPage />} />
+              <Route path="website/legal-page/terms" element={<ManageTermsPage />} />
+              <Route path="website/legal-page/privacy" element={<ManagePrivacyPage />} />
+
+              {/* Features Route */}
+              {/* <Route path="website/features" element={<ManageFeatures />} /> */}
+              <Route path="website/features/first-section" element={<ManageFeatureFirstSection />} />
+              <Route path="website/features/second-section" element={<ManageFeatureSecondSection />} />
+
+              {/* Website Route End */}
+
+              {/* Start Filling Process Routes */}
+              {/* <Route path="website/filling-steps" element={<ManageFillingSteps />} /> */}
+
+              {/* End Filling Process Routes */}
+            </Route>
+          </Route>
+
+          {/* Unauthorized Page */}
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        </Routes>
+      </AuthGate>
     </Router>
   );
 };
