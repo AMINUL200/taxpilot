@@ -76,6 +76,16 @@ import ManageTermsPage from "./pages/admin/website/legal_page/ManageTermsPage";
 import ManagePrivacyPage from "./pages/admin/website/legal_page/ManagePrivacyPage";
 import ManageFeatureFirstSection from "./pages/admin/features/ManageFeatureFirstSection";
 import ManageFeatureSecondSection from "./pages/admin/features/ManageFeatureSecondSection";
+import ManageFeatureThirdSection from "./pages/admin/features/ManageFeatureThirdSection ";
+import ManageFeatureFourthSection from "./pages/admin/features/ManageFeatureFourthSection";
+import ManageFeatureFifthSection from "./pages/admin/features/ManageFeatureFifthSection";
+import ManageFeatureSixthSection from "./pages/admin/features/ManageFeatureSixthSection";
+import ManageSubscriptionProduct from "./pages/admin/subscription/ManageSubscriptionProduct";
+import ManageSubscriptionPlan from "./pages/admin/subscription/ManageSubscriptionPlan";
+import ManageSubscriptionPlanFeature from "./pages/admin/subscription/ManageSubscriptionPlanFeature";
+import ManageSubscriptionPlanPricing from "./pages/admin/subscription/ManageSubscriptionPlanPricing";
+import ManageSubscriptionFillingTypeAssign from "./pages/admin/subscription/ManageSubscriptionFillingTypeAssign";
+import ManageSubscriptionEntitlements from "./pages/admin/subscription/ManageSubscriptionEntitlements";
 
 const App = () => {
   return (
@@ -143,7 +153,7 @@ const App = () => {
               />
 
               <Route
-                path="/organization/products/corporation-tax/ct600/:companyNumber"
+                path="/organization/products/corporation-tax/ct600/:filingId"
                 element={<OrganizationCorporationTaxCT600Page />}
               />
 
@@ -263,18 +273,66 @@ const App = () => {
                 element={<ManageFormVersions />}
               />
 
+              {/* Subscription Management Routes */}
+              <Route
+                path="subscriptions/products"
+                element={<ManageSubscriptionProduct />}
+              />
+              <Route path="subscriptions/plans" element={<ManageSubscriptionPlan />} />
+              <Route
+                path="subscriptions/plans/:planId/features"
+                element={<ManageSubscriptionPlanFeature />}
+              />
+              <Route path="subscriptions/plans/:planId/pricing" element={<ManageSubscriptionPlanPricing />} />
+              <Route
+                path="subscriptions/plans/:planId/filing-types"
+                element={<ManageSubscriptionFillingTypeAssign />}
+              />
+              <Route
+                path="subscriptions/plans/:planId/entitlements"
+                element={<ManageSubscriptionEntitlements />}
+              />
+
               {/* End Form Management Routes */}
 
               {/* Website Route Start */}
               <Route path="website/faqs" element={<ManageFaqPage />} />
               <Route path="website/legal-page" element={<ManageLegalPage />} />
-              <Route path="website/legal-page/terms" element={<ManageTermsPage />} />
-              <Route path="website/legal-page/privacy" element={<ManagePrivacyPage />} />
+              <Route
+                path="website/legal-page/terms"
+                element={<ManageTermsPage />}
+              />
+              <Route
+                path="website/legal-page/privacy"
+                element={<ManagePrivacyPage />}
+              />
 
               {/* Features Route */}
               {/* <Route path="website/features" element={<ManageFeatures />} /> */}
-              <Route path="website/features/first-section" element={<ManageFeatureFirstSection />} />
-              <Route path="website/features/second-section" element={<ManageFeatureSecondSection />} />
+              <Route
+                path="website/features/first-section"
+                element={<ManageFeatureFirstSection />}
+              />
+              <Route
+                path="website/features/second-section"
+                element={<ManageFeatureSecondSection />}
+              />
+              <Route
+                path="website/features/third-section"
+                element={<ManageFeatureThirdSection />}
+              />
+              <Route
+                path="website/features/fourth-section"
+                element={<ManageFeatureFourthSection />}
+              />
+              <Route
+                path="website/features/fifth-section"
+                element={<ManageFeatureFifthSection />}
+              />
+              <Route
+                path="website/features/sixth-section"
+                element={<ManageFeatureSixthSection />}
+              />
 
               {/* Website Route End */}
 

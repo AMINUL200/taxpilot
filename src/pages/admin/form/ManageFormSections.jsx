@@ -23,7 +23,6 @@ import {
   ArrowUpDown,
   Repeat,
   Lock,
-  Info,
   ListChecks,
 } from "lucide-react";
 import api from "../../../services/api";
@@ -79,9 +78,7 @@ const ManageFormSections = () => {
       setError(null);
 
       try {
-        const response = await api.get(
-          `/form-versions/${versionId}/sections`
-        );
+        const response = await api.get(`/form-versions/${versionId}/sections`);
 
         if (!response.data?.success) {
           throw new Error(
@@ -248,9 +245,7 @@ const ManageFormSections = () => {
 
       setSections((prev) => {
         const next = [...prev, response.data.data];
-        return next.sort(
-          (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
-        );
+        return next.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
       });
     }
 
@@ -318,30 +313,16 @@ const ManageFormSections = () => {
 
   return (
     <div className="space-y-6">
-      {/* ======================================================
-          HEADER
-      ====================================================== */}
+      {/* HEADER */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex items-start gap-3">
           <button
             type="button"
             onClick={() => navigate(-1)}
             className="
-              flex
-              h-11
-              w-11
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              border
-              border-border
-              bg-background
-              text-text-muted
-              transition-all
-              duration-200
-              hover:border-primary
-              hover:text-primary
+              flex h-11 w-11 shrink-0 items-center justify-center rounded-xl
+              border border-border bg-background text-text-muted
+              transition-all duration-200 hover:border-primary hover:text-primary
             "
             aria-label="Back"
           >
@@ -366,24 +347,10 @@ const ManageFormSections = () => {
             onClick={() => fetchSections(true)}
             disabled={refreshing || !versionId}
             className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-lg
-              border
-              border-border
-              bg-background
-              px-4
-              py-2.5
-              text-sm
-              font-semibold
-              text-heading
-              transition-all
-              duration-200
-              hover:border-primary
-              hover:text-primary
-              disabled:cursor-not-allowed
-              disabled:opacity-60
+              inline-flex items-center gap-2 rounded-lg border border-border
+              bg-background px-4 py-2.5 text-sm font-semibold text-heading
+              transition-all duration-200 hover:border-primary hover:text-primary
+              disabled:cursor-not-allowed disabled:opacity-60
             "
           >
             <RefreshCw
@@ -400,22 +367,10 @@ const ManageFormSections = () => {
             onClick={openCreateModal}
             disabled={!versionId}
             className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-lg
-              bg-primary
-              px-4
-              py-2.5
-              text-sm
-              font-semibold
-              text-text-white
-              shadow-button
-              transition-all
-              duration-200
-              hover:bg-primary-hover
-              hover:-translate-y-0.5
-              disabled:cursor-not-allowed
+              inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5
+              text-sm font-semibold text-text-white shadow-button
+              transition-all duration-200 hover:bg-primary-hover
+              hover:-translate-y-0.5 disabled:cursor-not-allowed
               disabled:opacity-60
             "
           >
@@ -425,9 +380,7 @@ const ManageFormSections = () => {
         </div>
       </div>
 
-      {/* ======================================================
-          MISSING VERSION ID WARNING
-      ====================================================== */}
+      {/* MISSING VERSION ID WARNING */}
       {!versionId && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -446,9 +399,7 @@ const ManageFormSections = () => {
         </motion.div>
       )}
 
-      {/* ======================================================
-          STATS
-      ====================================================== */}
+      {/* STATS */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {stats.map((stat) => {
           const Icon = stat.icon;
@@ -456,16 +407,9 @@ const ManageFormSections = () => {
             <div
               key={stat.id}
               className="
-                rounded-xl
-                border
-                border-border-light
-                bg-background
-                p-4
-                shadow-card
-                transition-all
-                duration-200
-                hover:-translate-y-0.5
-                hover:shadow-card-hover
+                rounded-xl border border-border-light bg-background p-4
+                shadow-card transition-all duration-200
+                hover:-translate-y-0.5 hover:shadow-card-hover
               "
             >
               <div className="flex items-start justify-between gap-3">
@@ -491,9 +435,7 @@ const ManageFormSections = () => {
         })}
       </div>
 
-      {/* ======================================================
-          ERROR BANNER
-      ====================================================== */}
+      {/* ERROR BANNER */}
       {error && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -517,9 +459,7 @@ const ManageFormSections = () => {
         </motion.div>
       )}
 
-      {/* ======================================================
-          FILTERS
-      ====================================================== */}
+      {/* FILTERS */}
       <div className="rounded-xl border border-border-light bg-background p-4 shadow-card">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           {/* Search */}
@@ -531,22 +471,10 @@ const ManageFormSections = () => {
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search sections by name, slug or description..."
               className="
-                w-full
-                rounded-lg
-                border
-                border-border
-                bg-background-soft
-                py-2.5
-                pl-10
-                pr-4
-                text-sm
-                text-heading
-                outline-none
-                transition-all
-                placeholder:text-text-muted
-                focus:border-primary
-                focus:bg-background
-                focus:ring-2
+                w-full rounded-lg border border-border bg-background-soft
+                py-2.5 pl-10 pr-4 text-sm text-heading outline-none
+                transition-all placeholder:text-text-muted
+                focus:border-primary focus:bg-background focus:ring-2
                 focus:ring-primary/10
               "
             />
@@ -558,25 +486,10 @@ const ManageFormSections = () => {
               type="button"
               onClick={() => setShowRepeatableDropdown((p) => !p)}
               className="
-                flex
-                w-full
-                items-center
-                justify-between
-                gap-2
-                rounded-lg
-                border
-                border-border
-                bg-background
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-heading
-                transition-all
-                duration-200
-                hover:border-primary
-                hover:text-primary
-                lg:w-auto
+                flex w-full items-center justify-between gap-2 rounded-lg
+                border border-border bg-background px-4 py-2.5 text-sm
+                font-semibold text-heading transition-all duration-200
+                hover:border-primary hover:text-primary lg:w-auto
               "
             >
               <span>
@@ -601,17 +514,8 @@ const ManageFormSections = () => {
                   exit={{ opacity: 0, y: -5, scale: 0.97 }}
                   transition={{ duration: 0.2, ease: premiumEase }}
                   className="
-                    absolute
-                    right-0
-                    top-full
-                    z-30
-                    mt-2
-                    w-52
-                    overflow-hidden
-                    rounded-xl
-                    border
-                    border-border
-                    bg-background
+                    absolute right-0 top-full z-30 mt-2 w-52 overflow-hidden
+                    rounded-xl border border-border bg-background
                     shadow-card-hover
                   "
                 >
@@ -628,16 +532,8 @@ const ManageFormSections = () => {
                         setShowRepeatableDropdown(false);
                       }}
                       className={`
-                        flex
-                        w-full
-                        items-center
-                        justify-between
-                        px-4
-                        py-2.5
-                        text-left
-                        text-sm
-                        transition-colors
-                        hover:bg-primary-light
+                        flex w-full items-center justify-between px-4 py-2.5
+                        text-left text-sm transition-colors hover:bg-primary-light
                         ${
                           repeatableFilter === opt.value
                             ? "bg-primary-light font-semibold text-primary"
@@ -662,23 +558,10 @@ const ManageFormSections = () => {
               type="button"
               onClick={clearFilters}
               className="
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                rounded-lg
-                border
-                border-border
-                bg-background
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-text-secondary
-                transition-all
-                duration-200
-                hover:border-primary
-                hover:text-primary
+                inline-flex items-center justify-center gap-2 rounded-lg
+                border border-border bg-background px-4 py-2.5 text-sm
+                font-semibold text-text-secondary transition-all duration-200
+                hover:border-primary hover:text-primary
               "
             >
               <X className="h-3.5 w-3.5" strokeWidth={2.4} />
@@ -688,9 +571,7 @@ const ManageFormSections = () => {
         </div>
       </div>
 
-      {/* ======================================================
-          TABLE
-      ====================================================== */}
+      {/* TABLE */}
       <div className="overflow-hidden rounded-xl border border-border-light bg-background shadow-card">
         {/* Header */}
         <div className="flex flex-col gap-2 border-b border-border-light px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -753,15 +634,8 @@ const ManageFormSections = () => {
                     <td className="px-5 py-4">
                       <span
                         className="
-                          inline-flex
-                          h-8
-                          w-8
-                          items-center
-                          justify-center
-                          rounded-lg
-                          bg-background-soft
-                          text-xs
-                          font-bold
+                          inline-flex h-8 w-8 items-center justify-center
+                          rounded-lg bg-background-soft text-xs font-bold
                           text-text-secondary
                         "
                       >
@@ -826,23 +700,11 @@ const ManageFormSections = () => {
                           type="button"
                           onClick={() => handleManageFields(section)}
                           className="
-                            inline-flex
-                            items-center
-                            gap-1
-                            rounded-lg
-                            border
-                            border-primary/40
-                            bg-primary-light
-                            px-3
-                            py-1.5
-                            text-[11px]
-                            font-bold
-                            text-primary
-                            transition-all
-                            duration-200
-                            hover:bg-primary
-                            hover:text-text-white
-                            hover:border-primary
+                            inline-flex items-center gap-1 rounded-lg border
+                            border-primary/40 bg-primary-light px-3 py-1.5
+                            text-[11px] font-bold text-[var(--color-primary)]
+                            transition-all duration-200 hover:bg-primary
+                            hover:text-text-white hover:border-primary
                           "
                         >
                           <ListChecks className="h-3 w-3" strokeWidth={2.4} />
@@ -854,23 +716,11 @@ const ManageFormSections = () => {
                           type="button"
                           onClick={() => openEditModal(section)}
                           className="
-                            inline-flex
-                            items-center
-                            gap-1
-                            rounded-lg
-                            border
-                            border-border
-                            bg-background
-                            px-3
-                            py-1.5
-                            text-[11px]
-                            font-semibold
-                            text-heading
-                            transition-all
-                            duration-200
-                            hover:border-primary
-                            hover:bg-primary-light
-                            hover:text-primary
+                            inline-flex items-center gap-1 rounded-lg border
+                            border-border bg-background px-3 py-1.5
+                            text-[11px] font-semibold text-heading
+                            transition-all duration-200 hover:border-primary
+                            hover:bg-primary-light hover:text-primary
                           "
                         >
                           <Edit3 className="h-3 w-3" strokeWidth={2.4} />
@@ -883,22 +733,13 @@ const ManageFormSections = () => {
                             type="button"
                             onClick={() =>
                               setOpenRowMenu(
-                                openRowMenu === section.id
-                                  ? null
-                                  : section.id
+                                openRowMenu === section.id ? null : section.id
                               )
                             }
                             className="
-                              flex
-                              h-7
-                              w-7
-                              items-center
-                              justify-center
-                              rounded-lg
-                              text-text-muted
-                              transition-colors
-                              hover:bg-primary-light
-                              hover:text-primary
+                              flex h-7 w-7 items-center justify-center
+                              rounded-lg text-text-muted transition-colors
+                              hover:bg-primary-light hover:text-primary
                             "
                           >
                             <MoreVertical className="h-3.5 w-3.5" />
@@ -907,35 +748,17 @@ const ManageFormSections = () => {
                           <AnimatePresence>
                             {openRowMenu === section.id && (
                               <motion.div
-                                initial={{
-                                  opacity: 0,
-                                  y: -6,
-                                  scale: 0.97,
-                                }}
+                                initial={{ opacity: 0, y: -6, scale: 0.97 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{
-                                  opacity: 0,
-                                  y: -5,
-                                  scale: 0.97,
-                                }}
+                                exit={{ opacity: 0, y: -5, scale: 0.97 }}
                                 transition={{ duration: 0.18 }}
                                 className="
-                                  absolute
-                                  right-0
-                                  top-full
-                                  z-20
-                                  mt-1
-                                  w-48
-                                  overflow-hidden
-                                  rounded-lg
-                                  border
-                                  border-border
-                                  bg-background
-                                  py-1
+                                  absolute right-0 top-full z-20 mt-1 w-48
+                                  overflow-hidden rounded-lg border
+                                  border-border bg-background py-1
                                   shadow-card-hover
                                 "
                               >
-                                {/* Manage Fields */}
                                 <button
                                   type="button"
                                   onClick={() => handleManageFields(section)}
@@ -945,7 +768,6 @@ const ManageFormSections = () => {
                                   <span>Manage Fields</span>
                                 </button>
 
-                                {/* Edit */}
                                 <button
                                   type="button"
                                   onClick={() => openEditModal(section)}
@@ -955,9 +777,13 @@ const ManageFormSections = () => {
                                   <span>Edit</span>
                                 </button>
 
-                                {/* Copy ID */}
                                 <button
                                   type="button"
+                                  onClick={() =>
+                                    navigator.clipboard?.writeText(
+                                      String(section.id)
+                                    )
+                                  }
                                   className="flex w-full items-center gap-2 px-3 py-2 text-xs text-text transition-colors hover:bg-primary-light hover:text-primary"
                                 >
                                   <Hash className="h-3.5 w-3.5" />
@@ -966,7 +792,6 @@ const ManageFormSections = () => {
 
                                 <div className="my-1 border-t border-border-light" />
 
-                                {/* Delete */}
                                 <button
                                   type="button"
                                   onClick={() => openDeleteModal(section)}
@@ -1012,15 +837,8 @@ const ManageFormSections = () => {
                       </div>
                       <span
                         className={`
-                          shrink-0
-                          inline-flex
-                          items-center
-                          gap-1
-                          rounded-full
-                          px-2
-                          py-0.5
-                          text-[9px]
-                          font-bold
+                          shrink-0 inline-flex items-center gap-1 rounded-full
+                          px-2 py-0.5 text-[9px] font-bold
                           ${
                             section.is_repeatable
                               ? "bg-info-light text-info"
@@ -1046,82 +864,43 @@ const ManageFormSections = () => {
                     </div>
 
                     <div className="mt-3 flex items-center gap-2">
-                      {/* Fields button */}
                       <button
                         type="button"
                         onClick={() => handleManageFields(section)}
                         className="
-                          inline-flex
-                          flex-1
-                          items-center
-                          justify-center
-                          gap-1.5
-                          rounded-lg
-                          border
-                          border-primary/40
-                          bg-primary-light
-                          px-3
-                          py-2
-                          text-[11px]
-                          font-bold
-                          text-primary
-                          transition-all
-                          hover:bg-primary
-                          hover:text-text-white
+                          inline-flex flex-1 items-center justify-center gap-1.5
+                          rounded-lg border border-primary/40 bg-primary-light
+                          px-3 py-2 text-[11px] font-bold
+                          text-[var(--color-primary)] transition-all
+                          hover:bg-primary hover:text-text-white
                         "
                       >
                         <ListChecks className="h-3 w-3" />
                         Fields
                       </button>
 
-                      {/* Edit button */}
                       <button
                         type="button"
                         onClick={() => openEditModal(section)}
                         className="
-                          inline-flex
-                          flex-1
-                          items-center
-                          justify-center
-                          gap-1.5
-                          rounded-lg
-                          border
-                          border-border
-                          bg-background
-                          px-3
-                          py-2
-                          text-[11px]
-                          font-semibold
-                          text-heading
-                          transition-all
-                          hover:border-primary
-                          hover:text-primary
+                          inline-flex flex-1 items-center justify-center gap-1.5
+                          rounded-lg border border-border bg-background px-3
+                          py-2 text-[11px] font-semibold text-heading
+                          transition-all hover:border-primary hover:text-primary
                         "
                       >
                         <Edit3 className="h-3 w-3" />
                         Edit
                       </button>
 
-                      {/* Delete button */}
                       <button
                         type="button"
                         onClick={() => openDeleteModal(section)}
                         className="
-                          inline-flex
-                          items-center
-                          justify-center
-                          gap-1.5
-                          rounded-lg
-                          border
-                          border-danger-light
-                          bg-background
-                          px-3
-                          py-2
-                          text-[11px]
-                          font-semibold
-                          text-danger
-                          transition-all
-                          hover:bg-danger-light
+                          inline-flex items-center justify-center gap-1.5
+                          rounded-lg border border-danger-light bg-background
+                          px-3 py-2 text-[11px] font-semibold text-danger
+                          transition-all hover:bg-danger-light
                         "
                       >
                         <Trash2 className="h-3 w-3" />
@@ -1153,21 +932,9 @@ const ManageFormSections = () => {
                 type="button"
                 onClick={clearFilters}
                 className="
-                  mt-5
-                  inline-flex
-                  items-center
-                  gap-2
-                  rounded-lg
-                  border
-                  border-border
-                  bg-background
-                  px-4
-                  py-2
-                  text-xs
-                  font-semibold
-                  text-heading
-                  transition-all
-                  hover:border-primary
+                  mt-5 inline-flex items-center gap-2 rounded-lg border
+                  border-border bg-background px-4 py-2 text-xs font-semibold
+                  text-heading transition-all hover:border-primary
                   hover:text-primary
                 "
               >
@@ -1179,18 +946,8 @@ const ManageFormSections = () => {
                 type="button"
                 onClick={openCreateModal}
                 className="
-                  mt-5
-                  inline-flex
-                  items-center
-                  gap-2
-                  rounded-lg
-                  bg-primary
-                  px-4
-                  py-2
-                  text-xs
-                  font-bold
-                  text-text-white
-                  transition-all
+                  mt-5 inline-flex items-center gap-2 rounded-lg bg-primary
+                  px-4 py-2 text-xs font-bold text-text-white transition-all
                   hover:bg-primary-hover
                 "
               >
@@ -1202,9 +959,7 @@ const ManageFormSections = () => {
         )}
       </div>
 
-      {/* ======================================================
-          FORM MODAL (Create/Edit)
-      ====================================================== */}
+      {/* MODALS */}
       <SectionFormModal
         isOpen={showFormModal}
         onClose={() => {
@@ -1218,9 +973,6 @@ const ManageFormSections = () => {
         premiumEase={premiumEase}
       />
 
-      {/* ======================================================
-          DELETE MODAL
-      ====================================================== */}
       <DeleteConfirmModal
         isOpen={showDeleteModal}
         onClose={() => {
@@ -1263,17 +1015,36 @@ const SectionFormModal = ({
   const [saving, setSaving] = useState(false);
   const [serverError, setServerError] = useState(null);
 
+  // Slug state
+  // slugLocked = true  → slug does NOT follow name
+  // slugLocked = false → slug follows name automatically
+  const [slugLocked, setSlugLocked] = useState(false);
+
+  // Original values for the edited section (used to detect "unchanged name")
+  const [originalName, setOriginalName] = useState("");
+  const [originalSlug, setOriginalSlug] = useState("");
+
+  /* Reset when opening */
   useEffect(() => {
     if (!isOpen) return;
 
     if (section) {
+      const initialName = section.name || "";
+      const initialSlug = section.slug || "";
+
       setForm({
-        name: section.name || "",
-        slug: section.slug || "",
+        name: initialName,
+        slug: initialSlug,
         description: section.description || "",
         sort_order: section.sort_order ?? 1,
         is_repeatable: section.is_repeatable ?? false,
       });
+
+      setOriginalName(initialName);
+      setOriginalSlug(initialSlug);
+
+      // Start UNLOCKED so that any name change immediately regenerates the slug
+      setSlugLocked(false);
     } else {
       setForm({
         name: "",
@@ -1282,27 +1053,71 @@ const SectionFormModal = ({
         sort_order: 1,
         is_repeatable: false,
       });
+
+      setOriginalName("");
+      setOriginalSlug("");
+      setSlugLocked(false);
     }
 
     setErrors({});
     setServerError(null);
   }, [isOpen, section]);
 
-  /* Auto-slug from name on create */
+  /* Auto-generate slug from name — unless the user has locked it */
   useEffect(() => {
-    if (isEdit) return;
-    if (form.slug && form.slug.length > 0) return;
+    if (!isOpen) return;
+    if (slugLocked) return;
 
-    const slug = form.name
+    // On edit: if the name hasn't been changed from the original,
+    // and the slug is still the original, don't overwrite it.
+    if (
+      isEdit &&
+      form.name === originalName &&
+      form.slug === originalSlug    ) {
+      return;
+    }
+
+    const generated = form.name
       .toLowerCase()
       .trim()
       .replace(/[^a-z0-9\s-]/g, "")
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-");
 
-    setForm((prev) => ({ ...prev, slug }));
+    setForm((prev) => {
+      if (prev.slug === generated) return prev;
+      return { ...prev, slug: generated };
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.name]);
+  }, [form.name, slugLocked, isOpen]);
+
+  /* Manual slug edit → lock it so it stops auto-updating */
+  const handleSlugChange = (value) => {
+    setSlugLocked(true);
+    setForm((prev) => ({ ...prev, slug: value }));
+  };
+
+  /* Re-enable auto-sync and regenerate from current name */
+  const handleSyncSlug = () => {
+    const generated = form.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
+
+    setSlugLocked(false);
+    setForm((prev) => ({ ...prev, slug: generated }));
+  };
+
+  /* Toggle lock state from the pill */
+  const handleToggleLock = () => {
+    if (slugLocked) {
+      handleSyncSlug();
+    } else {
+      setSlugLocked(true);
+    }
+  };
 
   const validate = () => {
     const next = {};
@@ -1351,9 +1166,7 @@ const SectionFormModal = ({
 
           <motion.div
             initial={
-              shouldReduceMotion
-                ? false
-                : { opacity: 0, scale: 0.95, y: 20 }
+              shouldReduceMotion ? false : { opacity: 0, scale: 0.95, y: 20 }
             }
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={
@@ -1364,23 +1177,10 @@ const SectionFormModal = ({
             transition={{ duration: 0.35, ease: premiumEase }}
             onClick={(e) => e.stopPropagation()}
             className="
-              fixed
-              left-1/2
-              top-1/2
-              z-[210]
-              flex
-              max-h-[90vh]
-              w-[calc(100%-32px)]
-              max-w-[560px]
-              -translate-x-1/2
-              -translate-y-1/2
-              flex-col
-              overflow-hidden
-              rounded-2xl
-              border
-              border-border
-              bg-background
-              shadow-card-hover
+              fixed left-1/2 top-1/2 z-[210] flex max-h-[90vh]
+              w-[calc(100%-32px)] max-w-[560px] -translate-x-1/2
+              -translate-y-1/2 flex-col overflow-hidden rounded-2xl
+              border border-border bg-background shadow-card-hover
             "
           >
             {/* Header */}
@@ -1439,18 +1239,9 @@ const SectionFormModal = ({
                     }
                     placeholder="e.g. Company Details"
                     className={`
-                      w-full
-                      rounded-lg
-                      border
-                      bg-background
-                      px-4
-                      py-2.5
-                      text-sm
-                      text-heading
-                      outline-none
-                      transition-all
-                      placeholder:text-text-muted
-                      focus:ring-2
+                      w-full rounded-lg border bg-background px-4 py-2.5
+                      text-sm text-heading outline-none transition-all
+                      placeholder:text-text-muted focus:ring-2
                       focus:ring-primary/10
                       ${
                         errors.name
@@ -1468,30 +1259,52 @@ const SectionFormModal = ({
 
                 {/* Slug */}
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-heading">
-                    Slug <span className="text-danger">*</span>
-                  </label>
+                  <div className="mb-1.5 flex items-center justify-between gap-2">
+                    <label className="block text-xs font-semibold text-heading">
+                      Slug <span className="text-danger">*</span>
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={handleToggleLock}
+                      className={`
+                        inline-flex items-center gap-1 rounded-full px-2 py-0.5
+                        text-[10px] font-bold transition-colors
+                        ${
+                          slugLocked
+                            ? "bg-warning-light text-warning hover:bg-warning/20"
+                            : "bg-success-light text-success hover:bg-success/20"
+                        }
+                      `}
+                      title={
+                        slugLocked
+                          ? "Slug is locked — click to sync from name"
+                          : "Slug follows name automatically — click to lock"
+                      }
+                    >
+                      {slugLocked ? (
+                        <>
+                          <Lock className="h-2.5 w-2.5" strokeWidth={2.6} />
+                          Locked
+                        </>
+                      ) : (
+                        <>
+                          <Repeat className="h-2.5 w-2.5" strokeWidth={2.6} />
+                          Auto
+                        </>
+                      )}
+                    </button>
+                  </div>
+
                   <input
                     type="text"
                     value={form.slug}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, slug: e.target.value }))
-                    }
+                    onChange={(e) => handleSlugChange(e.target.value)}
                     placeholder="e.g. company-details"
                     className={`
-                      w-full
-                      rounded-lg
-                      border
-                      bg-background
-                      px-4
-                      py-2.5
-                      font-mono
-                      text-sm
-                      text-heading
-                      outline-none
-                      transition-all
-                      placeholder:text-text-muted
-                      focus:ring-2
+                      w-full rounded-lg border bg-background px-4 py-2.5
+                      font-mono text-sm text-heading outline-none
+                      transition-all placeholder:text-text-muted focus:ring-2
                       focus:ring-primary/10
                       ${
                         errors.slug
@@ -1505,6 +1318,11 @@ const SectionFormModal = ({
                       {errors.slug}
                     </p>
                   )}
+                  <p className="mt-1.5 text-[11px] text-text-muted">
+                    {slugLocked
+                      ? "Slug is locked. Click Auto to re-sync from the name."
+                      : "Slug updates automatically as you type the name."}
+                  </p>
                 </div>
 
                 {/* Description */}
@@ -1523,29 +1341,16 @@ const SectionFormModal = ({
                     rows={3}
                     placeholder="Brief description of this section..."
                     className="
-                      w-full
-                      resize-none
-                      rounded-lg
-                      border
-                      border-border
-                      bg-background
-                      px-4
-                      py-2.5
-                      text-sm
-                      text-heading
-                      outline-none
-                      transition-all
-                      placeholder:text-text-muted
-                      focus:border-primary
-                      focus:ring-2
-                      focus:ring-primary/10
+                      w-full resize-none rounded-lg border border-border
+                      bg-background px-4 py-2.5 text-sm text-heading
+                      outline-none transition-all placeholder:text-text-muted
+                      focus:border-primary focus:ring-2 focus:ring-primary/10
                     "
                   />
                 </div>
 
                 {/* Grid: sort_order + is_repeatable */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {/* Sort Order */}
                   <div>
                     <label className="mb-1.5 block text-xs font-semibold text-heading">
                       Sort Order
@@ -1561,19 +1366,9 @@ const SectionFormModal = ({
                         }))
                       }
                       className="
-                        w-full
-                        rounded-lg
-                        border
-                        border-border
-                        bg-background
-                        px-4
-                        py-2.5
-                        text-sm
-                        text-heading
-                        outline-none
-                        transition-all
-                        focus:border-primary
-                        focus:ring-2
+                        w-full rounded-lg border border-border bg-background
+                        px-4 py-2.5 text-sm text-heading outline-none
+                        transition-all focus:border-primary focus:ring-2
                         focus:ring-primary/10
                       "
                     />
@@ -1582,7 +1377,6 @@ const SectionFormModal = ({
                     </p>
                   </div>
 
-                  {/* Repeatable Toggle */}
                   <div>
                     <label className="mb-1.5 block text-xs font-semibold text-heading">
                       Repeatable
@@ -1596,20 +1390,9 @@ const SectionFormModal = ({
                         }))
                       }
                       className={`
-                        group
-                        flex
-                        w-full
-                        items-center
-                        justify-between
-                        gap-3
-                        rounded-lg
-                        border
-                        bg-background
-                        px-4
-                        py-2.5
-                        text-sm
-                        transition-colors
-                        duration-200
+                        group flex w-full items-center justify-between gap-3
+                        rounded-lg border bg-background px-4 py-2.5 text-sm
+                        transition-colors duration-200
                         ${
                           form.is_repeatable
                             ? "border-info/30 hover:border-info/50"
@@ -1632,15 +1415,8 @@ const SectionFormModal = ({
 
                       <span
                         className={`
-                          relative
-                          inline-flex
-                          h-5
-                          w-9
-                          shrink-0
-                          items-center
-                          rounded-full
-                          transition-colors
-                          duration-300
+                          relative inline-flex h-5 w-9 shrink-0 items-center
+                          rounded-full transition-colors duration-300
                           ease-in-out
                           ${form.is_repeatable ? "bg-info" : "bg-border"}
                         `}
@@ -1653,18 +1429,9 @@ const SectionFormModal = ({
                             damping: 30,
                           }}
                           className={`
-                            absolute
-                            top-0.5
-                            h-4
-                            w-4
-                            rounded-full
-                            bg-white
+                            absolute top-0.5 h-4 w-4 rounded-full bg-white
                             shadow-[0_1px_3px_rgba(0,0,0,0.15)]
-                            ${
-                              form.is_repeatable
-                                ? "right-0.5"
-                                : "left-0.5"
-                            }
+                            ${form.is_repeatable ? "right-0.5" : "left-0.5"}
                           `}
                         />
                       </span>
@@ -1686,22 +1453,10 @@ const SectionFormModal = ({
                 onClick={onClose}
                 disabled={saving}
                 className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  rounded-lg
-                  border
-                  border-border
-                  bg-background
-                  px-5
-                  py-2.5
-                  text-xs
-                  font-semibold
-                  text-heading
-                  transition-all
-                  hover:border-primary
-                  hover:text-primary
-                  disabled:opacity-60
+                  inline-flex items-center justify-center rounded-lg border
+                  border-border bg-background px-5 py-2.5 text-xs font-semibold
+                  text-heading transition-all hover:border-primary
+                  hover:text-primary disabled:opacity-60
                 "
               >
                 Cancel
@@ -1711,22 +1466,10 @@ const SectionFormModal = ({
                 onClick={handleSubmit}
                 disabled={saving}
                 className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-lg
-                  bg-primary
-                  px-5
-                  py-2.5
-                  text-xs
-                  font-bold
-                  text-text-white
-                  shadow-button
-                  transition-all
-                  hover:bg-primary-hover
-                  disabled:cursor-not-allowed
-                  disabled:opacity-60
+                  inline-flex items-center justify-center gap-2 rounded-lg
+                  bg-primary px-5 py-2.5 text-xs font-bold text-text-white
+                  shadow-button transition-all hover:bg-primary-hover
+                  disabled:cursor-not-allowed disabled:opacity-60
                 "
               >
                 {saving ? (
@@ -1787,9 +1530,7 @@ const DeleteConfirmModal = ({
 
           <motion.div
             initial={
-              shouldReduceMotion
-                ? false
-                : { opacity: 0, scale: 0.95, y: 20 }
+              shouldReduceMotion ? false : { opacity: 0, scale: 0.95, y: 20 }
             }
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={
@@ -1800,30 +1541,17 @@ const DeleteConfirmModal = ({
             transition={{ duration: 0.35, ease: premiumEase }}
             onClick={(e) => e.stopPropagation()}
             className="
-              fixed
-              left-1/2
-              top-1/2
-              z-[210]
-              w-[calc(100%-32px)]
-              max-w-[440px]
-              -translate-x-1/2
-              -translate-y-1/2
-              overflow-hidden
-              rounded-2xl
-              border
-              border-border
-              bg-background
-              shadow-card-hover
+              fixed left-1/2 top-1/2 z-[210] w-[calc(100%-32px)]
+              max-w-[440px] -translate-x-1/2 -translate-y-1/2
+              overflow-hidden rounded-2xl border border-border
+              bg-background shadow-card-hover
             "
           >
             <div className="h-1.5 w-full bg-gradient-to-r from-danger via-danger/60 to-transparent" />
 
             <div className="p-6">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-danger-light">
-                <AlertCircle
-                  className="h-7 w-7 text-danger"
-                  strokeWidth={2}
-                />
+                <AlertCircle className="h-7 w-7 text-danger" strokeWidth={2} />
               </div>
 
               <h3 className="mt-4 text-lg font-bold text-heading">
@@ -1842,22 +1570,10 @@ const DeleteConfirmModal = ({
                 onClick={onClose}
                 disabled={deleting}
                 className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  rounded-lg
-                  border
-                  border-border
-                  bg-background
-                  px-5
-                  py-2.5
-                  text-xs
-                  font-semibold
-                  text-heading
-                  transition-all
-                  hover:border-primary
-                  hover:text-primary
-                  disabled:opacity-60
+                  inline-flex items-center justify-center rounded-lg border
+                  border-border bg-background px-5 py-2.5 text-xs font-semibold
+                  text-heading transition-all hover:border-primary
+                  hover:text-primary disabled:opacity-60
                 "
               >
                 Cancel
@@ -1867,20 +1583,9 @@ const DeleteConfirmModal = ({
                 onClick={handleConfirm}
                 disabled={deleting}
                 className="
-                  inline-flex
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-lg
-                  bg-danger
-                  px-5
-                  py-2.5
-                  text-xs
-                  font-bold
-                  text-text-white
-                  transition-all
-                  hover:opacity-90
-                  disabled:cursor-not-allowed
+                  inline-flex items-center justify-center gap-2 rounded-lg
+                  bg-danger px-5 py-2.5 text-xs font-bold text-text-white
+                  transition-all hover:opacity-90 disabled:cursor-not-allowed
                   disabled:opacity-60
                 "
               >

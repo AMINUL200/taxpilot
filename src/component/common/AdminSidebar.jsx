@@ -248,8 +248,22 @@ const AdminSidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
         {
           id: "subscriptions",
           label: "Subscriptions",
-          path: "/admin/subscriptions",
+          // path: "/admin/subscriptions",
           icon: BadgeDollarSign,
+          children: [
+            {
+              id: "subscriptions-products",
+              label: "Products", 
+              path: "/admin/subscriptions/products",
+              icon: BadgeDollarSign,
+            },
+            {
+              id: "subscriptions-plans",
+              label: "Plans",
+              path: "/admin/subscriptions/plans",
+              icon: BadgeDollarSign,
+            }
+          ]
         },
         {
           id: "payments",
@@ -369,28 +383,34 @@ const AdminSidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
               label: "Feature Second Section",
               path: "/admin/website/features/second-section",
               icon: Sparkles,
+            },
+            {
+              id: "feature-third-section",
+              label: "Feature Third Section",
+              path: "/admin/website/features/third-section",
+              icon: Sparkles,
+            },
+            {
+              id: "feature-fourth-section",
+              label: "Feature Fourth Section",
+              path: "/admin/website/features/fourth-section",
+              icon: Sparkles,
+            },
+            {
+              id: "feature-fifth-section",
+              label: "Feature Fifth Section",
+              path: "/admin/website/features/fifth-section",
+              icon: Sparkles,
+            },
+            {
+              id: "feature-sixth-section",
+              label: "Feature Sixth Section",
+              path: "/admin/website/features/sixth-section",
+              icon: Sparkles,
             }
           ]
         },
-        // {
-        //   id: "website-blog",
-        //   label: "Blog",
-        //   path: "/admin/website/blog",
-        //   icon: Newspaper,
-        // },
-        // {
-        //   id: "help-centre",
-        //   label: "Help Centre",
-        //   path: "/admin/website/help-centre",
-        //   icon: LifeBuoy,
-        // },
-        // {
-        //   id: "media-library",
-        //   label: "Media Library",
-        //   path: "/admin/website/media-library",
-        //   icon: Images,
-        // },
-        // 🌟 NESTED DROPDOWN ITEM
+    
         {
           id: "website-forms",
           label: "Forms",
